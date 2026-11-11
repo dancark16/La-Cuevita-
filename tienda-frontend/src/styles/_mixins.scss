@@ -1,0 +1,91 @@
+@use 'sass:map';
+@use 'variables' as v;
+
+@mixin up($name) {
+    @media (min-width: map.get(v.$breakpoints, $name)) {
+        @content;
+    }
+}
+
+@mixin container {
+    width: 100%;
+    max-width: v.$container-max;
+    margin-inline: auto;
+    padding-inline: 1rem;
+
+    @include up(sm) {
+        padding-inline: 1.5rem;
+    }
+
+    @include up(lg) {
+        padding-inline: 2rem;
+    }
+}
+
+@mixin button-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+@mixin button-disabled {
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+    }
+}
+
+@mixin button-primary {
+    @include button-base;
+    background: var(--color-accent);
+    color: var(--color-white);
+
+    &:hover:not(:disabled) {
+        background: var(--color-accent-deep);
+    }
+
+    @include button-disabled;
+}
+
+@mixin button-outline {
+    @include button-base;
+    background: transparent;
+    border-color: var(--color-black);
+    color: var(--color-black);
+
+    &:hover:not(:disabled) {
+        background: var(--color-black);
+        color: var(--color-white);
+    }
+
+    @include button-disabled;
+}
+
+@mixin section-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+@mixin visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

@@ -1,0 +1,117 @@
+<section class="catalog">
+  <button type="button" class="catalog__filters-toggle" [attr.aria-expanded]="filtersOpen()" (click)="toggleFilters()">
+    <span class="material-icons" aria-hidden="true">tune</span>
+    Categorías y filtros
+    @if (activeFilters() > 0) {
+      <span class="catalog__filters-count">{{ activeFilters() }}</span>
+    }
+  </button>
+
+  <div class="catalog__layout">
+    @if (filtersOpen()) {
+      <button type="button" class="catalog__backdrop" aria-label="Cerrar filtros" (click)="toggleFilters()"></button>
+    }
+
+    <aside class="catalog__sidebar" [class.is-open]="filtersOpen()" aria-label="Categorías y filtros">
+      <header class="catalog__drawer-head">
+        <h2 class="catalog__drawer-title">Categorías y filtros</h2>
+        <button type="button" class="catalog__drawer-close" aria-label="Cerrar" (click)="toggleFilters()">
+          <span class="material-icons" aria-hidden="true">close</span>
+        </button>
+      </header>
+      <app-catalog-sidebar
+        [categories]="categories()"
+        [selectedCategoryId]="query().categoryId"
+        [facets]="facets()"
+        [selectedSize]="query().sizeLabel"
+        [selectedColor]="query().colorName"
+        (categorySelected)="selectCategory($event)"
+        (sizeSelected)="selectSize($event)"
+        (colorSelected)="selectColor($event)"
+        (cleared)="clearFilters()"
+      />
+    </aside>
+
+    <div class="catalog__main">
+      <header class="catalog__header">
+        <h1 class="catalog__title">Tienda</h1>
+        @if (!loading() && !failed()) {
+          <p class="catalog__count">
+            {{ total() }} {{ total() === 1 ? 'producto' : 'productos' }}
+          </p>
+        }
+      </header>
+
+      <app-catalog-filters
+        [searchTerm]="query().q"
+        [sort]="query().sort"
+        (searchSubmitted)="search($event)"
+        (sortChanged)="changeSort($event)"
+      />
+
+      <nav class="crumbs" aria-label="Ruta de navegación">
+        <a routerLink="/">Inicio</a>
+        <span aria-hidden="true">/</span>
+        @if (breadcrumb().length === 0) {
+          <span class="crumbs__current">Tienda</span>
+        } @else {
+          <a routerLink="/tienda">Tienda</a>
+          @for (crumb of breadcrumb(); track $index) {
+            <span aria-hidden="true">/</span>
+            @if (crumb.categoryId) {
+              <a routerLink="/tienda" [queryParams]="{ categoria: crumb.categoryId }">{{ crumb.label }}</a>
+            } @else {
+              <span class="crumbs__current">{{ crumb.label }}</span>
+            }
+          }
+        }
+      </nav>
+
+      <div class="catalog__grid">
+        @if (loading()) {
+          @for (item of skeletons; track $index) {
+            <app-product-card-skeleton />
+          }
+        } @else {
+          @for (product of products(); track product.id) {
+            <app-product-card [product]="product" />
+          }
+        }
+      </div>
+
+      @if (failed()) {
+        <div class="catalog__notice" role="alert">
+          <p class="catalog__notice-title">No pudimos cargar los productos.</p>
+          <p class="catalog__notice-text">Revisa tu conexión e intenta de nuevo.</p>
+        </div>
+      } @else if (!loading() && products().length === 0) {
+        <div class="catalog__notice">
+          <p class="catalog__notice-title">No encontramos productos con esos filtros.</p>
+          <button type="button" class="catalog__reset" (click)="clearFilters()">Limpiar filtros</button>
+        </div>
+      }
+
+      @if (totalPages() > 1) {
+        <nav class="pagination" aria-label="Paginación">
+          <button
+            type="button"
+            class="pagination__button"
+            [disabled]="query().page === 0"
+            (click)="goToPage(query().page - 1)"
+          >
+            Anterior
+          </button>
+          <span class="pagination__status">Página {{ query().page + 1 }} de {{ totalPages() }}</span>
+          <button
+            type="button"
+            class="pagination__button"
+            [disabled]="query().page + 1 >= totalPages()"
+            (click)="goToPage(query().page + 1)"
+          >
+            Siguiente
+          </button>
+        </nav>
+      }
+    </div>
+  </div>
+</section>

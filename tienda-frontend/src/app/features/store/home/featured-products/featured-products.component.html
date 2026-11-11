@@ -1,0 +1,25 @@
+<section class="featured">
+  <div class="featured__header">
+    <h2 class="featured__title"><span class="slash" aria-hidden="true">/</span>Productos destacados</h2>
+    <a routerLink="/tienda" class="featured__link">
+      Ver todos
+      <span class="material-icons" aria-hidden="true">arrow_forward</span>
+    </a>
+  </div>
+
+  <div class="featured__grid">
+    @if (loading) {
+      @for (item of skeletons; track $index) {
+        <app-product-card-skeleton />
+      }
+    } @else {
+      @for (product of products; track product.id) {
+        <app-product-card [product]="product" />
+      }
+    }
+  </div>
+
+  @if (!loading && products.length === 0) {
+    <p class="featured__empty">Pronto habrá productos nuevos.</p>
+  }
+</section>

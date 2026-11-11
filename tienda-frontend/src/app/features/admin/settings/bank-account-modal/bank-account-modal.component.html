@@ -1,0 +1,77 @@
+<app-modal [title]="account() ? 'Editar cuenta' : 'Agregar cuenta'" (closed)="cancelled.emit()">
+  <form class="form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="field">
+      <label class="field__label" for="bank-name">Banco</label>
+      <input id="bank-name" class="field__input" [class.field__input--invalid]="invalid('bankName')" formControlName="bankName" list="bank-list" placeholder="Banco de Guayaquil" />
+      <datalist id="bank-list">
+        @for (bank of banks; track bank) {
+          <option [value]="bank"></option>
+        }
+      </datalist>
+      @if (invalid('bankName')) {
+        <span class="field__error">Escribe el nombre del banco</span>
+      }
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field__label" for="bank-type">Tipo de cuenta</label>
+        <select id="bank-type" class="field__input" formControlName="accountType">
+          <option value="Ahorros">Ahorros</option>
+          <option value="Corriente">Corriente</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field__label" for="bank-number">Número de cuenta</label>
+        <input id="bank-number" class="field__input" [class.field__input--invalid]="invalid('accountNumber')" formControlName="accountNumber" inputmode="numeric" />
+        @if (invalid('accountNumber')) {
+          <span class="field__error">Solo números (6 a 30 dígitos)</span>
+        }
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field__label" for="bank-holder">Titular</label>
+        <input id="bank-holder" class="field__input" [class.field__input--invalid]="invalid('holder')" formControlName="holder" />
+        @if (invalid('holder')) {
+          <span class="field__error">Escribe el nombre del titular</span>
+        }
+      </div>
+      <div class="field">
+        <label class="field__label" for="bank-holder-id">Cédula o RUC (opcional)</label>
+        <input id="bank-holder-id" class="field__input" formControlName="holderId" inputmode="numeric" />
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field__label" for="bank-email">Correo del titular (opcional)</label>
+        <input id="bank-email" class="field__input" [class.field__input--invalid]="invalid('holderEmail')" formControlName="holderEmail" type="email" />
+        @if (invalid('holderEmail')) {
+          <span class="field__error">Correo no válido</span>
+        }
+      </div>
+      <div class="field">
+        <label class="field__label" for="bank-swift">Código SWIFT (opcional)</label>
+        <input id="bank-swift" class="field__input" formControlName="swiftCode" />
+      </div>
+    </div>
+
+    <label class="switch">
+      <input type="checkbox" class="switch__input" formControlName="active" />
+      <span class="switch__track" aria-hidden="true"></span>
+      <span class="switch__text">
+        <strong>{{ form.controls.active.value ? 'Cuenta activa' : 'Cuenta oculta' }}</strong>
+        <span class="field__hint">Solo las cuentas activas se muestran a las clientas.</span>
+      </span>
+    </label>
+
+    <div class="form__actions">
+      <button type="button" class="button button--outline" (click)="cancelled.emit()">Cancelar</button>
+      <button type="submit" class="button button--primary" [disabled]="saving()">
+        {{ saving() ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</app-modal>

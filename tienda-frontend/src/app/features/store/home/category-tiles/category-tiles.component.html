@@ -1,0 +1,37 @@
+@if (groups.length > 0) {
+  <section class="categories" aria-labelledby="categories-title">
+    <div class="categories__header">
+      <h2 id="categories-title" class="categories__title">
+        <span class="slash" aria-hidden="true">/</span>Categorías principales
+      </h2>
+      <a routerLink="/tienda" class="categories__link">
+        Ver todas
+        <span class="material-icons" aria-hidden="true">arrow_forward</span>
+      </a>
+    </div>
+
+    <ul class="categories__list">
+      @for (group of groups; track group.category.id) {
+        <li>
+          <a
+            routerLink="/tienda"
+            [queryParams]="{ categoria: group.category.id }"
+            class="tile"
+            [class.tile--photo]="imageFor(group.category)"
+            [style.--tile-image]="imageFor(group.category) ? 'url(&quot;' + imageFor(group.category) + '&quot;)' : null"
+          >
+            <span class="tile__text">
+              <span class="tile__name">{{ group.category.name }}</span>
+              @if (group.count !== null) {
+                <span class="tile__count">{{ group.count }} {{ group.count === 1 ? 'prenda' : 'prendas' }}</span>
+              }
+            </span>
+            <span class="tile__arrow" aria-hidden="true">
+              <span class="material-icons">arrow_forward</span>
+            </span>
+          </a>
+        </li>
+      }
+    </ul>
+  </section>
+}

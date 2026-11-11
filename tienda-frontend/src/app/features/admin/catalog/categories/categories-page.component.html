@@ -1,0 +1,109 @@
+<header class="page-header">
+  <div>
+    <h1 class="page-header__title"><span class="slash" aria-hidden="true">/</span>Categorías</h1>
+    <p class="page-header__text">
+      Organiza tu catálogo. Usa categorías padre para agrupar otras (por ejemplo, Mujer → Blusas y Vestidos).
+    </p>
+  </div>
+  <button type="button" class="button button--primary" (click)="openForm(null)">
+    <span class="material-icons" aria-hidden="true">add</span>
+    Nueva categoría
+  </button>
+</header>
+
+<section class="card">
+  <div class="toolbar">
+    <label class="search">
+      <span class="material-icons search__icon" aria-hidden="true">search</span>
+      <input class="search__input" type="search" placeholder="Buscar categoría por nombre..." (input)="onSearch($event)" />
+    </label>
+    <select class="select" aria-label="Categoría" (change)="onCategory($event)">
+      <option value="">Todas las categorías</option>
+      @for (category of categories(); track category.id) {
+        <option [value]="category.id">{{ category.name }}</option>
+      }
+    </select>
+    <select class="select" aria-label="Categoría padre" (change)="onParent($event)">
+      <option value="">Todos los padres</option>
+      <option value="ROOT">Sin padre (principales)</option>
+      @for (parent of parents(); track parent.id) {
+        <option [value]="parent.id">{{ parent.name }}</option>
+      }
+    </select>
+    <select class="select" aria-label="Estado" (change)="onStatus($event)">
+      <option value="">Todos los estados</option>
+      <option value="ACTIVE">Activas</option>
+      <option value="INACTIVE">Inactivas</option>
+    </select>
+    <span class="toolbar__count">{{ visible().length }} {{ visible().length === 1 ? 'categoría' : 'categorías' }}</span>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Imagen</th>
+          <th>Categoría</th>
+          <th>Slug</th>
+          <th>Categoría padre</th>
+          <th class="center">Productos</th>
+          <th>Estado</th>
+          <th class="num">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (category of visible(); track category.id) {
+          <tr>
+            <td>
+              @if (category.imageUrl) {
+                <img class="thumb" [src]="category.imageUrl" alt="" loading="lazy" />
+              } @else {
+                <span class="thumb thumb--empty" aria-hidden="true">{{ category.name.charAt(0).toUpperCase() }}</span>
+              }
+            </td>
+            <td class="strong">{{ category.name }}</td>
+            <td class="slug">{{ category.slug }}</td>
+            <td>
+              @if (parentName(category.parentId); as parent) {
+                <span class="chip">{{ parent }}</span>
+              } @else {
+                <span class="muted">Principal</span>
+              }
+            </td>
+            <td class="center">{{ productCount(category.id) }}</td>
+            <td>
+              <span class="chip" [class.chip--ok]="category.active" [class.chip--off]="!category.active">
+                {{ category.active ? 'Activa' : 'Inactiva' }}
+              </span>
+            </td>
+            <td>
+              <div class="actions">
+                <button type="button" class="icon-btn" aria-label="Editar" (click)="openForm(category)">
+                  <span class="material-icons" aria-hidden="true">edit</span>
+                </button>
+                <button type="button" class="icon-btn icon-btn--danger" aria-label="Eliminar" (click)="remove(category)">
+                  <span class="material-icons" aria-hidden="true">delete_outline</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (!loading() && visible().length === 0) {
+      <p class="empty">No hay categorías que coincidan.</p>
+    }
+    @if (loading()) {
+      <p class="empty">Cargando...</p>
+    }
+  </div>
+</section>
+
+@if (formOpen()) {
+  <app-category-form-modal
+    [category]="editing()"
+    [categories]="categories()"
+    (saved)="onSaved()"
+    (cancelled)="closeForm()"
+  />
+}

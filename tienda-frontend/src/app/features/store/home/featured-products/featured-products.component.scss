@@ -1,0 +1,65 @@
+@use 'styles/mixins' as m;
+
+:host {
+  display: block;
+}
+
+.featured {
+  padding-block: 2.5rem;
+
+  @include m.container;
+}
+
+.featured__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.slash {
+  margin-right: 0.5rem;
+  font-style: italic;
+  color: var(--color-accent);
+}
+
+.featured__title {
+  @include m.section-title;
+}
+
+.featured__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-accent-deep);
+
+  .material-icons {
+    font-size: 1rem;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.featured__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem 0.75rem;
+  margin-top: 1.5rem;
+
+  @include m.up(md) {
+    gap: 2rem 1rem;
+  }
+
+  @include m.up(lg) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.featured__empty {
+  margin-top: 1.5rem;
+  color: var(--color-muted);
+}

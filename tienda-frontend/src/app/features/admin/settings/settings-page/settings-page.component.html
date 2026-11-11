@@ -1,0 +1,95 @@
+<header class="page-header">
+  <div>
+    <h1 class="page-header__title"><span class="slash" aria-hidden="true">/</span>Configuración</h1>
+    <p class="page-header__text">Datos de contacto y cuentas donde tus clientas te pagan. Se actualizan en la tienda al instante.</p>
+  </div>
+</header>
+
+<div class="layout">
+  <section class="card">
+    <h2 class="card__title"><span class="slash" aria-hidden="true">/</span>Contacto de la tienda</h2>
+    <form class="form" [formGroup]="form" (ngSubmit)="save()">
+      <div class="field">
+        <label class="field__label" for="set-whatsapp">WhatsApp de la tienda</label>
+        <input id="set-whatsapp" class="field__input" formControlName="whatsappNumber" type="tel" placeholder="0991234567" />
+        <span class="field__hint">
+          A este número llegan los mensajes de las clientas (botón "Avisar por WhatsApp" y pie de página).
+          Escríbelo como lo marcas normalmente, el sistema lo convierte.
+        </span>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="set-instagram">Instagram</label>
+        <input id="set-instagram" class="field__input" formControlName="instagramUser" placeholder="lacuevitamach_" />
+        <span class="field__hint">Solo el usuario, sin el arroba.</span>
+      </div>
+
+      <div class="form__actions">
+        <button type="submit" class="button button--primary" [disabled]="saving() || loading()">
+          {{ saving() ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </form>
+
+    <div class="soon">
+      <span class="material-icons" aria-hidden="true">credit_card</span>
+      <div>
+        <p class="soon__title">Pago con tarjeta (PayPhone)</p>
+        <p class="soon__text">Aún no está conectado. Se activará aquí cuando tengamos las credenciales de PayPhone.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <header class="card__head">
+      <h2 class="card__title"><span class="slash" aria-hidden="true">/</span>Cuentas para transferencias</h2>
+      <button type="button" class="button button--outline button--small" (click)="openModal(null)">
+        <span class="material-icons" aria-hidden="true">add</span>
+        Agregar cuenta
+      </button>
+    </header>
+
+    @if (loading()) {
+      <p class="empty">Cargando...</p>
+    } @else if (accounts().length === 0) {
+      <p class="empty">
+        Todavía no hay cuentas. Agrega al menos una para que tus clientas sepan a dónde transferir.
+      </p>
+    } @else {
+      <ul class="accounts">
+        @for (account of accounts(); track account.id) {
+          <li class="account" [class.account--off]="!account.active">
+            @if (logoOf(account.bankName); as logo) {
+              <img class="account__logo" [src]="logo.src" [style.background]="logo.background" alt="" />
+            }
+            <div class="account__main">
+              <p class="account__bank">
+                {{ account.bankName }}
+                <span class="account__type">{{ account.accountType }}</span>
+                @if (!account.active) {
+                  <span class="account__hidden">Oculta</span>
+                }
+              </p>
+              <p class="account__number">{{ account.accountNumber }}</p>
+              <p class="account__holder">
+                {{ account.holder }}@if (account.holderId) { · {{ account.holderId }} }
+              </p>
+            </div>
+            <div class="account__actions">
+              <button type="button" class="icon-btn" aria-label="Editar cuenta" (click)="openModal(account)">
+                <span class="material-icons" aria-hidden="true">edit</span>
+              </button>
+              <button type="button" class="icon-btn icon-btn--danger" aria-label="Eliminar cuenta" (click)="remove(account)">
+                <span class="material-icons" aria-hidden="true">delete_outline</span>
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</div>
+
+@if (modalOpen()) {
+  <app-bank-account-modal [account]="editing()" (saved)="onSaved()" (cancelled)="modalOpen.set(false)" />
+}

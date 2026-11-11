@@ -1,0 +1,172 @@
+<header class="header">
+  <h1 class="header__title"><span class="slash" aria-hidden="true">/</span>Dashboard</h1>
+  <p class="header__text">¡Bienvenido de nuevo! Aquí tienes el resumen de tu tienda La Cuevita.</p>
+</header>
+
+@if (failed()) {
+  <p class="notice" role="alert">No pudimos cargar todos los datos. Revisa que el backend esté corriendo.</p>
+}
+
+@if (pendingOrders() > 0) {
+  <a routerLink="/admin/pedidos" [queryParams]="{ estado: 'PENDING' }" class="orders-alert">
+    <span class="material-icons" aria-hidden="true">receipt_long</span>
+    <span>
+      Tienes <strong>{{ pendingOrders() }}</strong>
+      {{ pendingOrders() === 1 ? 'pedido por confirmar' : 'pedidos por confirmar' }}
+    </span>
+    <span class="orders-alert__cta">Revisar</span>
+  </a>
+}
+
+<section class="money-row" aria-label="Valor del inventario">
+  <article class="money">
+    <span class="money__icon"><span class="material-icons" aria-hidden="true">inventory_2</span></span>
+    <div class="money__body">
+      <p class="money__label">Valor del inventario</p>
+      <p class="money__value">{{ stock() ? (stock()!.retailValue | currency: 'USD') : '-' }}</p>
+      <p class="money__hint">{{ stock() ? (stock()!.units | number) : '-' }} unidades a precio de venta</p>
+    </div>
+  </article>
+  <article class="money">
+    <span class="money__icon"><span class="material-icons" aria-hidden="true">shopping_bag</span></span>
+    <div class="money__body">
+      <p class="money__label">Costo del inventario</p>
+      <p class="money__value">{{ hasCosts() ? (stock()!.costValue | currency: 'USD') : '-' }}</p>
+      <p class="money__hint">{{ hasCosts() ? 'Según el costo de Codesoft' : 'Importa el Excel para cargar costos' }}</p>
+    </div>
+  </article>
+  <article class="money">
+    <span class="money__icon"><span class="material-icons" aria-hidden="true">bar_chart</span></span>
+    <div class="money__body">
+      <p class="money__label">Utilidad estimada</p>
+      <p class="money__value">{{ profit() !== null ? (profit()! | currency: 'USD') : '-' }}</p>
+      <p class="money__hint">Precio de venta menos costo</p>
+    </div>
+  </article>
+  <article class="money money--alert">
+    <span class="money__icon"><span class="material-icons" aria-hidden="true">warning_amber</span></span>
+    <div class="money__body">
+      <p class="money__label">Productos con poco stock</p>
+      <p class="money__value">{{ attention() ?? '-' }}</p>
+      <p class="money__hint">Con 2 unidades o menos</p>
+    </div>
+  </article>
+</section>
+
+<section class="counts" aria-label="Resumen">
+  <a routerLink="/admin/productos" class="count">
+    <span class="count__icon"><span class="material-icons" aria-hidden="true">inventory_2</span></span>
+    <span class="count__value">{{ productTotal() ?? '-' }}</span>
+    <span class="count__label">Productos</span>
+  </a>
+  <a routerLink="/admin/categorias" class="count">
+    <span class="count__icon"><span class="material-icons" aria-hidden="true">sell</span></span>
+    <span class="count__value">{{ categoryTotal() ?? '-' }}</span>
+    <span class="count__label">Categorías</span>
+  </a>
+  <a routerLink="/admin/atributos" class="count">
+    <span class="count__icon"><span class="material-icons" aria-hidden="true">straighten</span></span>
+    <span class="count__value">{{ sizeCount() ?? '-' }}</span>
+    <span class="count__label">Tallas</span>
+  </a>
+  <a routerLink="/admin/atributos" class="count">
+    <span class="count__icon"><span class="material-icons" aria-hidden="true">palette</span></span>
+    <span class="count__value">{{ colorCount() ?? '-' }}</span>
+    <span class="count__label">Colores</span>
+  </a>
+</section>
+
+<div class="grid">
+  <section class="panel">
+    <h2 class="panel__title"><span class="slash" aria-hidden="true">/</span>Estado del catálogo</h2>
+    <div class="donut">
+      <div class="donut__chart">
+        <svg viewBox="0 0 42 42" class="donut__svg" role="img" aria-label="Productos por estado">
+          <circle class="donut__track" cx="21" cy="21" r="15.9155" />
+          @for (segment of donut(); track segment.key) {
+            @if (segment.percent > 0) {
+              <circle
+                class="donut__segment"
+                cx="21"
+                cy="21"
+                r="15.9155"
+                [attr.stroke]="segment.color"
+                [attr.stroke-dasharray]="segment.percent + ' ' + (100 - segment.percent)"
+                [attr.stroke-dashoffset]="segment.offset"
+              />
+            }
+          }
+        </svg>
+        <div class="donut__center">
+          <span class="donut__total">{{ productTotal() ?? '-' }}</span>
+          <span class="donut__caption">Productos</span>
+        </div>
+      </div>
+      <ul class="legend">
+        @for (segment of donut(); track segment.key) {
+          <li class="legend__row">
+            <span class="legend__dot" [style.background]="segment.color"></span>
+            <span class="legend__label">{{ segment.label }}</span>
+            <span class="legend__count">{{ segment.count }} ({{ segment.percent | number: '1.0-0' }}%)</span>
+          </li>
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel__title"><span class="slash" aria-hidden="true">/</span>Productos por categoría</h2>
+    @if (topCategories().length === 0) {
+      <p class="empty">Sin datos todavía.</p>
+    } @else {
+      <ul class="bars">
+        @for (row of topCategories(); track row.id) {
+          <li class="bar">
+            <span class="bar__label">{{ row.name }}</span>
+            <div class="bar__track"><div class="bar__fill" [style.width.%]="row.percent"></div></div>
+            <span class="bar__count">{{ row.products }}</span>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="panel">
+    <header class="panel__header">
+      <h2 class="panel__title"><span class="slash" aria-hidden="true">/</span>Productos recientes</h2>
+      <a routerLink="/admin/productos" class="panel__link">Ver todos</a>
+    </header>
+    @if (recent().length === 0) {
+      <p class="empty">Todavía no hay productos.</p>
+    } @else {
+      <ul class="recent">
+        @for (product of recent(); track product.id) {
+          <li>
+            <a [routerLink]="['/admin/productos', product.id]" class="recent__row">
+              <span class="recent__avatar" aria-hidden="true">{{ product.name.charAt(0).toUpperCase() }}</span>
+              <span class="recent__info">
+                <span class="recent__name">{{ product.name }}</span>
+                <span class="recent__meta">{{ product.categoryName }} · {{ product.createdAt | date: 'dd/MM/yyyy' }}</span>
+              </span>
+              <span class="chip" [class.chip--ok]="product.baseStatus === 'ACTIVE'" [class.chip--warn]="product.baseStatus === 'DRAFT'" [class.chip--off]="product.baseStatus === 'INACTIVE'">
+                {{ product.baseStatus === 'ACTIVE' ? 'Activo' : product.baseStatus === 'DRAFT' ? 'Borrador' : 'Inactivo' }}
+              </span>
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="panel">
+    <h2 class="panel__title"><span class="slash" aria-hidden="true">/</span>Accesos rápidos</h2>
+    <div class="actions">
+      @for (action of actions; track action.label) {
+        <a [routerLink]="action.route" class="action">
+          <span class="material-icons action__icon" aria-hidden="true">{{ action.icon }}</span>
+          {{ action.label }}
+        </a>
+      }
+    </div>
+  </section>
+</div>

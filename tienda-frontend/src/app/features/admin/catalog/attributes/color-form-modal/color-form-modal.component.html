@@ -1,0 +1,57 @@
+<app-modal [title]="color() ? 'Editar color' : 'Agregar color'" (closed)="cancelled.emit()">
+  <form class="form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="field">
+      <label class="field__label" for="color-name">Nombre</label>
+      <input
+        id="color-name"
+        class="field__input"
+        [class.field__input--invalid]="form.controls.name.touched && form.controls.name.invalid"
+        formControlName="name"
+        placeholder="Negro, Rosa, Beige..."
+      />
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <span class="field__error">El nombre es obligatorio</span>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="color-hex">Código del color</label>
+      <div class="hex">
+        <input
+          class="hex__picker"
+          type="color"
+          aria-label="Elegir color"
+          [value]="validPreview()"
+          (input)="setHex($any($event.target).value)"
+        />
+        <input
+          id="color-hex"
+          class="field__input"
+          [class.field__input--invalid]="form.controls.hex.touched && form.controls.hex.invalid"
+          formControlName="hex"
+          placeholder="#1A1A1A"
+          maxlength="7"
+        />
+      </div>
+      @if (form.controls.hex.touched && form.controls.hex.invalid) {
+        <span class="field__error">Formato válido: #1A1A1A</span>
+      }
+    </div>
+
+    <label class="switch">
+      <input type="checkbox" class="switch__input" formControlName="active" />
+      <span class="switch__track" aria-hidden="true"></span>
+      <span class="switch__text">
+        <strong>{{ form.controls.active.value ? 'Color activo' : 'Color inactivo' }}</strong>
+        <span class="field__hint">Los colores inactivos no se ofrecen al crear variantes.</span>
+      </span>
+    </label>
+
+    <div class="form__actions">
+      <button type="button" class="button button--outline" (click)="cancelled.emit()">Cancelar</button>
+      <button type="submit" class="button button--primary" [disabled]="saving()">
+        {{ saving() ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</app-modal>

@@ -1,0 +1,112 @@
+<section class="cart">
+    <h1 class="cart__title">Carrito</h1>
+
+    @if (cart.lines().length === 0) {
+    <div class="empty">
+        <span class="material-icons empty__icon" aria-hidden="true">shopping_bag</span>
+        <p class="empty__title">Tu carrito está vacío</p>
+        <p class="empty__text">Explora la tienda y agrega tus prendas favoritas.</p>
+        <a routerLink="/tienda" class="button button--primary">Ir a la tienda</a>
+    </div>
+    } @else {
+    <div class="cart__layout">
+        <ul class="lines">
+            @for (line of cart.lines(); track line.variantId) {
+            <li class="line">
+                <div class="line__media">
+                    @if (line.imageUrl) {
+                    <img class="line__image" [src]="line.imageUrl" [alt]="line.productName" />
+                    } @else {
+                    <span class="material-icons line__placeholder" aria-hidden="true">checkroom</span>
+                    }
+                </div>
+
+                <div class="line__info">
+                    <p class="line__name">{{ line.productName }}</p>
+                    <p class="line__meta">
+                        Talla {{ line.sizeLabel }}
+                        <span class="line__dot" [style.background]="line.colorHex"></span>
+                        {{ line.colorName }}
+                    </p>
+                    <p class="line__unit">{{ line.unitPrice | currency: 'USD' }}</p>
+                </div>
+
+                <div class="qty" role="group" [attr.aria-label]="'Cantidad de ' + line.productName">
+                    <button type="button" class="qty__button" aria-label="Quitar una unidad"
+                        (click)="decrease(line.variantId, line.quantity)">−</button>
+                    <span class="qty__value">{{ line.quantity }}</span>
+                    <button type="button" class="qty__button" aria-label="Agregar una unidad"
+                        [disabled]="line.quantity >= line.maxQuantity"
+                        (click)="increase(line.variantId, line.quantity)">+</button>
+                </div>
+
+                <p class="line__total">{{ line.unitPrice * line.quantity | currency: 'USD' }}</p>
+
+                <button type="button" class="line__remove" aria-label="Quitar del carrito"
+                    (click)="cart.remove(line.variantId)">
+                    <span class="material-icons" aria-hidden="true">delete_outline</span>
+                </button>
+            </li>
+            }
+        </ul>
+
+        <aside class="summary">
+            <h2 class="summary__title">Resumen</h2>
+            <p class="summary__row">
+                <span>Subtotal ({{ cart.count() }} {{ cart.count() === 1 ? 'prenda' : 'prendas' }})</span>
+                <strong>{{ cart.subtotal() | currency: 'USD' }}</strong>
+            </p>
+            <p class="summary__note">Precios con IVA incluido. El envío se coordina por WhatsApp.</p>
+
+            <div class="methods">
+                <p class="methods__title">Formas de pago</p>
+                <div class="methods__buttons">
+                    @for (account of accounts(); track account.id) {
+                    <button type="button" class="method" (click)="selectedAccount.set(account)">
+                        @if (logoOf(account.bankName); as logo) {
+                        <img class="method__logo" [src]="logo.src" [style.background]="logo.background" alt="" />
+                        } @else {
+                        <span class="material-icons" aria-hidden="true">account_balance</span>
+                        }
+                        <span class="method__text">
+                            <strong>{{ account.bankName }}</strong>
+                            <small>Ver datos de la cuenta</small>
+                        </span>
+                    </button>
+                    }
+                    <div class="method method--soon" [class.method--soon]="!payphoneEnabled()">
+                        <span class="material-icons" aria-hidden="true">credit_card</span>
+                        <span class="method__text">
+                            <strong>Tarjeta (PayPhone)</strong>
+                            <small>{{ payphoneEnabled() ? 'Disponible al pagar' : 'Próximamente' }}</small>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <p class="summary__row summary__row--total">
+                <span>Total</span>
+                <strong>{{ cart.subtotal() | currency: 'USD' }}</strong>
+            </p>
+
+            <a routerLink="/pago" class="button button--primary">
+                <span class="material-icons" aria-hidden="true">lock</span>
+                Pagar
+            </a>
+
+            @if (hasWhatsapp()) {
+            <a class="button button--outline" [href]="whatsappUrl()" target="_blank" rel="noopener">
+                <span class="material-icons" aria-hidden="true">chat</span>
+                Consultar por WhatsApp
+            </a>
+            }
+
+            <a routerLink="/tienda" class="button button--outline">Seguir comprando</a>
+            <button type="button" class="summary__clear" (click)="cart.clear()">Vaciar carrito</button>
+        </aside>
+    </div>
+    }
+</section>
+
+@if (selectedAccount(); as account) {
+<app-bank-account-modal [account]="account" [amount]="cart.subtotal()" (closed)="selectedAccount.set(null)" />
+}

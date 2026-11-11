@@ -1,0 +1,68 @@
+<app-modal [title]="account().bankName" (closed)="closed.emit()">
+  @if (logoOf(account().bankName); as logo) {
+    <img class="logo" [src]="logo.src" [style.background]="logo.background" [alt]="account().bankName" />
+  }
+  <p class="intro">Transfiere a esta cuenta y guarda tu comprobante.</p>
+
+  <dl class="data">
+    @if (amount() !== null) {
+      <div class="data__row data__row--amount">
+        <dt>Valor a transferir</dt>
+        <dd>
+          <strong>{{ amount() | currency: 'USD' }}</strong>
+          <button type="button" class="copy" (click)="copy('amount', amount()!.toFixed(2))">
+            {{ copied() === 'amount' ? '¡Copiado!' : 'Copiar' }}
+          </button>
+        </dd>
+      </div>
+    }
+    <div class="data__row">
+      <dt>Banco</dt>
+      <dd>{{ account().bankName }}</dd>
+    </div>
+    <div class="data__row">
+      <dt>Tipo de cuenta</dt>
+      <dd>{{ account().accountType === 'Ahorros' ? 'Cuenta de ahorros' : account().accountType }}</dd>
+    </div>
+    <div class="data__row">
+      <dt>Número de cuenta</dt>
+      <dd>
+        <strong>{{ account().accountNumber }}</strong>
+        <button type="button" class="copy" (click)="copy('number', account().accountNumber)">
+          {{ copied() === 'number' ? '¡Copiado!' : 'Copiar' }}
+        </button>
+      </dd>
+    </div>
+    <div class="data__row">
+      <dt>Nombre</dt>
+      <dd>{{ account().holder }}</dd>
+    </div>
+    @if (account().holderId) {
+      <div class="data__row">
+        <dt>Cédula</dt>
+        <dd>{{ account().holderId }}</dd>
+      </div>
+    }
+    @if (account().holderEmail) {
+      <div class="data__row">
+        <dt>Correo</dt>
+        <dd>{{ account().holderEmail }}</dd>
+      </div>
+    }
+    @if (account().swiftCode) {
+      <div class="data__row">
+        <dt>Código SWIFT</dt>
+        <dd>{{ account().swiftCode }}</dd>
+      </div>
+    }
+  </dl>
+
+  <p class="tip">
+    <span class="material-icons" aria-hidden="true">info</span>
+    Después de transferir, pulsa <strong>Pagar</strong> para crear tu pedido y subir el comprobante.
+  </p>
+
+  <div class="actions">
+    <button type="button" class="button" (click)="closed.emit()">Entendido</button>
+  </div>
+</app-modal>

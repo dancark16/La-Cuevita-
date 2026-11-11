@@ -1,0 +1,49 @@
+<div class="shell">
+  <aside class="hero" [style.--hero-image]="'url(' + image + ')'">
+    <div class="hero__content">
+      <a routerLink="/" class="hero__brand" aria-label="La Cuevita, ir al inicio">
+        <span class="material-icons hero__crown" aria-hidden="true">workspace_premium</span>
+        <span class="hero__brand-name">La Cuevita</span>
+        <span class="hero__brand-tag">Ropa con actitud</span>
+      </a>
+
+      <div class="hero__copy">
+        <h2 class="hero__title">
+          {{ headline() }}
+          <span class="hero__title-accent">La Cuevita</span>
+        </h2>
+        <p class="hero__text">{{ text() }}</p>
+      </div>
+
+      <ul class="hero__features">
+        @for (feature of features; track feature.title) {
+          <li class="feature">
+            <span class="material-icons feature__icon" aria-hidden="true">{{ feature.icon }}</span>
+            <span class="feature__title">{{ feature.title }}</span>
+            <span class="feature__text">{{ feature.text }}</span>
+          </li>
+        }
+      </ul>
+
+      <p class="hero__slogan">Más que ropa, <span>es actitud</span></p>
+    </div>
+    <span class="hero__brush" aria-hidden="true"></span>
+  </aside>
+
+  <section class="panel">
+    <p class="panel__top">
+      <span>La Cuevita</span>
+      <span class="panel__line"></span>
+      <span class="panel__top-muted">Tienda online</span>
+    </p>
+
+    <div class="card">
+      <ng-content />
+    </div>
+
+    <p class="panel__secure">
+      <span class="material-icons panel__secure-icon" aria-hidden="true">verified_user</span>
+      Tu información está protegida
+    </p>
+  </section>
+</div>

@@ -1,0 +1,72 @@
+<article class="card">
+  <a [routerLink]="['/producto', product.id]" class="card__link">
+    <div class="card__media">
+      @if (product.imageUrl) {
+        <img class="card__image" [src]="product.imageUrl" [alt]="product.name" loading="lazy" />
+      } @else {
+        <span class="card__placeholder material-icons" aria-hidden="true">checkroom</span>
+      }
+
+      <div class="card__badges">
+        @if (!product.inStock) {
+          <span class="badge badge--soldout">Agotado</span>
+        } @else {
+          @if (product.newArrival) {
+            <span class="badge badge--new">Nuevo</span>
+          }
+          @if (lastUnits) {
+            <span class="badge">Últimas unidades</span>
+          }
+          @if (product.compareAtPrice) {
+            <span class="badge badge--sale">Oferta</span>
+          }
+        }
+      </div>
+    </div>
+
+    <h3 class="card__name">{{ product.name }}</h3>
+  </a>
+
+  <p class="card__prices">
+    <span class="card__price">{{ product.price | currency: 'USD' }}</span>
+    @if (product.compareAtPrice) {
+      <span class="card__compare">{{ product.compareAtPrice | currency: 'USD' }}</span>
+    }
+    @if (product.colors.length > 1) {
+      <span class="card__colors" aria-label="Colores disponibles">
+        @for (color of product.colors; track color.name) {
+          <span class="card__color" [style.background]="color.hex" [attr.title]="color.name"></span>
+        }
+      </span>
+    }
+  </p>
+
+  <div class="card__actions">
+    <ul class="sizes" aria-label="Tallas">
+      @for (chip of sizes; track chip.label) {
+        <li>
+          <button
+            type="button"
+            class="size"
+            [class.is-selected]="selectedSize() === chip.label"
+            [disabled]="!chip.available"
+            [attr.aria-pressed]="selectedSize() === chip.label"
+            (click)="selectSize(chip)"
+          >
+            {{ chip.label }}
+          </button>
+        </li>
+      }
+    </ul>
+
+    <button
+      type="button"
+      class="card__cart"
+      [disabled]="!product.inStock"
+      [attr.aria-label]="'Agregar ' + product.name + ' al carrito'"
+      (click)="addToCart()"
+    >
+      <span class="material-icons" aria-hidden="true">{{ added() ? 'check' : 'shopping_cart' }}</span>
+    </button>
+  </div>
+</article>

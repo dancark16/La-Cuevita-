@@ -1,0 +1,20 @@
+@use 'variables' as v;
+
+:root {
+    --color-white: #{v.$color-white};
+    --color-black: #{v.$color-black};
+    --color-ink: #{v.$color-ink};
+    --color-muted: #{v.$color-muted};
+    --color-accent: #{v.$color-accent};
+    --color-accent-deep: #{v.$color-accent-deep};
+    --color-gray: #{v.$color-gray};
+    --color-gray-soft: #{v.$color-gray-soft};
+    --color-border: #{v.$color-border};
+    --color-danger: #{v.$color-danger};
+
+    --font-body: #{v.$font-body};
+
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-pill: 999px;
+}

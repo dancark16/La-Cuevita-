@@ -1,0 +1,155 @@
+@use '../../admin-ui';
+
+:host {
+  display: block;
+}
+
+@include admin-ui.page-header;
+@include admin-ui.card;
+@include admin-ui.buttons;
+@include admin-ui.data-table;
+
+.card {
+  margin-top: 1.5rem;
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem 0;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--color-gray);
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-muted);
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-ink);
+  }
+}
+
+.tab--active {
+  border-bottom-color: var(--color-accent);
+  color: var(--color-ink);
+}
+
+.tab__count {
+  padding: 0 0.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-gray-soft);
+  font-size: 0.6875rem;
+}
+
+.tab__count--alert {
+  background: var(--color-accent);
+  color: var(--color-white);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+}
+
+.toolbar__count {
+  margin-left: auto;
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.search {
+  position: relative;
+  flex: 1;
+  min-width: 16rem;
+  max-width: 26rem;
+}
+
+.search__icon {
+  position: absolute;
+  top: 50%;
+  left: 0.75rem;
+  font-size: 1.25rem;
+  color: var(--color-muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search__input {
+  width: 100%;
+  padding: 0.625rem 1rem 0.625rem 2.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: 0.8125rem;
+
+  &:focus {
+    border-color: var(--color-black);
+    box-shadow: 0 0 0 3px rgb(255 79 163 / 25%);
+    outline: none;
+  }
+}
+
+.table--loading {
+  opacity: 0.5;
+}
+
+small {
+  display: block;
+  font-size: 0.75rem;
+}
+
+.chip--pink {
+  background: rgb(255 79 163 / 14%);
+  color: var(--color-accent-deep);
+}
+
+.button--small {
+  padding: 0.375rem 1rem;
+  background: var(--color-black);
+  font-size: 0.75rem;
+  color: var(--color-white);
+
+  &:hover {
+    background: var(--color-accent);
+  }
+}
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--color-gray);
+}
+
+.pager__info {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.pager__buttons {
+  display: flex;
+  gap: 0.75rem;
+
+  .button {
+    padding: 0.5rem 1rem;
+  }
+}

@@ -1,0 +1,65 @@
+<app-modal [title]="category() ? 'Editar categoría' : 'Nueva categoría'" (closed)="cancelled.emit()">
+  <form class="form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="field">
+      <label class="field__label" for="category-name">Nombre</label>
+      <input id="category-name" class="field__input" [class.field__input--invalid]="invalid('name')" formControlName="name" />
+      @if (invalid('name')) {
+        <span class="field__error">El nombre es obligatorio</span>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="category-slug">Slug (parte de la URL)</label>
+      <input id="category-slug" class="field__input" [class.field__input--invalid]="invalid('slug')" formControlName="slug" />
+      <span class="field__hint">Se genera solo desde el nombre. Minúsculas, números y guiones. Ej: ropa-hombre</span>
+      @if (invalid('slug')) {
+        <span class="field__error">Solo minúsculas, números y guiones</span>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="category-parent">Categoría padre</label>
+      <select id="category-parent" class="field__input" formControlName="parentId">
+        <option [ngValue]="null">Ninguna (categoría principal)</option>
+        @for (option of parentOptions; track option.id) {
+          <option [ngValue]="option.id">{{ option.name }}</option>
+        }
+      </select>
+      <span class="field__hint">
+        Opcional. Sirve para armar subcategorías: si eliges "Mujer" como padre de "Blusas", Blusas queda dentro de Mujer.
+        Déjala en "Ninguna" si no la necesitas.
+      </span>
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="category-image">Imagen (URL)</label>
+      <input
+        id="category-image"
+        class="field__input"
+        [class.field__input--invalid]="invalid('imageUrl')"
+        formControlName="imageUrl"
+        placeholder="https://..."
+      />
+      <span class="field__hint">Se muestra en la tienda, en el inicio. Opcional.</span>
+      @if (invalid('imageUrl')) {
+        <span class="field__error">Debe ser una URL que empiece con http:// o https://</span>
+      }
+    </div>
+
+    <label class="switch">
+      <input type="checkbox" class="switch__input" formControlName="active" />
+      <span class="switch__track" aria-hidden="true"></span>
+      <span class="switch__text">
+        <strong>{{ form.controls.active.value ? 'Categoría activa' : 'Categoría inactiva' }}</strong>
+        <span class="field__hint">Las categorías inactivas no se muestran en la tienda.</span>
+      </span>
+    </label>
+
+    <div class="form__actions">
+      <button type="button" class="button button--outline" (click)="cancelled.emit()">Cancelar</button>
+      <button type="submit" class="button button--primary" [disabled]="saving()">
+        {{ saving() ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</app-modal>

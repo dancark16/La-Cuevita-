@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Insycar Web",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-s", "C:\\Insycar_Web\\insicar_web", "-l", "5500"],
+      "port": 5500
+    }
+  ]
+}

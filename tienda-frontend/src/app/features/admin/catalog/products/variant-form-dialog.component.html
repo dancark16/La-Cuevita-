@@ -1,0 +1,128 @@
+<h2 mat-dialog-title>{{ editing ? 'Editar variante' : 'Agregar variantes' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <mat-dialog-content class="content">
+    @if (missingAttributes) {
+      <p class="alert">Primero crea al menos una talla y un color en «Tallas y colores».</p>
+    }
+
+    <fieldset class="group">
+      <legend class="group__label">
+        Colores
+        <span class="group__hint">puedes elegir varios</span>
+      </legend>
+      <div class="chips">
+        @for (color of data.colors; track color.id) {
+          <button
+            type="button"
+            class="chip"
+            [class.chip--on]="selectedColors().includes(color.id)"
+            [attr.aria-pressed]="selectedColors().includes(color.id)"
+            (click)="toggleColor(color.id)"
+          >
+            <span class="chip__dot" [style.background]="color.hex"></span>{{ color.name }}
+          </button>
+        }
+      </div>
+      @if (attempted() && selectedColors().length === 0) {
+        <p class="error">Elige al menos un color</p>
+      }
+    </fieldset>
+
+    <fieldset class="group">
+      <legend class="group__label">
+        Tallas
+        <span class="group__hint">puedes elegir varias</span>
+      </legend>
+      <div class="chips">
+        @for (size of data.sizes; track size.id) {
+          <button
+            type="button"
+            class="chip"
+            [class.chip--on]="selectedSizes().includes(size.id)"
+            [attr.aria-pressed]="selectedSizes().includes(size.id)"
+            (click)="toggleSize(size.id)"
+          >
+            {{ size.label }}
+          </button>
+        }
+      </div>
+      @if (attempted() && selectedSizes().length === 0) {
+        <p class="error">Elige al menos una talla</p>
+      }
+    </fieldset>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ editing ? 'SKU' : 'SKU base' }}</mat-label>
+      <input matInput formControlName="sku" />
+      <mat-hint>
+        {{ editing ? 'Debe ser único. Las combinaciones extra llevan talla y color al final.' : 'A cada combinación se le agrega talla y color. Ej: CAM-001-M-NEG' }}
+      </mat-hint>
+      @if (form.controls.sku.hasError('required')) {
+        <mat-error>El SKU es obligatorio</mat-error>
+      }
+    </mat-form-field>
+
+    @if (combos().length > 1) {
+      <div class="preview">
+        <p class="preview__title">
+          {{ editing ? 'Se guardarán' : 'Se crearán' }} {{ newCombos().length }} {{ newCombos().length === 1 ? 'variante' : 'variantes' }}
+        </p>
+        <ul class="preview__list">
+          @for (combo of combos(); track combo.size.id + combo.color.id) {
+            <li [class.preview__item--dup]="combo.duplicate">
+              <span class="chip__dot" [style.background]="combo.color.hex"></span>
+              {{ combo.color.name }} · {{ combo.size.label }}
+              <span class="mono">{{ combo.duplicate ? 'ya existe' : skuFor(combo) }}</span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    <div class="row">
+      <mat-form-field appearance="outline">
+        <mat-label>Precio (USD)</mat-label>
+        <input matInput type="number" step="0.01" min="0" formControlName="price" />
+        @if (form.controls.price.hasError('required')) {
+          <mat-error>El precio es obligatorio</mat-error>
+        } @else if (form.controls.price.hasError('min')) {
+          <mat-error>No puede ser negativo</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Precio promocional</mat-label>
+        <input matInput type="number" step="0.01" min="0" formControlName="promoPrice" />
+        @if (form.controls.promoPrice.hasError('promoTooHigh')) {
+          <mat-error>Debe ser menor al precio</mat-error>
+        } @else if (form.controls.promoPrice.hasError('min')) {
+          <mat-error>No puede ser negativo</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline">
+        <mat-label>Código de barras (opcional)</mat-label>
+        <input matInput formControlName="barcode" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Estado</mat-label>
+        <mat-select formControlName="status">
+          @for (option of statusOptions; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancelar</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="saving() || missingAttributes">
+      {{ saving() ? 'Guardando...' : editing ? 'Guardar' : 'Crear variantes' }}
+    </button>
+  </mat-dialog-actions>
+</form>

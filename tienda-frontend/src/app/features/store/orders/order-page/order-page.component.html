@@ -1,0 +1,179 @@
+<section class="order">
+  @if (loading()) {
+    <p class="notice">Cargando tu pedido...</p>
+  } @else if (notFound() || !order()) {
+    <div class="notice">
+      <p class="notice__title">No encontramos este pedido.</p>
+      <a routerLink="/cuenta/pedidos" class="button button--primary">Ver mis pedidos</a>
+    </div>
+  } @else {
+    @if (order(); as o) {
+      <header class="order__head">
+        <div>
+          <p class="order__eyebrow">Pedido</p>
+          <h1 class="order__number">#{{ o.orderNumber }}</h1>
+          <p class="order__date">{{ o.createdAt | date: "d 'de' MMMM, y · HH:mm" }}</p>
+        </div>
+        <span class="status" [class.status--ok]="o.status === 'PAID' || o.status === 'SHIPPED' || o.status === 'DELIVERED'" [class.status--off]="o.status === 'CANCELLED'">
+          {{ statusLabel[o.status] }}
+        </span>
+      </header>
+
+      @if (o.status !== 'CANCELLED') {
+        <ol class="steps" aria-label="Estado del pedido">
+          @for (step of steps; track step.status; let i = $index) {
+            <li class="step" [class.step--done]="i <= stepIndex()" [class.step--current]="i === stepIndex()">
+              <span class="step__dot">{{ i < stepIndex() ? '✓' : i + 1 }}</span>
+              <span class="step__label">{{ step.label }}</span>
+            </li>
+          }
+        </ol>
+      }
+
+      @if (o.adminNote) {
+        <p class="alert" [class.alert--info]="o.status !== 'PENDING' && o.status !== 'CANCELLED'">
+          <strong>Mensaje de La Cuevita:</strong> {{ o.adminNote }}
+        </p>
+      }
+
+      <div class="order__layout">
+        <div class="order__main">
+          @if (o.status === 'PENDING') {
+            <section class="card">
+              <h2 class="card__title"><span class="slash" aria-hidden="true">/</span>Paga por transferencia</h2>
+
+              @if (hasBank()) {
+                <dl class="bank">
+                  <div class="bank__row bank__row--amount">
+                    <dt>Valor exacto</dt>
+                    <dd>
+                      <strong>{{ o.total | currency: 'USD' }}</strong>
+                      <button type="button" class="copy" (click)="copy('valor', o.total.toFixed(2))">
+                        {{ copied() === 'valor' ? '¡Copiado!' : 'Copiar' }}
+                      </button>
+                    </dd>
+                  </div>
+                  <div class="bank__row">
+                    <dt>Referencia</dt>
+                    <dd>Pedido #{{ o.orderNumber }}</dd>
+                  </div>
+                </dl>
+
+                <p class="card__text accounts__intro">Elige el banco que prefieras:</p>
+                <ul class="accounts">
+                  @for (account of accounts(); track account.id; let i = $index) {
+                    <li class="account">
+                      <div class="account__head">
+                        @if (logoOf(account.bankName); as logo) {
+                          <img class="account__logo" [src]="logo.src" [style.background]="logo.background" alt="" />
+                        }
+                        <p class="account__bank">{{ account.bankName }} <span>{{ account.accountType }}</span></p>
+                      </div>
+                      <p class="account__number">
+                        <strong>{{ account.accountNumber }}</strong>
+                        <button type="button" class="copy" (click)="copy('cuenta' + i, account.accountNumber)">
+                          {{ copied() === 'cuenta' + i ? '¡Copiado!' : 'Copiar' }}
+                        </button>
+                      </p>
+                      <p class="account__holder">
+                        {{ account.holder }}@if (account.holderId) { · {{ account.holderId }} }
+                      </p>
+                      @if (account.swiftCode) {
+                        <p class="account__holder">SWIFT {{ account.swiftCode }}</p>
+                      }
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="card__text">
+                  Escríbenos por WhatsApp y te enviaremos los datos de la cuenta para transferir
+                  {{ o.total | currency: 'USD' }}.
+                </p>
+              }
+
+              <h3 class="card__subtitle">Sube tu comprobante</h3>
+              @if (o.hasReceipt) {
+                <p class="received">
+                  <span class="material-icons" aria-hidden="true">check_circle</span>
+                  Recibimos tu comprobante el {{ o.receiptUploadedAt | date: "d/MM 'a las' HH:mm" }}. Lo estamos revisando.
+                </p>
+              }
+
+              <label
+                class="drop"
+                [class.drop--over]="dragging()"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave()"
+                (drop)="onDrop($event)"
+              >
+                <input class="drop__input" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" (change)="onChosen($event)" />
+                @if (uploading()) {
+                  <span class="spinner" aria-hidden="true"></span>
+                  <span class="drop__title">Subiendo...</span>
+                } @else {
+                  <span class="material-icons drop__icon" aria-hidden="true">upload_file</span>
+                  <span class="drop__title">
+                    {{ o.hasReceipt ? 'Cambiar comprobante' : 'Arrastra tu captura aquí o haz clic para elegirla' }}
+                  </span>
+                  <span class="drop__hint">JPG, PNG, WebP o PDF · hasta 10 MB</span>
+                }
+              </label>
+
+              @if (message(); as m) {
+                <p class="message" [class.message--error]="m.kind === 'error'" role="status">{{ m.text }}</p>
+              }
+
+              <div class="actions">
+                @if (storeWhatsappUrl(); as url) {
+                  <a class="button button--outline" [href]="url" target="_blank" rel="noopener">
+                    <span class="material-icons" aria-hidden="true">chat</span>
+                    Avisar por WhatsApp
+                  </a>
+                }
+                <button type="button" class="link link--danger" (click)="cancel()">Cancelar pedido</button>
+              </div>
+            </section>
+          }
+
+          @if (o.status === 'PAID' || o.status === 'PROCESSING' || o.status === 'CONFIRMED') {
+            <p class="alert alert--info">
+              ¡Recibimos tu pago! Estamos preparando tu pedido y te escribiremos por WhatsApp para coordinar el envío.
+            </p>
+          }
+          @if (o.status === 'SHIPPED') {
+            <p class="alert alert--info">Tu pedido va en camino. Cualquier duda, escríbenos por WhatsApp.</p>
+          }
+          @if (o.status === 'DELIVERED') {
+            <p class="alert alert--info">Tu pedido fue entregado. ¡Gracias por comprar en La Cuevita!</p>
+          }
+        </div>
+
+        <aside class="card summary">
+          <h2 class="card__title"><span class="slash" aria-hidden="true">/</span>Resumen</h2>
+          <ul class="items">
+            @for (item of o.items; track item.variantId) {
+              <li class="item">
+                <span>
+                  {{ item.quantity }} x {{ item.productName }}
+                  <small>Talla {{ item.sizeLabel }} · {{ item.colorName }}</small>
+                </span>
+                <span>{{ item.subtotal | currency: 'USD' }}</span>
+              </li>
+            }
+          </ul>
+          <p class="total"><span>Total</span><strong>{{ o.total | currency: 'USD' }}</strong></p>
+
+          <h3 class="card__subtitle">Entrega</h3>
+          <p class="address">
+            {{ o.address.line1 }}<br />
+            {{ o.address.city }}, {{ o.address.province }}
+            @if (o.address.reference) {
+              <br /><small>{{ o.address.reference }}</small>
+            }
+          </p>
+          <a routerLink="/cuenta/pedidos" class="link">Ver todos mis pedidos</a>
+        </aside>
+      </div>
+    }
+  }
+</section>

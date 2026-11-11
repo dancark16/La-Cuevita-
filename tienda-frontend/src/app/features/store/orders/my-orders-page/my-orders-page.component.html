@@ -1,0 +1,39 @@
+<section class="orders">
+  <h1 class="orders__title">Mis pedidos</h1>
+
+  @if (loading()) {
+    <p class="empty">Cargando...</p>
+  } @else if (failed()) {
+    <p class="empty" role="alert">No pudimos cargar tus pedidos. Intenta de nuevo.</p>
+  } @else if (orders().length === 0) {
+    <div class="empty">
+      <p class="empty__title">Todavía no tienes pedidos</p>
+      <a routerLink="/tienda" class="button">Ir a la tienda</a>
+    </div>
+  } @else {
+    <ul class="list">
+      @for (order of orders(); track order.id) {
+        <li>
+          <a [routerLink]="['/pedido', order.id]" class="row">
+            <span class="row__main">
+              <strong class="row__number">Pedido #{{ order.orderNumber }}</strong>
+              <span class="row__meta">
+                {{ order.createdAt | date: 'd/MM/yyyy' }} · {{ order.items.length }}
+                {{ order.items.length === 1 ? 'producto' : 'productos' }}
+              </span>
+            </span>
+            <span class="row__total">{{ order.total | currency: 'USD' }}</span>
+            <span
+              class="status"
+              [class.status--ok]="order.status === 'PAID' || order.status === 'SHIPPED' || order.status === 'DELIVERED'"
+              [class.status--off]="order.status === 'CANCELLED'"
+            >
+              {{ statusLabel[order.status] }}
+            </span>
+            <span class="material-icons row__arrow" aria-hidden="true">chevron_right</span>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</section>

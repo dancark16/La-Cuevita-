@@ -1,0 +1,145 @@
+<header class="banner" [style.--banner-image]="'url(assets/images/admin-header.webp)'">
+  <h1 class="banner__title"><span class="slash" aria-hidden="true">/</span>Tallas y Colores</h1>
+  <p class="banner__text">Administra las tallas y los colores disponibles para tus productos.</p>
+</header>
+
+<div class="columns">
+  <section class="card">
+    <header class="card__head">
+      <span class="card__icon"><span class="material-icons" aria-hidden="true">straighten</span></span>
+      <div class="card__heading">
+        <h2 class="card__title">Tallas</h2>
+        <p class="card__subtitle">Gestiona las tallas disponibles en tu tienda.</p>
+      </div>
+      <button type="button" class="button button--primary" (click)="openSizeForm(null)">
+        <span class="material-icons" aria-hidden="true">add</span>
+        Agregar talla
+      </button>
+    </header>
+
+    <div class="toolbar">
+      <label class="search">
+        <span class="material-icons search__icon" aria-hidden="true">search</span>
+        <input class="search__input" type="search" placeholder="Buscar talla..." (input)="onSizeSearch($event)" />
+      </label>
+      <select class="select" aria-label="Estado" (change)="onSizeStatus($event)">
+        <option value="">Todas</option>
+        <option value="ACTIVE">Activas</option>
+        <option value="INACTIVE">Inactivas</option>
+      </select>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Talla</th>
+          <th>Estado</th>
+          <th class="center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (size of visibleSizes(); track size.id) {
+          <tr [class.row--off]="!size.active">
+            <td class="strong">{{ size.label }}</td>
+            <td>
+              <span class="status" [class.status--off]="!size.active">
+                <span class="status__dot"></span>{{ size.active ? 'Activa' : 'Inactiva' }}
+              </span>
+            </td>
+            <td>
+              <div class="actions">
+                <button type="button" class="round" aria-label="Editar talla" (click)="openSizeForm(size)">
+                  <span class="material-icons" aria-hidden="true">edit</span>
+                </button>
+                <button type="button" class="round round--danger" aria-label="Eliminar talla" (click)="removeSize(size)">
+                  <span class="material-icons" aria-hidden="true">delete_outline</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (visibleSizes().length === 0) {
+      <p class="empty">No hay tallas que coincidan.</p>
+    }
+
+    <p class="tip">
+      <span class="material-icons tip__icon" aria-hidden="true">lightbulb</span>
+      Puedes desactivar una talla si ya no la utilizas.
+    </p>
+  </section>
+
+  <section class="card">
+    <header class="card__head">
+      <span class="card__icon"><span class="material-icons" aria-hidden="true">palette</span></span>
+      <div class="card__heading">
+        <h2 class="card__title">Colores</h2>
+        <p class="card__subtitle">Administra los colores disponibles en tu tienda.</p>
+      </div>
+      <button type="button" class="button button--primary" (click)="openColorForm(null)">
+        <span class="material-icons" aria-hidden="true">add</span>
+        Agregar color
+      </button>
+    </header>
+
+    <div class="toolbar">
+      <label class="search search--full">
+        <span class="material-icons search__icon" aria-hidden="true">search</span>
+        <input class="search__input" type="search" placeholder="Buscar color..." (input)="onColorSearch($event)" />
+      </label>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Color</th>
+          <th>Código</th>
+          <th>Estado</th>
+          <th class="center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (color of visibleColors(); track color.id) {
+          <tr [class.row--off]="!color.active">
+            <td>
+              <span class="swatch" [style.background]="color.hex"></span>
+              <span class="strong">{{ color.name }}</span>
+            </td>
+            <td><span class="hex">{{ color.hex }}</span></td>
+            <td>
+              <span class="status" [class.status--off]="!color.active">
+                <span class="status__dot"></span>{{ color.active ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td>
+              <div class="actions">
+                <button type="button" class="round" aria-label="Editar color" (click)="openColorForm(color)">
+                  <span class="material-icons" aria-hidden="true">edit</span>
+                </button>
+                <button type="button" class="round round--danger" aria-label="Eliminar color" (click)="removeColor(color)">
+                  <span class="material-icons" aria-hidden="true">delete_outline</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (visibleColors().length === 0) {
+      <p class="empty">No hay colores que coincidan.</p>
+    }
+
+    <p class="tip">
+      <span class="material-icons tip__icon" aria-hidden="true">checkroom</span>
+      Los colores te ayudan a organizar mejor tus productos y ofrecer más opciones a tus clientas.
+    </p>
+  </section>
+</div>
+
+@if (sizeFormOpen()) {
+  <app-size-form-modal [size]="editingSize()" (saved)="onSizeSaved()" (cancelled)="sizeFormOpen.set(false)" />
+}
+@if (colorFormOpen()) {
+  <app-color-form-modal [color]="editingColor()" (saved)="onColorSaved()" (cancelled)="colorFormOpen.set(false)" />
+}

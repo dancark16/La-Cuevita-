@@ -1,0 +1,231 @@
+<header class="header">
+  <div class="header__icon"><span class="material-icons" aria-hidden="true">upload_file</span></div>
+  <div>
+    <h1 class="header__title"><span class="slash" aria-hidden="true">/</span>Importar productos</h1>
+    <p class="header__text">Arrastra el reporte de inventario de Codesoft y carga todo el catálogo de una vez.</p>
+  </div>
+</header>
+
+@if (error()) {
+  <p class="alert" role="alert">
+    <span class="material-icons" aria-hidden="true">error_outline</span>
+    {{ error() }}
+  </p>
+}
+
+@switch (stage()) {
+  @case ('idle') {
+    <div class="layout">
+      <label
+        class="dropzone"
+        [class.dropzone--over]="dragging()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave()"
+        (drop)="onDrop($event)"
+      >
+        <input class="dropzone__input" type="file" accept=".xlsx,.xls" (change)="onFileChosen($event)" />
+        <span class="dropzone__icon"><span class="material-icons" aria-hidden="true">cloud_upload</span></span>
+        <span class="dropzone__title">Arrastra tu archivo Excel aquí</span>
+        <span class="dropzone__text">o haz clic para seleccionarlo</span>
+        <span class="dropzone__formats">
+          <span class="tag">.xlsx</span>
+          <span class="tag">.xls</span>
+        </span>
+        <span class="dropzone__hint">Primero verás una vista previa. No se guarda nada hasta que confirmes.</span>
+      </label>
+
+      <aside class="tips">
+        <article class="tip">
+          <span class="tip__icon"><span class="material-icons" aria-hidden="true">table_chart</span></span>
+          <div>
+            <h2 class="tip__title">Columnas que se leen</h2>
+            <p class="tip__text">Código · Producto · Categoría · Pvp1 · Stock</p>
+          </div>
+        </article>
+        <article class="tip">
+          <span class="tip__icon"><span class="material-icons" aria-hidden="true">auto_fix_high</span></span>
+          <div>
+            <h2 class="tip__title">Limpieza automática</h2>
+            <p class="tip__text">Corrige mayúsculas, ñ dañadas y unifica categorías repetidas.</p>
+          </div>
+        </article>
+        <article class="tip">
+          <span class="tip__icon"><span class="material-icons" aria-hidden="true">sync</span></span>
+          <div>
+            <h2 class="tip__title">Sin duplicados</h2>
+            <p class="tip__text">Si el código ya existe, solo actualiza el precio y el stock.</p>
+          </div>
+        </article>
+      </aside>
+    </div>
+  }
+
+  @case ('loading') {
+    <div class="working">
+      <span class="spinner" aria-hidden="true"></span>
+      <p class="working__title">Leyendo {{ file()?.name }}...</p>
+      <p class="working__text">Estamos preparando la vista previa.</p>
+    </div>
+  }
+
+  @case ('importing') {
+    <div class="working">
+      <span class="spinner" aria-hidden="true"></span>
+      <p class="working__title">Importando productos...</p>
+      <p class="working__text">No cierres esta página.</p>
+    </div>
+  }
+
+  @case ('done') {
+    @if (result(); as r) {
+      <div class="success">
+        <span class="success__icon"><span class="material-icons" aria-hidden="true">check_circle</span></span>
+        <h2 class="success__title">¡Importación completada!</h2>
+        <p class="success__text">
+          {{ r.created }} productos creados y {{ r.updated }} actualizados desde {{ r.fileName }}.
+        </p>
+        <div class="success__actions">
+          <a routerLink="/admin/productos" class="button button--primary">Ver productos</a>
+          <a routerLink="/" class="button button--outline">Ver la tienda</a>
+          <button type="button" class="button button--outline" (click)="reset()">Importar otro archivo</button>
+        </div>
+      </div>
+    }
+  }
+
+  @case ('preview') {
+    @if (result(); as r) {
+      <section class="file">
+        <span class="material-icons file__icon" aria-hidden="true">description</span>
+        <div class="file__info">
+          <p class="file__name">{{ file()?.name }}</p>
+          <p class="file__meta">{{ r.totalRows }} filas leídas</p>
+        </div>
+        <button type="button" class="button button--outline" (click)="reset()">Cambiar archivo</button>
+      </section>
+
+      <section class="stats">
+        <article class="stat stat--create">
+          <p class="stat__value">{{ r.created }}</p>
+          <p class="stat__label">Productos nuevos</p>
+        </article>
+        <article class="stat stat--update">
+          <p class="stat__value">{{ r.updated }}</p>
+          <p class="stat__label">Se actualizan</p>
+        </article>
+        <article class="stat stat--skip">
+          <p class="stat__value">{{ r.skipped }}</p>
+          <p class="stat__label">Se omiten por error</p>
+        </article>
+        <article class="stat">
+          <p class="stat__value">{{ r.categories.length }}</p>
+          <p class="stat__label">Categorías</p>
+        </article>
+      </section>
+
+      @if (errors().length > 0 || warnings().length > 0) {
+        <section class="panel">
+          <h2 class="panel__title"><span class="slash" aria-hidden="true">/</span>Revisión</h2>
+          <ul class="issues">
+            @for (issue of errors(); track $index) {
+              <li class="issue issue--error">
+                <span class="material-icons" aria-hidden="true">block</span>
+                <span><strong>Fila {{ issue.row }}:</strong> {{ issue.message }}</span>
+              </li>
+            }
+            @for (issue of warnings(); track $index) {
+              <li class="issue issue--warning">
+                <span class="material-icons" aria-hidden="true">warning_amber</span>
+                <span><strong>Fila {{ issue.row }}:</strong> {{ issue.message }}</span>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      <section class="panel">
+        <h2 class="panel__title"><span class="slash" aria-hidden="true">/</span>Categorías</h2>
+        <ul class="chips">
+          @for (category of r.categories; track category.name) {
+            <li class="chip">
+              {{ category.name }}
+              <span class="chip__count">{{ category.count }}</span>
+              @if (category.isNew) {
+                <span class="chip__new">Nueva</span>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="panel">
+        <header class="panel__header">
+          <h2 class="panel__title"><span class="slash" aria-hidden="true">/</span>Vista previa</h2>
+          <div class="tabs" role="group" aria-label="Filtrar filas">
+            <button type="button" class="tab" [class.tab--active]="filter() === 'ALL'" (click)="setFilter('ALL')">
+              Todos ({{ r.items.length }})
+            </button>
+            <button type="button" class="tab" [class.tab--active]="filter() === 'CREATE'" (click)="setFilter('CREATE')">
+              Nuevos ({{ r.created }})
+            </button>
+            <button type="button" class="tab" [class.tab--active]="filter() === 'UPDATE'" (click)="setFilter('UPDATE')">
+              Actualizar ({{ r.updated }})
+            </button>
+          </div>
+        </header>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Talla</th>
+                <th class="num">Precio</th>
+                <th class="num">Stock</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of visibleItems(); track item.sku) {
+                <tr>
+                  <td class="mono">{{ item.sku }}</td>
+                  <td class="strong">{{ item.name }}</td>
+                  <td>{{ item.category }}</td>
+                  <td>{{ item.size }}</td>
+                  <td class="num">{{ item.price | currency: 'USD' }}</td>
+                  <td class="num">
+                    @if (item.action === 'UPDATE' && item.currentStock !== item.stock) {
+                      <span class="muted">{{ item.currentStock }} →</span>
+                    }
+                    {{ item.stock }}
+                  </td>
+                  <td>
+                    <span class="badge" [class.badge--create]="item.action === 'CREATE'" [class.badge--update]="item.action === 'UPDATE'">
+                      {{ item.action === 'CREATE' ? 'Nuevo' : 'Actualizar' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p class="footer__text">
+          @if (importable()) {
+            Se guardarán <strong>{{ r.items.length }}</strong> productos. Revisa la tabla antes de confirmar.
+          } @else {
+            No hay filas válidas para importar.
+          }
+        </p>
+        <button type="button" class="button button--primary" [disabled]="!importable() || busy()" (click)="confirm()">
+          <span class="material-icons" aria-hidden="true">file_download_done</span>
+          Importar {{ r.items.length }} productos
+        </button>
+      </footer>
+    }
+  }
+}

@@ -1,0 +1,12 @@
+<div class="backdrop" (click)="closed.emit()"></div>
+<div class="modal" role="dialog" aria-modal="true" [attr.aria-label]="title()">
+  <header class="modal__header">
+    <h2 class="modal__title"><span class="modal__slash" aria-hidden="true">/</span>{{ title() }}</h2>
+    <button type="button" class="modal__close" aria-label="Cerrar" (click)="closed.emit()">
+      <span class="material-icons" aria-hidden="true">close</span>
+    </button>
+  </header>
+  <div class="modal__body">
+    <ng-content />
+  </div>
+</div>

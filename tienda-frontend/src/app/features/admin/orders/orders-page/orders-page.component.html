@@ -1,0 +1,102 @@
+<header class="page-header">
+  <div>
+    <h1 class="page-header__title"><span class="slash" aria-hidden="true">/</span>Pedidos</h1>
+    <p class="page-header__text">Revisa los comprobantes, confirma los pagos y marca los envíos.</p>
+  </div>
+</header>
+
+<section class="card">
+  <div class="tabs" role="tablist">
+    @for (tab of tabs; track tab.key) {
+      <button
+        type="button"
+        role="tab"
+        class="tab"
+        [class.tab--active]="activeTab() === tab.key"
+        [attr.aria-selected]="activeTab() === tab.key"
+        (click)="selectTab(tab.key)"
+      >
+        {{ tab.label }}
+        @if (countOf(tab) !== null) {
+          <span class="tab__count" [class.tab__count--alert]="tab.key === 'PENDING' && (countOf(tab) ?? 0) > 0">
+            {{ countOf(tab) }}
+          </span>
+        }
+      </button>
+    }
+  </div>
+
+  <div class="toolbar">
+    <label class="search">
+      <span class="material-icons search__icon" aria-hidden="true">search</span>
+      <input class="search__input" type="search" placeholder="Buscar por número, nombre o correo..." (input)="onSearch($event)" />
+    </label>
+    <span class="toolbar__count">{{ total() }} {{ total() === 1 ? 'pedido' : 'pedidos' }}</span>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Pedido</th>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th class="num">Total</th>
+          <th>Comprobante</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody [class.table--loading]="loading()">
+        @for (order of rows(); track order.id) {
+          <tr>
+            <td class="strong">#{{ order.orderNumber }}</td>
+            <td>{{ order.createdAt | date: 'd/MM/yyyy HH:mm' }}</td>
+            <td>
+              {{ order.customerName }}
+              @if (order.customerPhone) {
+                <small class="muted">{{ order.customerPhone }}</small>
+              }
+            </td>
+            <td class="num strong">{{ order.total | currency: 'USD' }}</td>
+            <td>
+              @if (order.hasReceipt) {
+                <span class="chip chip--pink">Subido</span>
+              } @else if (order.status === 'PENDING') {
+                <span class="chip">Sin comprobante</span>
+              } @else {
+                <span class="muted">-</span>
+              }
+            </td>
+            <td>
+              <span
+                class="chip"
+                [class.chip--warn]="order.status === 'PENDING'"
+                [class.chip--ok]="order.status === 'PAID' || order.status === 'SHIPPED' || order.status === 'DELIVERED'"
+                [class.chip--off]="order.status === 'CANCELLED'"
+              >
+                {{ statusLabel[order.status] }}
+              </span>
+            </td>
+            <td>
+              <a [routerLink]="['/admin/pedidos', order.id]" class="button button--small">Ver</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (loading() && rows().length === 0) {
+      <p class="empty">Cargando...</p>
+    } @else if (!loading() && rows().length === 0) {
+      <p class="empty">No hay pedidos en esta lista.</p>
+    }
+  </div>
+
+  <footer class="pager">
+    <span class="pager__info">Página {{ pageIndex() + 1 }} de {{ totalPages() }}</span>
+    <div class="pager__buttons">
+      <button type="button" class="button button--outline" [disabled]="pageIndex() === 0" (click)="goTo(pageIndex() - 1)">Anterior</button>
+      <button type="button" class="button button--outline" [disabled]="pageIndex() + 1 >= totalPages()" (click)="goTo(pageIndex() + 1)">Siguiente</button>
+    </div>
+  </footer>
+</section>

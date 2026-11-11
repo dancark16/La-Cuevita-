@@ -1,0 +1,252 @@
+@if (loading()) {
+  <p class="empty">Cargando producto...</p>
+}
+
+@if (loadError()) {
+  <p class="alert" role="alert">{{ loadError() }}</p>
+}
+
+@if (product(); as p) {
+  <a routerLink="/admin/productos" class="back">
+    <span class="material-icons" aria-hidden="true">arrow_back</span>
+    Volver a productos
+  </a>
+
+  <header class="page-header">
+    <div>
+      <h1 class="page-header__title"><span class="slash" aria-hidden="true">/</span>Editar producto</h1>
+      <p class="page-header__text">
+        @if (variants()[0]; as first) {
+          Código <strong>{{ first.sku }}</strong> ·
+        }
+        Creado el {{ p.createdAt | date: 'dd/MM/yyyy' }} · Última actualización {{ p.updatedAt | date: 'dd/MM/yyyy' }}
+      </p>
+    </div>
+    <a routerLink="/admin/productos" class="icon-btn" aria-label="Volver a productos">
+      <span class="material-icons" aria-hidden="true">close</span>
+    </a>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="layout">
+      <section class="card info">
+        <h2 class="card__title"><span class="slash" aria-hidden="true">/</span>Información general</h2>
+
+        <div class="form">
+          <div class="field">
+            <label class="field__label" for="detail-name">Nombre del producto *</label>
+            <input id="detail-name" class="field__input" [class.field__input--invalid]="invalid('name')" formControlName="name" />
+            @if (invalid('name')) {
+              <span class="field__error">El nombre es obligatorio (máximo 150 caracteres)</span>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="detail-category">Categoría *</label>
+            <select id="detail-category" class="field__input" [class.field__input--invalid]="invalid('categoryId')" formControlName="categoryId">
+              @for (category of categories(); track category.id) {
+                <option [value]="category.id">{{ category.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="detail-description">Descripción</label>
+            <textarea
+              id="detail-description"
+              class="field__input field__input--area"
+              rows="6"
+              placeholder="Describe el producto: tela, corte, cuidados..."
+              formControlName="description"
+            ></textarea>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field__label" for="detail-price">Precio (con IVA) *</label>
+              <input
+                id="detail-price"
+                class="field__input"
+                [class.field__input--invalid]="invalid('price')"
+                type="number"
+                step="0.01"
+                min="0"
+                [placeholder]="mixedPrices() ? 'Varios precios' : ''"
+                formControlName="price"
+              />
+              @if (mixedPrices()) {
+                <span class="field__hint">Las variantes tienen precios distintos. Si escribes uno, se aplicará a todas.</span>
+              } @else if (invalid('price')) {
+                <span class="field__error">Ingresa un precio mayor a 0</span>
+              }
+            </div>
+            <div class="field">
+              <label class="field__label" for="detail-promo">Precio promocional</label>
+              <input
+                id="detail-promo"
+                class="field__input"
+                [class.field__input--invalid]="invalid('promoPrice')"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="Sin promoción"
+                formControlName="promoPrice"
+              />
+              <span class="field__hint">Déjalo vacío para quitar la promoción.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="side">
+        <section class="card">
+          <h2 class="card__title"><span class="slash" aria-hidden="true">/</span>Fotos del producto</h2>
+          <div class="photos-head">
+            <span class="photos-head__title">Fotos principales ({{ photos().length }}/{{ maxPhotos }})</span>
+            <button type="button" class="link" [disabled]="uploading()" (click)="fileInput.click()">
+              <span class="material-icons" aria-hidden="true">add_photo_alternate</span>
+              {{ uploading() ? 'Subiendo...' : 'Subir imágenes' }}
+            </button>
+          </div>
+
+          <input
+            #fileInput
+            class="photos-input"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            (change)="onFilesChosen($event)"
+          />
+
+          <ul
+            class="photos"
+            [class.photos--over]="dragging()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave()"
+            (drop)="onDrop($event)"
+          >
+            @for (photo of photos(); track photo.url) {
+              <li class="photo">
+                <img class="photo__img" [src]="photo.url" [alt]="'Foto de ' + photo.sku" loading="lazy" />
+                <button type="button" class="photo__remove" aria-label="Quitar foto" (click)="removePhoto(photo)">
+                  <span class="material-icons" aria-hidden="true">close</span>
+                </button>
+                @if ($first) {
+                  <span class="photo__badge">Principal</span>
+                }
+              </li>
+            }
+            @if (photos().length < maxPhotos) {
+              <li>
+                <button type="button" class="photo photo--add" [disabled]="uploading()" (click)="fileInput.click()">
+                  <span class="material-icons" aria-hidden="true">photo_camera</span>
+                  {{ uploading() ? 'Subiendo...' : 'Agregar foto' }}
+                </button>
+              </li>
+            }
+          </ul>
+
+          <p class="note">
+            <span class="material-icons" aria-hidden="true">info</span>
+            <span>Arrastra las fotos al recuadro o usa el botón. Se guardan en todas las tallas y colores. La primera será la principal; recomendamos fondo claro.</span>
+          </p>
+        </section>
+
+        <section class="card">
+          <header class="card__header">
+            <h2 class="card__title"><span class="slash" aria-hidden="true">/</span>Variantes (tallas y colores)</h2>
+            <button type="button" class="button button--soft" (click)="openVariantForm(null)">
+              <span class="material-icons" aria-hidden="true">add</span>
+              Agregar variante
+            </button>
+          </header>
+
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Talla</th>
+                  <th>Color</th>
+                  <th>Stock</th>
+                  <th>SKU</th>
+                  <th class="num">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (variant of variants(); track variant.id) {
+                  <tr [class.row--off]="variant.status !== 'ACTIVE'">
+                    <td>{{ variant.sizeLabel }}</td>
+                    <td>
+                      <span class="dot" [style.background]="variant.colorHex"></span>
+                      {{ variant.colorName }}
+                    </td>
+                    <td>
+                      <div class="stock">
+                        <input
+                          type="number"
+                          min="0"
+                          step="1"
+                          class="stock__input"
+                          [class.stock__input--low]="stockDraft(variant.id) <= 2"
+                          [attr.aria-label]="'Stock de ' + variant.colorName + ' ' + variant.sizeLabel"
+                          [value]="stockDraft(variant.id)"
+                          [disabled]="stockOf(variant.id) === null || stockSaving() === variant.id"
+                          (input)="setStockDraft(variant.id, $any($event.target).value)"
+                          (keydown.enter)="saveStock(variant)"
+                        />
+                        @if (stockChanged(variant.id)) {
+                          <button type="button" class="stock__save" [disabled]="stockSaving() === variant.id" (click)="saveStock(variant)">
+                            Guardar
+                          </button>
+                        }
+                      </div>
+                    </td>
+                    <td class="mono">{{ variant.sku }}</td>
+                    <td>
+                      <div class="actions">
+                        <button type="button" class="icon-btn" [attr.aria-label]="'Fotos (' + variant.images.length + ')'" [title]="'Fotos (' + variant.images.length + ')'" (click)="openImages(variant)">
+                          <span class="material-icons" aria-hidden="true">photo_library</span>
+                        </button>
+                        <button type="button" class="icon-btn" aria-label="Editar variante" (click)="openVariantForm(variant)">
+                          <span class="material-icons" aria-hidden="true">edit</span>
+                        </button>
+                        @if (variant.status !== 'DISCONTINUED') {
+                          <button type="button" class="icon-btn icon-btn--danger" aria-label="Eliminar variante" title="Eliminar variante" (click)="discontinue(variant)">
+                            <span class="material-icons" aria-hidden="true">delete_outline</span>
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+            @if (variants().length === 0) {
+              <p class="empty">Este producto aún no tiene variantes. Agrega la primera combinación de talla y color.</p>
+            }
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <footer class="card bar">
+      <div class="bar__status">
+        <h2 class="card__title"><span class="slash" aria-hidden="true">/</span>Estado del producto</h2>
+        <label class="switch">
+          <input type="checkbox" class="switch__input" formControlName="active" />
+          <span class="switch__track" aria-hidden="true"></span>
+          <span class="switch__text">
+            <strong>{{ form.controls.active.value ? 'Producto activo' : 'Producto inactivo' }}</strong>
+            <span class="field__hint">Los productos inactivos no serán visibles en tu tienda.</span>
+          </span>
+        </label>
+      </div>
+      <div class="bar__actions">
+        <button type="button" class="button button--outline" (click)="cancel()">Cancelar</button>
+        <button type="submit" class="button button--primary" [disabled]="saving()">
+          {{ saving() ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </footer>
+  </form>
+}

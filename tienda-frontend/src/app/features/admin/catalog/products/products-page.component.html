@@ -1,0 +1,163 @@
+<header class="page-header">
+  <div>
+    <h1 class="page-header__title"><span class="slash" aria-hidden="true">/</span>Productos</h1>
+    <p class="page-header__text">Gestiona tu inventario. Busca, filtra y edita la información de tus productos.</p>
+  </div>
+  <div class="page-header__actions">
+    <a routerLink="/admin/importar" class="button button--outline">
+      <span class="material-icons" aria-hidden="true">upload_file</span>
+      Importar Excel
+    </a>
+    <button type="button" class="button button--primary" (click)="newProduct()">
+      <span class="material-icons" aria-hidden="true">add</span>
+      Nuevo producto
+    </button>
+  </div>
+</header>
+
+<section class="card">
+  <div class="toolbar">
+    <label class="search">
+      <span class="material-icons search__icon" aria-hidden="true">search</span>
+      <input class="search__input" type="search" placeholder="Buscar por código o nombre..." [formControl]="searchControl" />
+    </label>
+    <select class="select" aria-label="Categoría" [formControl]="categoryControl">
+      <option [ngValue]="null">Todas las categorías</option>
+      @for (category of categories(); track category.id) {
+        <option [ngValue]="category.id">{{ category.name }}</option>
+      }
+    </select>
+    <select class="select" aria-label="Estado" [formControl]="statusControl">
+      <option [ngValue]="null">Todos los estados</option>
+      <option value="ACTIVE">Activos</option>
+      <option value="DRAFT">Borradores</option>
+      <option value="INACTIVE">Inactivos</option>
+    </select>
+    @if (searchControl.value || categoryControl.value || statusControl.value) {
+      <button type="button" class="link" (click)="clearFilters()">Limpiar filtros</button>
+    }
+    <span class="toolbar__count">{{ total() }} {{ total() === 1 ? 'resultado' : 'resultados' }}</span>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Categoría</th>
+          <th>Colores</th>
+          <th>Tallas</th>
+          <th class="num">Precio</th>
+          <th class="num">Stock</th>
+          <th>Estado</th>
+          <th class="num">Acciones</th>
+        </tr>
+      </thead>
+      <tbody [class.table--loading]="loading()">
+        @for (item of rows(); track item.productId) {
+          <tr [class.row--open]="expanded() === item.productId">
+            <td>
+              <div class="product">
+                @if (item.thumbnailUrl) {
+                  <img class="thumb" [src]="item.thumbnailUrl" alt="" loading="lazy" />
+                } @else {
+                  <span class="thumb thumb--empty" aria-hidden="true">{{ item.name.charAt(0).toUpperCase() }}</span>
+                }
+                <div class="product__text">
+                  <a class="product__name" [routerLink]="['/admin/productos', item.productId]">{{ item.name }}</a>
+                  <span class="product__sku">{{ item.variants.length }} {{ item.variants.length === 1 ? 'variante' : 'variantes' }}</span>
+                </div>
+              </div>
+            </td>
+            <td><span class="tag">{{ item.categoryName }}</span></td>
+            <td>
+              <div class="swatches">
+                @for (color of colorsOf(item); track color.name) {
+                  <span class="swatch" [style.background]="color.hex" [title]="color.name"></span>
+                }
+              </div>
+            </td>
+            <td>
+              <div class="sizes">
+                @for (size of sizesOf(item); track size) {
+                  <span class="size">{{ size }}</span>
+                }
+              </div>
+            </td>
+            <td class="num">
+              @if (item.minPrice === item.maxPrice) {
+                {{ item.minPrice | currency: 'USD' }}
+              } @else {
+                {{ item.minPrice | currency: 'USD' }} – {{ item.maxPrice | currency: 'USD' }}
+              }
+              @if (item.onPromo) {
+                <span class="chip chip--ok">Oferta</span>
+              }
+            </td>
+            <td class="num">
+              <span class="chip" [class.chip--danger]="item.totalStock === 0" [class.chip--warn]="item.totalStock > 0 && item.totalStock <= 2">
+                {{ item.totalStock === 0 ? 'Agotado' : item.totalStock }}
+              </span>
+            </td>
+            <td>
+              <span class="chip" [class.chip--ok]="item.status === 'ACTIVE'" [class.chip--warn]="item.status === 'DRAFT'" [class.chip--off]="item.status === 'INACTIVE'">
+                {{ item.status === 'ACTIVE' ? 'Activo' : item.status === 'DRAFT' ? 'Borrador' : 'Inactivo' }}
+              </span>
+            </td>
+            <td>
+              <div class="actions">
+                <button type="button" class="icon-btn" [attr.aria-expanded]="expanded() === item.productId" aria-label="Ver variantes" title="Ver colores y tallas" (click)="toggle(item.productId)">
+                  <span class="material-icons" aria-hidden="true">{{ expanded() === item.productId ? 'expand_less' : 'expand_more' }}</span>
+                </button>
+                <a class="icon-btn" aria-label="Editar producto" title="Editar" [routerLink]="['/admin/productos', item.productId]">
+                  <span class="material-icons" aria-hidden="true">edit</span>
+                </a>
+                <button type="button" class="icon-btn icon-btn--danger" aria-label="Desactivar" (click)="deactivate(item)">
+                  <span class="material-icons" aria-hidden="true">visibility_off</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+          @if (expanded() === item.productId) {
+            <tr class="detail">
+              <td colspan="8">
+                <table class="inner">
+                  <thead>
+                    <tr><th>Color</th><th>Talla</th><th>SKU</th><th class="num">Precio</th><th class="num">Stock</th></tr>
+                  </thead>
+                  <tbody>
+                    @for (v of item.variants; track v.variantId) {
+                      <tr>
+                        <td><span class="color"><span class="color__dot" [style.background]="v.colorHex"></span>{{ v.colorName }}</span></td>
+                        <td><span class="size">{{ v.sizeLabel }}</span></td>
+                        <td class="mono">{{ v.sku }}</td>
+                        <td class="num">{{ (v.promoPrice ?? v.price) | currency: 'USD' }}</td>
+                        <td class="num">
+                          <span class="chip" [class.chip--danger]="v.stock === 0" [class.chip--warn]="v.stock > 0 && v.stock <= 2">{{ v.stock === 0 ? 'Agotado' : v.stock }}</span>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+    @if (loading() && rows().length === 0) {
+      <p class="empty">Cargando...</p>
+    } @else if (!loading() && rows().length === 0) {
+      <p class="empty">No encontramos productos con esa búsqueda.</p>
+    }
+  </div>
+
+  <footer class="pager">
+    <span class="pager__info">Mostrando {{ from() }}–{{ to() }} de {{ total() }}</span>
+    <div class="pager__buttons">
+      <button type="button" class="button button--outline" [disabled]="pageIndex() === 0" (click)="goTo(pageIndex() - 1)">Anterior</button>
+      <span class="pager__page">Página {{ pageIndex() + 1 }} de {{ totalPages() }}</span>
+      <button type="button" class="button button--outline" [disabled]="pageIndex() + 1 >= totalPages()" (click)="goTo(pageIndex() + 1)">Siguiente</button>
+    </div>
+  </footer>
+</section>

@@ -1,0 +1,124 @@
+@use 'styles/mixins' as m;
+
+:host {
+  display: block;
+  margin-top: 1.25rem;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 26rem;
+}
+
+.search__label {
+  @include m.visually-hidden;
+}
+
+.search__input {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--color-ink);
+
+  &::placeholder {
+    color: var(--color-muted);
+  }
+
+  &:focus {
+    border-color: var(--color-black);
+  }
+}
+
+.search__button {
+  padding: 0.625rem 1.25rem;
+
+  @include m.button-primary;
+}
+
+.filters__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+
+  &:hover {
+    border-color: var(--color-black);
+  }
+}
+
+.chip--active {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-white);
+}
+
+.sort {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.sort__label {
+  color: var(--color-muted);
+}
+
+.sort__select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  font: inherit;
+  color: var(--color-ink);
+
+  &:focus {
+    border-color: var(--color-black);
+  }
+}
+
+.chips--sub {
+  margin-top: 0.75rem;
+}
+
+.chip--sub {
+  padding: 0.375rem 0.875rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 500;
+}

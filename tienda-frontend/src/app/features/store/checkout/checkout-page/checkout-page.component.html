@@ -1,0 +1,151 @@
+<section class="checkout">
+  <h1 class="checkout__title">Finalizar pedido</h1>
+
+  @if (cart.lines().length === 0) {
+    <div class="empty">
+      <p class="empty__title">Tu carrito está vacío</p>
+      <a routerLink="/tienda" class="button button--primary">Ir a la tienda</a>
+    </div>
+  } @else {
+    <form class="checkout__layout" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="checkout__form">
+        <section class="block">
+          <h2 class="block__title"><span class="slash" aria-hidden="true">/</span>Tus datos</h2>
+
+          <div class="row">
+            <div class="field">
+              <label class="field__label" for="co-idType">Documento</label>
+              <select id="co-idType" class="field__input" formControlName="idType">
+                <option value="CEDULA">Cédula</option>
+                <option value="RUC">RUC</option>
+                <option value="PASAPORTE">Pasaporte</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="co-idNumber">Número</label>
+              <input id="co-idNumber" class="field__input" [class.field__input--invalid]="invalid('idNumber')" formControlName="idNumber" inputmode="numeric" />
+              @if (invalid('idNumber')) {
+                <span class="field__error">Ingresa tu número de documento</span>
+              }
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label class="field__label" for="co-first">
+                {{ form.controls.idType.value === 'RUC' ? 'Razón social' : 'Nombres' }}
+              </label>
+              <input id="co-first" class="field__input" [class.field__input--invalid]="invalid('firstName')" formControlName="firstName" autocomplete="given-name" />
+              @if (invalid('firstName')) {
+                <span class="field__error">Este dato es obligatorio</span>
+              }
+            </div>
+            @if (form.controls.idType.value !== 'RUC') {
+              <div class="field">
+                <label class="field__label" for="co-last">Apellidos</label>
+                <input id="co-last" class="field__input" formControlName="lastName" autocomplete="family-name" />
+              </div>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="co-phone">WhatsApp / celular</label>
+            <input id="co-phone" class="field__input" [class.field__input--invalid]="invalid('phone')" formControlName="phone" type="tel" autocomplete="tel" placeholder="0991234567" />
+            <span class="field__hint">Te escribiremos por aquí para confirmar tu pedido y coordinar el envío.</span>
+            @if (invalid('phone')) {
+              <span class="field__error">Ingresa un número válido</span>
+            }
+          </div>
+        </section>
+
+        <section class="block">
+          <h2 class="block__title"><span class="slash" aria-hidden="true">/</span>Dirección de entrega</h2>
+
+          <div class="field">
+            <label class="field__label" for="co-line1">Dirección</label>
+            <input id="co-line1" class="field__input" [class.field__input--invalid]="invalid('line1')" formControlName="line1" autocomplete="street-address" placeholder="Calle principal y secundaria, número" />
+            @if (invalid('line1')) {
+              <span class="field__error">Ingresa tu dirección</span>
+            }
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label class="field__label" for="co-city">Ciudad</label>
+              <input id="co-city" class="field__input" [class.field__input--invalid]="invalid('city')" formControlName="city" autocomplete="address-level2" />
+              @if (invalid('city')) {
+                <span class="field__error">Ingresa tu ciudad</span>
+              }
+            </div>
+            <div class="field">
+              <label class="field__label" for="co-province">Provincia</label>
+              <select id="co-province" class="field__input" [class.field__input--invalid]="invalid('province')" formControlName="province">
+                <option value="">Elige una provincia</option>
+                @for (province of provinces; track province) {
+                  <option [value]="province">{{ province }}</option>
+                }
+              </select>
+              @if (invalid('province')) {
+                <span class="field__error">Elige tu provincia</span>
+              }
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="co-reference">Referencia (opcional)</label>
+            <input id="co-reference" class="field__input" formControlName="reference" placeholder="Cerca de..., casa de color..." />
+          </div>
+        </section>
+      </div>
+
+      <aside class="summary">
+        <h2 class="summary__title">Tu pedido</h2>
+        <ul class="summary__lines">
+          @for (line of cart.lines(); track line.variantId) {
+            <li class="summary__line">
+              <span class="summary__name">
+                {{ line.quantity }} x {{ line.productName }}
+                <small>Talla {{ line.sizeLabel }} · {{ line.colorName }}</small>
+              </span>
+              <span>{{ line.unitPrice * line.quantity | currency: 'USD' }}</span>
+            </li>
+          }
+        </ul>
+
+        <p class="summary__row summary__row--total">
+          <span>Total</span>
+          <strong>{{ cart.subtotal() | currency: 'USD' }}</strong>
+        </p>
+        <div class="methods">
+          <p class="methods__title">Formas de pago</p>
+          <ul class="methods__list">
+            @for (bank of bankNames(); track bank) {
+              <li class="methods__item">
+                <span class="material-icons" aria-hidden="true">account_balance</span>
+                Transferencia · {{ bank }}
+              </li>
+            }
+            <li class="methods__item" [class.methods__item--soon]="!payphoneEnabled()">
+              <span class="material-icons" aria-hidden="true">credit_card</span>
+              Tarjeta (PayPhone) @if (!payphoneEnabled()) { <small>próximamente</small> }
+            </li>
+          </ul>
+        </div>
+
+        <p class="summary__note">
+          Precios con IVA incluido. El envío se coordina contigo por WhatsApp. En el siguiente paso verás
+          los números de cuenta y subirás tu comprobante.
+        </p>
+
+        @if (errorMessage()) {
+          <p class="summary__error" role="alert">{{ errorMessage() }}</p>
+        }
+
+        <button type="submit" class="button button--primary" [disabled]="submitting()">
+          {{ submitting() ? 'Creando pedido...' : 'Confirmar pedido' }}
+        </button>
+        <a routerLink="/carrito" class="summary__back">Volver al carrito</a>
+      </aside>
+    </form>
+  }
+</section>

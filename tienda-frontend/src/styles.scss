@@ -1,0 +1,9 @@
+@use 'styles/tokens';
+@use 'styles/base';
+@use 'styles/material-theme';
+
+// Transitorio: el panel admin todavía usa utilidades de Tailwind.
+// Estas líneas se eliminan cuando el panel se migre a SCSS por componente.
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

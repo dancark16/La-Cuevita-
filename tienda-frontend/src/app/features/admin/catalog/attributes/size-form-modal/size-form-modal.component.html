@@ -1,0 +1,35 @@
+<app-modal [title]="size() ? 'Editar talla' : 'Agregar talla'" (closed)="cancelled.emit()">
+  <form class="form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="field">
+      <label class="field__label" for="size-label">Talla</label>
+      <input
+        id="size-label"
+        class="field__input"
+        [class.field__input--invalid]="form.controls.label.touched && form.controls.label.invalid"
+        formControlName="label"
+        placeholder="S, M, L, XL, 28, Única..."
+        maxlength="10"
+      />
+      <span class="field__hint">Máximo 10 caracteres.</span>
+      @if (form.controls.label.touched && form.controls.label.invalid) {
+        <span class="field__error">La talla es obligatoria</span>
+      }
+    </div>
+
+    <label class="switch">
+      <input type="checkbox" class="switch__input" formControlName="active" />
+      <span class="switch__track" aria-hidden="true"></span>
+      <span class="switch__text">
+        <strong>{{ form.controls.active.value ? 'Talla activa' : 'Talla inactiva' }}</strong>
+        <span class="field__hint">Las tallas inactivas no se ofrecen al crear variantes.</span>
+      </span>
+    </label>
+
+    <div class="form__actions">
+      <button type="button" class="button button--outline" (click)="cancelled.emit()">Cancelar</button>
+      <button type="submit" class="button button--primary" [disabled]="saving()">
+        {{ saving() ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</app-modal>

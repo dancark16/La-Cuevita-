@@ -1,0 +1,22 @@
+$color-white: #ffffff;
+$color-black: #000000;
+$color-ink: #111111;
+$color-muted: #6b6b6b;
+$color-accent: #ff4fa3;
+$color-accent-deep: #e6338a;
+$color-gray: #e5e5e5;
+$color-gray-soft: #f5f5f5;
+$color-border: #d4d4d4;
+$color-danger: #b3261e;
+
+$font-body: 'Montserrat Variable', system-ui, sans-serif;
+
+$breakpoints: (
+    sm: 40rem,
+    md: 48rem,
+    lg: 64rem,
+    xl: 80rem,
+);
+
+$container-max: 120rem;
+$header-height: 4.5rem;

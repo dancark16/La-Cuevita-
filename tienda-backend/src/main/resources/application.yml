@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: tienda-backend
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 120MB
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:tienda}
+    username: ${POSTGRES_USER:tienda_user}
+    password: ${POSTGRES_PASSWORD:change_me_local}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:cambia-esta-clave-en-produccion-minimo-32-caracteres-1234567890}
+    access-token-expiration-minutes: 15
+    refresh-token-expiration-days: 7
+  billing:
+    tax-rate: 0.15
+  cookie:
+    secure: false
+  store:
+    new-product-days: 30
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:820353047340-34r03a8plv0qtjsm3j3pefeuv716u7dv.apps.googleusercontent.com}
+  storage:
+    root: ${UPLOAD_DIR:uploads}
+  public-base-url: ${PUBLIC_BASE_URL:http://localhost:8080}

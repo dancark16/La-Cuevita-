@@ -1,0 +1,22 @@
+<div class="filters">
+  <form class="search" role="search" (submit)="onSearch($event, searchInput.value)">
+    <label class="search__label" for="catalog-search">Buscar productos</label>
+    <input
+      #searchInput
+      id="catalog-search"
+      class="search__input"
+      type="search"
+      placeholder="Buscar por nombre"
+      [value]="searchTerm"
+    />
+    <button type="submit" class="search__button">Buscar</button>
+  </form>
+
+  <label class="sort">
+    <span class="sort__label">Ordenar</span>
+    <select class="sort__select" (change)="onSortChange($any($event.target).value)">
+      <option value="NEWEST" [selected]="sort === 'NEWEST'">Más nuevos</option>
+      <option value="NAME" [selected]="sort === 'NAME'">Nombre (A-Z)</option>
+    </select>
+  </label>
+</div>

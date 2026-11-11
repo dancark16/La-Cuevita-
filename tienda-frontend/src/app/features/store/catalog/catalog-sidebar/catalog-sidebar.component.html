@@ -1,0 +1,99 @@
+<div class="sidebar">
+  <h2 class="sidebar__title">Categorías</h2>
+
+  <ul class="groups">
+    @for (root of roots; track root.id) {
+      <li class="group" [class.group--open]="isOpen(root)">
+        <button
+          type="button"
+          class="group__head"
+          [attr.aria-expanded]="isOpen(root)"
+          (click)="toggle(root)"
+        >
+          <span class="material-icons group__icon" aria-hidden="true">{{ icon(root) }}</span>
+          <span class="group__name">{{ root.name }}</span>
+          <span class="material-icons group__chevron" aria-hidden="true">expand_more</span>
+        </button>
+
+        @if (isOpen(root)) {
+          <ul class="group__list">
+            <li>
+              <button
+                type="button"
+                class="item item--all"
+                [class.item--active]="selectedCategoryId === root.id"
+                (click)="categorySelected.emit(root.id)"
+              >
+                Todo {{ root.name }}
+              </button>
+            </li>
+            @for (child of childrenOf(root); track child.id) {
+              <li>
+                <button
+                  type="button"
+                  class="item"
+                  [class.item--active]="selectedCategoryId === child.id"
+                  (click)="categorySelected.emit(child.id)"
+                >
+                  {{ child.name }}
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </li>
+    }
+  </ul>
+
+  @if (sizes.length > 0 || colors.length > 0) {
+    <div class="filters">
+      <h2 class="sidebar__title">Filtros</h2>
+
+      @if (sizes.length > 0) {
+        <h3 class="filters__label">Tallas</h3>
+        <ul class="sizes">
+          @for (size of sizes; track size) {
+            <li>
+              <button
+                type="button"
+                class="size"
+                [class.size--active]="selectedSize === size"
+                [attr.aria-pressed]="selectedSize === size"
+                (click)="sizeSelected.emit(selectedSize === size ? null : size)"
+              >
+                {{ size }}
+              </button>
+            </li>
+          }
+        </ul>
+      }
+
+      @if (colors.length > 0) {
+        <h3 class="filters__label">Colores</h3>
+        <ul class="colors">
+          @for (color of colors; track color.name) {
+            <li>
+              <button
+                type="button"
+                class="color"
+                [class.color--active]="selectedColor === color.name"
+                [attr.aria-pressed]="selectedColor === color.name"
+                (click)="colorSelected.emit(selectedColor === color.name ? null : color.name)"
+              >
+                <span class="color__dot" [style.background]="color.hex"></span>
+                {{ color.name }}
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+  @if (hasFilters) {
+    <button type="button" class="clear" (click)="cleared.emit()">
+      <span class="material-icons" aria-hidden="true">close</span>
+      Limpiar filtros
+    </button>
+  }
+</div>

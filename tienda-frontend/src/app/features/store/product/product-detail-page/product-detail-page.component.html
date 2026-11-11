@@ -1,0 +1,169 @@
+<section class="detail">
+  @if (loading()) {
+    <div class="detail__skeleton" aria-busy="true">
+      <div class="skeleton skeleton--image"></div>
+      <div class="detail__skeleton-info">
+        <div class="skeleton skeleton--line"></div>
+        <div class="skeleton skeleton--line skeleton--short"></div>
+        <div class="skeleton skeleton--line"></div>
+      </div>
+    </div>
+  } @else if (notFound() || !product()) {
+    <div class="notice">
+      <p class="notice__title">No encontramos este producto.</p>
+      <p class="notice__text">Puede que ya no esté disponible.</p>
+      <a routerLink="/tienda" class="button button--primary">Volver a la tienda</a>
+    </div>
+  } @else {
+    @if (product(); as p) {
+      <nav class="crumbs" aria-label="Ruta de navegación">
+        <a routerLink="/">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <a routerLink="/tienda">Tienda</a>
+        <span aria-hidden="true">/</span>
+        <a routerLink="/tienda" [queryParams]="{ categoria: p.categoryId }">{{ p.categoryName }}</a>
+        <span aria-hidden="true">/</span>
+        <span class="crumbs__current">{{ p.name }}</span>
+      </nav>
+
+      <div class="detail__layout">
+        <div class="gallery">
+          <div class="gallery__main">
+            @if (currentImage(); as image) {
+              <img class="gallery__image" [src]="image" [alt]="p.name" />
+            } @else {
+              <span class="material-icons gallery__placeholder" aria-hidden="true">checkroom</span>
+            }
+            @if (!inStock()) {
+              <span class="badge badge--soldout">Agotado</span>
+            }
+          </div>
+
+          @if (images().length > 1) {
+            <ul class="gallery__thumbs">
+              @for (image of images(); track image; let i = $index) {
+                <li>
+                  <button
+                    type="button"
+                    class="thumb"
+                    [class.thumb--active]="imageIndex() === i"
+                    [attr.aria-label]="'Ver foto ' + (i + 1)"
+                    (click)="imageIndex.set(i)"
+                  >
+                    <img [src]="image" alt="" loading="lazy" />
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+
+        <div class="info">
+          <p class="info__category">{{ p.categoryName }}</p>
+          <h1 class="info__name">{{ p.name }}</h1>
+
+          <p class="info__prices">
+            @if (price().from) {
+              <span class="info__from">Desde</span>
+            }
+            <span class="info__price">{{ price().value | currency: 'USD' }}</span>
+            @if (price().compare) {
+              <span class="info__compare">{{ price().compare | currency: 'USD' }}</span>
+            }
+          </p>
+          <p class="info__tax">Precio con IVA incluido</p>
+
+          @if (p.description) {
+            <p class="info__description">{{ p.description }}</p>
+          }
+
+          @if (colors().length > 1) {
+            <h2 class="option__label">
+              Color: <strong>{{ selectedColor() }}</strong>
+            </h2>
+            <ul class="colors">
+              @for (color of colors(); track color.name) {
+                <li>
+                  <button
+                    type="button"
+                    class="color"
+                    [class.color--active]="selectedColor() === color.name"
+                    [attr.aria-label]="color.name"
+                    [attr.aria-pressed]="selectedColor() === color.name"
+                    [title]="color.name"
+                    (click)="selectColor(color.name)"
+                  >
+                    <span class="color__dot" [style.background]="color.hex"></span>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+
+          <h2 class="option__label">
+            Talla
+            @if (attempted() && !selectedSize()) {
+              <span class="option__error">Elige una talla</span>
+            }
+          </h2>
+          <ul class="sizes">
+            @for (size of sizes(); track size.label) {
+              <li>
+                <button
+                  type="button"
+                  class="size"
+                  [class.size--active]="selectedSize() === size.label"
+                  [disabled]="!size.available"
+                  [attr.aria-pressed]="selectedSize() === size.label"
+                  (click)="selectSize(size.label, size.available)"
+                >
+                  {{ size.label }}
+                </button>
+              </li>
+            }
+          </ul>
+
+          @if (stockMessage(); as message) {
+            <p
+              class="stock"
+              [class.stock--low]="message.startsWith('¡')"
+              [class.stock--out]="message.startsWith('Agotado')"
+            >
+              {{ message }}
+            </p>
+          }
+
+          <div class="buy">
+            <div class="qty" role="group" aria-label="Cantidad">
+              <button type="button" class="qty__button" aria-label="Quitar una unidad" [disabled]="quantity() <= 1" (click)="changeQuantity(-1)">−</button>
+              <span class="qty__value">{{ quantity() }}</span>
+              <button
+                type="button"
+                class="qty__button"
+                aria-label="Agregar una unidad"
+                [disabled]="!selectedVariant() || quantity() >= selectedVariant()!.maxQuantity"
+                (click)="changeQuantity(1)"
+              >+</button>
+            </div>
+
+            <button type="button" class="button button--primary buy__add" [disabled]="!inStock()" (click)="addToCart()">
+              <span class="material-icons" aria-hidden="true">{{ added() ? 'check' : 'shopping_cart' }}</span>
+              {{ added() ? 'Agregado' : 'Agregar al carrito' }}
+            </button>
+          </div>
+
+          @if (added()) {
+            <p class="added">
+              Producto agregado.
+              <a routerLink="/carrito">Ver carrito</a>
+            </p>
+          }
+
+          @if (selectedVariant(); as variant) {
+            <p class="info__sku">Código: {{ variant.sku }}</p>
+          }
+        </div>
+      </div>
+    }
+  }
+</section>

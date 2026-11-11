@@ -1,0 +1,27 @@
+<footer class="footer">
+  <ul class="footer__features">
+    @for (item of features(); track item.title) {
+      <li>
+        @if (item.href) {
+          <a class="feature" [href]="item.href" target="_blank" rel="noopener noreferrer">
+            <ng-container *ngTemplateOutlet="content; context: { $implicit: item }" />
+          </a>
+        } @else {
+          <div class="feature">
+            <ng-container *ngTemplateOutlet="content; context: { $implicit: item }" />
+          </div>
+        }
+      </li>
+    }
+  </ul>
+
+  <p class="footer__legal">© {{ year }} La Cuevita. Todos los derechos reservados.</p>
+</footer>
+
+<ng-template #content let-item>
+  <span class="feature__icon material-icons" aria-hidden="true">{{ item.icon }}</span>
+  <span class="feature__text">
+    <strong class="feature__title">{{ item.title }}</strong>
+    <span class="feature__subtitle">{{ item.subtitle }}</span>
+  </span>
+</ng-template>

@@ -1,0 +1,164 @@
+<header class="header">
+  <div class="header__inner">
+    <button
+      type="button"
+      class="icon-button header__burger"
+      (click)="toggleMenu()"
+      aria-label="Abrir menú"
+      [attr.aria-expanded]="menuOpen()"
+    >
+      <span class="material-icons" aria-hidden="true">{{ menuOpen() ? 'close' : 'menu' }}</span>
+    </button>
+
+    <a routerLink="/" class="header__brand" aria-label="La Cuevita, ir al inicio" (click)="closeMenu()">
+      <app-brand-logo />
+    </a>
+
+    <nav class="nav" aria-label="Principal">
+      <a
+        routerLink="/"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="nav__link"
+        >Inicio</a
+      >
+      <a
+        routerLink="/tienda"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="nav__link"
+        >Tienda</a
+      >
+
+      <a
+        routerLink="/tienda"
+        [queryParams]="{ orden: 'NEWEST' }"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="nav__link"
+        >Novedades</a
+      >
+
+      @if (groups().length > 0) {
+        <div class="nav__dropdown">
+          <button type="button" class="nav__link nav__trigger" aria-haspopup="true">
+            Categorías
+            <span class="material-icons" aria-hidden="true">expand_more</span>
+          </button>
+          <div class="nav__menu">
+            @for (group of groups(); track group.root.id) {
+              <div class="nav__group">
+                <a routerLink="/tienda" [queryParams]="{ categoria: group.root.id }" class="nav__group-title">{{ group.root.name }}</a>
+                @for (child of group.children; track child.id) {
+                  <a routerLink="/tienda" [queryParams]="{ categoria: child.id }" class="nav__menu-link">{{ child.name }}</a>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </nav>
+
+    <div class="header__actions">
+      <form class="search" role="search" (submit)="search($event, term.value)">
+        <label class="search__label" for="header-search">Buscar productos</label>
+        <span class="material-icons search__icon" aria-hidden="true">search</span>
+        <input #term id="header-search" class="search__input" type="search" placeholder="Buscar productos..." />
+      </form>
+      <a routerLink="/tienda" class="icon-button header__search-link" aria-label="Buscar productos">
+        <span class="material-icons" aria-hidden="true">search</span>
+      </a>
+      @if (auth.user(); as user) {
+        <div class="account">
+          <button
+            type="button"
+            class="icon-button"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="accountMenuOpen()"
+            aria-label="Mi cuenta"
+            (click)="toggleAccountMenu()"
+          >
+            <span class="material-icons" aria-hidden="true">person</span>
+          </button>
+          @if (accountMenuOpen()) {
+            <div class="account__menu" role="menu">
+              <div class="account__profile">
+                <span class="account__avatar" aria-hidden="true">{{ user.email.charAt(0).toUpperCase() }}</span>
+                <div class="account__info">
+                  <p class="account__email">{{ user.email }}</p>
+                  <p class="account__role">{{ auth.isAdmin() ? 'Administrador' : 'Cliente' }}</p>
+                </div>
+              </div>
+              <div class="account__list">
+                @if (auth.isAdmin()) {
+                  <a routerLink="/admin" class="account__item" role="menuitem" (click)="accountMenuOpen.set(false)">
+                    <span class="material-icons account__item-icon" aria-hidden="true">dashboard</span>
+                    Ir al panel
+                  </a>
+                }
+                <a routerLink="/cuenta/pedidos" class="account__item" role="menuitem" (click)="accountMenuOpen.set(false)">
+                  <span class="material-icons account__item-icon" aria-hidden="true">receipt_long</span>
+                  Mis pedidos
+                </a>
+                <button type="button" class="account__item" role="menuitem" (click)="logout('/login')">
+                  <span class="material-icons account__item-icon" aria-hidden="true">swap_horiz</span>
+                  Cambiar de cuenta
+                </button>
+                <button type="button" class="account__item account__item--danger" role="menuitem" (click)="logout()">
+                  <span class="material-icons account__item-icon" aria-hidden="true">logout</span>
+                  Cerrar sesión
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <a routerLink="/login" class="icon-button" aria-label="Ingresar">
+          <span class="material-icons" aria-hidden="true">person_outline</span>
+        </a>
+      }
+      <a
+        routerLink="/carrito"
+        class="icon-button"
+        [attr.aria-label]="'Carrito, ' + cart.count() + ' productos'"
+      >
+        <span class="material-icons" aria-hidden="true">shopping_bag</span>
+        @if (cart.count() > 0) {
+          <span class="cart-badge">{{ cart.count() }}</span>
+        }
+      </a>
+    </div>
+  </div>
+
+  @if (menuOpen()) {
+    <nav class="mobile-nav" aria-label="Menú móvil">
+      <ul class="mobile-nav__list">
+        <li><a routerLink="/" class="mobile-nav__link" (click)="closeMenu()">Inicio</a></li>
+        <li><a routerLink="/tienda" class="mobile-nav__link" (click)="closeMenu()">Tienda</a></li>
+        <li><a routerLink="/tienda" [queryParams]="{ orden: 'NEWEST' }" class="mobile-nav__link" (click)="closeMenu()">Novedades</a></li>
+        @for (group of groups(); track group.root.id) {
+          <li>
+            <a
+              routerLink="/tienda"
+              [queryParams]="{ categoria: group.root.id }"
+              class="mobile-nav__link mobile-nav__link--group"
+              (click)="closeMenu()"
+              >{{ group.root.name }}</a
+            >
+          </li>
+          @for (child of group.children; track child.id) {
+            <li>
+              <a
+                routerLink="/tienda"
+                [queryParams]="{ categoria: child.id }"
+                class="mobile-nav__link mobile-nav__link--sub"
+                (click)="closeMenu()"
+                >{{ child.name }}</a
+              >
+            </li>
+          }
+        }
+      </ul>
+    </nav>
+  }
+</header>

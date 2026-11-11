@@ -1,0 +1,58 @@
+<section
+  class="hero"
+  aria-roledescription="carrusel"
+  aria-label="Destacados"
+  (mouseenter)="stopAutoplay()"
+  (mouseleave)="startAutoplay()"
+  (focusin)="stopAutoplay()"
+  (focusout)="startAutoplay()"
+>
+  @for (slide of slides; track slide.titleLine1; let i = $index) {
+    <article
+      class="slide"
+      [class.slide--active]="i === current()"
+      [style.--slide-image]="'url(' + slide.image + ')'"
+      [attr.aria-hidden]="i !== current()"
+    >
+      <div class="slide__inner">
+        <div class="slide__content">
+          <p class="slide__eyebrow">{{ slide.eyebrow }}</p>
+          <h1 class="slide__title">
+            {{ slide.titleLine1 }}
+            <span class="slide__title-accent">{{ slide.titleLine2 }}</span>
+          </h1>
+          <p class="slide__text">{{ slide.text }}</p>
+          <a
+            [routerLink]="slide.ctaLink"
+            class="slide__cta"
+            [attr.tabindex]="i === current() ? null : -1"
+          >
+            {{ slide.ctaLabel }}
+            <span class="material-icons" aria-hidden="true">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+    </article>
+  }
+
+  @if (slides.length > 1) {
+    <button type="button" class="hero__arrow hero__arrow--prev" (click)="previous()" aria-label="Anterior">
+      <span class="material-icons" aria-hidden="true">chevron_left</span>
+    </button>
+    <button type="button" class="hero__arrow hero__arrow--next" (click)="next()" aria-label="Siguiente">
+      <span class="material-icons" aria-hidden="true">chevron_right</span>
+    </button>
+
+    <div class="hero__dots">
+      @for (slide of slides; track $index) {
+        <button
+          type="button"
+          class="hero__dot"
+          [class.is-active]="$index === current()"
+          [attr.aria-label]="'Ir a la diapositiva ' + ($index + 1)"
+          (click)="go($index)"
+        ></button>
+      }
+    </div>
+  }
+</section>
