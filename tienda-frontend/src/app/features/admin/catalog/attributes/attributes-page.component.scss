@@ -8,10 +8,7 @@
 @include admin-ui.buttons;
 
 .slash {
-  margin-right: 0.5rem;
-  font-style: italic;
-  font-weight: 800;
-  color: var(--color-accent);
+  @include m.title-mark;
 }
 
 .banner {
@@ -51,7 +48,7 @@
   border: 1px solid var(--color-gray);
   border-radius: 0.75rem;
   background: var(--color-white);
-  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
+  box-shadow: 0 2px 8px rgb(20 40 75 / 4%);
 }
 
 .card__head {
@@ -179,7 +176,7 @@
   width: 1.75rem;
   height: 1.75rem;
   margin-right: 0.75rem;
-  border: 1px solid rgb(0 0 0 / 12%);
+  border: 1px solid rgb(20 40 75 / 12%);
   border-radius: 50%;
   vertical-align: middle;
 }

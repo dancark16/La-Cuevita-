@@ -1,3 +1,4 @@
+import { SelectComponent, SelectOption } from '../../../../shared/components/select/select.component';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { filter, switchMap } from 'rxjs';
@@ -12,7 +13,7 @@ import { CategoryFormModalComponent } from './category-form-modal/category-form-
 @Component({
   selector: 'app-categories-page',
   standalone: true,
-  imports: [CategoryFormModalComponent],
+  imports: [SelectComponent, CategoryFormModalComponent],
   templateUrl: './categories-page.component.html',
   styleUrl: './categories-page.component.scss',
 })
@@ -43,6 +44,23 @@ export class CategoriesPageComponent implements OnInit {
     const parentIds = new Set(this.categories().map((c) => c.parentId).filter((id): id is string => !!id));
     return this.categories().filter((c) => parentIds.has(c.id));
   });
+
+  readonly categoryOptions = computed<SelectOption[]>(() => [
+    { value: '', label: 'Todas las categorías' },
+    ...this.categories().map((c) => ({ value: c.id, label: c.name })),
+  ]);
+
+  readonly parentOptions = computed<SelectOption[]>(() => [
+    { value: '', label: 'Todos los padres' },
+    { value: 'ROOT', label: 'Sin padre (principales)' },
+    ...this.parents().map((c) => ({ value: c.id, label: c.name })),
+  ]);
+
+  readonly statusOptions: SelectOption[] = [
+    { value: '', label: 'Todos los estados' },
+    { value: 'ACTIVE', label: 'Activas' },
+    { value: 'INACTIVE', label: 'Inactivas' },
+  ];
 
   readonly visible = computed(() => {
     const term = this.search().trim().toLowerCase();

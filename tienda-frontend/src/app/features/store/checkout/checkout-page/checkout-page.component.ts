@@ -1,3 +1,4 @@
+import { SelectComponent, SelectOption } from '../../../../shared/components/select/select.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CurrencyPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
@@ -18,7 +19,7 @@ const PROVINCES = [
 @Component({
   selector: 'app-checkout-page',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, CurrencyPipe],
+  imports: [SelectComponent, ReactiveFormsModule, RouterLink, CurrencyPipe],
   templateUrl: './checkout-page.component.html',
   styleUrl: './checkout-page.component.scss',
 })
@@ -29,6 +30,12 @@ export class CheckoutPageComponent {
   readonly cart = inject(CartService);
 
   readonly provinces = PROVINCES;
+  readonly provinceOptions: SelectOption[] = PROVINCES.map((province) => ({ value: province, label: province }));
+  readonly idTypeOptions: SelectOption[] = [
+    { value: 'CEDULA', label: 'Cédula' },
+    { value: 'RUC', label: 'RUC' },
+    { value: 'PASAPORTE', label: 'Pasaporte' },
+  ];
   private readonly settings = inject(StoreSettingsService).settings;
   readonly bankNames = computed(() => this.settings().bankNames);
   readonly payphoneEnabled = computed(() => this.settings().payphoneEnabled);

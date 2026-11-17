@@ -1,3 +1,5 @@
+import { SelectComponent, SelectOption } from '../../../../shared/components/select/select.component';
+import { ColorBackgroundPipe } from '../../../../shared/util/color-background.pipe';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { filter, switchMap } from 'rxjs';
@@ -12,7 +14,7 @@ import { SizeFormModalComponent } from './size-form-modal/size-form-modal.compon
 @Component({
   selector: 'app-attributes-page',
   standalone: true,
-  imports: [SizeFormModalComponent, ColorFormModalComponent],
+  imports: [SelectComponent, ColorBackgroundPipe, SizeFormModalComponent, ColorFormModalComponent],
   templateUrl: './attributes-page.component.html',
   styleUrl: './attributes-page.component.scss',
 })
@@ -26,6 +28,11 @@ export class AttributesPageComponent implements OnInit {
 
   readonly sizeSearch = signal('');
   readonly sizeStatus = signal('');
+  readonly statusOptions: SelectOption[] = [
+    { value: '', label: 'Todas' },
+    { value: 'ACTIVE', label: 'Activas' },
+    { value: 'INACTIVE', label: 'Inactivas' },
+  ];
   readonly colorSearch = signal('');
 
   readonly sizeFormOpen = signal(false);

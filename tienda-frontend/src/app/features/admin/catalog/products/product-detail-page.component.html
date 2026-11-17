@@ -43,11 +43,7 @@
 
           <div class="field">
             <label class="field__label" for="detail-category">Categoría *</label>
-            <select id="detail-category" class="field__input" [class.field__input--invalid]="invalid('categoryId')" formControlName="categoryId">
-              @for (category of categories(); track category.id) {
-                <option [value]="category.id">{{ category.name }}</option>
-              }
-            </select>
+            <app-select inputId="detail-category" placeholder="Elige una categoría" [options]="categoryOptions()" [invalid]="invalid('categoryId')" formControlName="categoryId" />
           </div>
 
           <div class="field">
@@ -177,7 +173,7 @@
                   <tr [class.row--off]="variant.status !== 'ACTIVE'">
                     <td>{{ variant.sizeLabel }}</td>
                     <td>
-                      <span class="dot" [style.background]="variant.colorHex"></span>
+                      <span class="dot" [style.background]="variant.colorHex | colorBackground"></span>
                       {{ variant.colorName }}
                     </td>
                     <td>

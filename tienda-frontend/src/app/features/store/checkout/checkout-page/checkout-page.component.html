@@ -15,11 +15,7 @@
           <div class="row">
             <div class="field">
               <label class="field__label" for="co-idType">Documento</label>
-              <select id="co-idType" class="field__input" formControlName="idType">
-                <option value="CEDULA">Cédula</option>
-                <option value="RUC">RUC</option>
-                <option value="PASAPORTE">Pasaporte</option>
-              </select>
+              <app-select inputId="co-idType" [options]="idTypeOptions" formControlName="idType" />
             </div>
             <div class="field">
               <label class="field__label" for="co-idNumber">Número</label>
@@ -79,12 +75,7 @@
             </div>
             <div class="field">
               <label class="field__label" for="co-province">Provincia</label>
-              <select id="co-province" class="field__input" [class.field__input--invalid]="invalid('province')" formControlName="province">
-                <option value="">Elige una provincia</option>
-                @for (province of provinces; track province) {
-                  <option [value]="province">{{ province }}</option>
-                }
-              </select>
+              <app-select inputId="co-province" placeholder="Elige una provincia" [options]="provinceOptions" [invalid]="invalid('province')" formControlName="province" />
               @if (invalid('province')) {
                 <span class="field__error">Elige tu provincia</span>
               }

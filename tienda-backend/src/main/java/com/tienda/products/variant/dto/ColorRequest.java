@@ -7,7 +7,7 @@ public record ColorRequest(
         @NotBlank
         String name,
         @NotBlank
-        @Pattern(regexp = "^#[0-9A-Fa-f]{6}$", message = "El color debe ser un hex válido, ej: #1A1A1A")
+        @Pattern(regexp = "^#[0-9A-Fa-f]{6}(/#[0-9A-Fa-f]{6})?$", message = "El color debe ser un hex válido, ej: #1A1A1A, o dos separados por / para combinados")
         String hex,
         Boolean active
         ) {

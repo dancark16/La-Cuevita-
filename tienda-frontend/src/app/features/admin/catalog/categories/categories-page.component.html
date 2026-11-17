@@ -17,24 +17,9 @@
       <span class="material-icons search__icon" aria-hidden="true">search</span>
       <input class="search__input" type="search" placeholder="Buscar categoría por nombre..." (input)="onSearch($event)" />
     </label>
-    <select class="select" aria-label="Categoría" (change)="onCategory($event)">
-      <option value="">Todas las categorías</option>
-      @for (category of categories(); track category.id) {
-        <option [value]="category.id">{{ category.name }}</option>
-      }
-    </select>
-    <select class="select" aria-label="Categoría padre" (change)="onParent($event)">
-      <option value="">Todos los padres</option>
-      <option value="ROOT">Sin padre (principales)</option>
-      @for (parent of parents(); track parent.id) {
-        <option [value]="parent.id">{{ parent.name }}</option>
-      }
-    </select>
-    <select class="select" aria-label="Estado" (change)="onStatus($event)">
-      <option value="">Todos los estados</option>
-      <option value="ACTIVE">Activas</option>
-      <option value="INACTIVE">Inactivas</option>
-    </select>
+    <app-select class="filter" variant="filter" ariaLabel="Categoría" [options]="categoryOptions()" [value]="categoryFilter()" (changed)="categoryFilter.set($any($event))" />
+    <app-select class="filter" variant="filter" ariaLabel="Categoría padre" [options]="parentOptions()" [value]="parentFilter()" (changed)="parentFilter.set($any($event))" />
+    <app-select class="filter" variant="filter" ariaLabel="Estado" [options]="statusOptions" [value]="statusFilter()" (changed)="statusFilter.set($any($event))" />
     <span class="toolbar__count">{{ visible().length }} {{ visible().length === 1 ? 'categoría' : 'categorías' }}</span>
   </div>
 

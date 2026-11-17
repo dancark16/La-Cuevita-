@@ -1,3 +1,5 @@
+import { colorTones } from '../../../../../shared/util/color';
+import { ColorBackgroundPipe } from '../../../../../shared/util/color-background.pipe';
 import { Component, OnInit, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../../shared/components/modal/modal.component';
@@ -11,7 +13,7 @@ const HEX_PATTERN = /^#[0-9A-Fa-f]{6}$/;
 @Component({
   selector: 'app-color-form-modal',
   standalone: true,
-  imports: [ReactiveFormsModule, ModalComponent],
+  imports: [ReactiveFormsModule, ModalComponent, ColorBackgroundPipe],
   templateUrl: './color-form-modal.component.html',
   styleUrl: './color-form-modal.component.scss',
 })
@@ -30,18 +32,42 @@ export class ColorFormModalComponent implements OnInit {
   readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(50)]],
     hex: ['#000000', [Validators.required, Validators.pattern(HEX_PATTERN)]],
+    combine: [false],
+    hex2: ['#FFFFFF', [Validators.pattern(HEX_PATTERN)]],
     active: [true],
   });
 
   ngOnInit(): void {
     const current = this.color();
     if (current) {
-      this.form.setValue({ name: current.name, hex: current.hex, active: current.active });
+      const [first, second] = colorTones(current.hex);
+      this.form.setValue({
+        name: current.name,
+        hex: first ?? '#000000',
+        combine: !!second,
+        hex2: second ?? '#FFFFFF',
+        active: current.active,
+      });
     }
   }
 
   setHex(value: string): void {
     this.form.controls.hex.setValue(value.toUpperCase());
+  }
+
+  setHex2(value: string): void {
+    this.form.controls.hex2.setValue(value.toUpperCase());
+  }
+
+  validPreview2(): string {
+    const hex = this.form.controls.hex2.value;
+    return HEX_PATTERN.test(hex) ? hex : '#FFFFFF';
+  }
+
+  /** Valor que se guarda: un tono, o dos separados por «/». */
+  get combined(): string {
+    const { hex, hex2, combine } = this.form.getRawValue();
+    return combine && HEX_PATTERN.test(hex2) ? `${hex.toUpperCase()}/${hex2.toUpperCase()}` : hex.toUpperCase();
   }
 
   validPreview(): string {
@@ -50,12 +76,12 @@ export class ColorFormModalComponent implements OnInit {
   }
 
   save(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || (this.form.controls.combine.value && this.form.controls.hex2.invalid)) {
       this.form.markAllAsTouched();
       return;
     }
     const value = this.form.getRawValue();
-    const request = { name: value.name.trim(), hex: value.hex.toUpperCase(), active: value.active };
+    const request = { name: value.name.trim(), hex: this.combined, active: value.active };
     const current = this.color();
     const call$ = current ? this.api.updateColor(current.id, request) : this.api.createColor(request);
 

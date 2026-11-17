@@ -1,3 +1,4 @@
+import { ColorBackgroundPipe } from '../../../../shared/util/color-background.pipe';
 import { CurrencyPipe } from '@angular/common';
 import { Component, Input, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
@@ -12,7 +13,7 @@ interface SizeChip {
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe],
+  imports: [ColorBackgroundPipe, RouterLink, CurrencyPipe],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss',
 })

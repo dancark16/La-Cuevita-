@@ -1,0 +1,52 @@
+<button
+  #trigger
+  type="button"
+  class="trigger"
+  [class.trigger--filter]="variant() === 'filter'"
+  [class.trigger--open]="open()"
+  [class.trigger--invalid]="invalid()"
+  [class.trigger--placeholder]="!selected()"
+  [attr.id]="inputId()"
+  [attr.aria-label]="ariaLabel()"
+  [attr.aria-expanded]="open()"
+  [attr.aria-controls]="uid"
+  aria-haspopup="listbox"
+  [disabled]="disabled()"
+  (click)="toggle()"
+  (keydown)="onKeydown($event)"
+>
+  <span class="trigger__text">{{ selected()?.label ?? placeholder() }}</span>
+  <span class="material-icons trigger__chevron" aria-hidden="true">expand_more</span>
+</button>
+
+@if (open()) {
+  <div class="panel" [id]="uid" [style]="panelStyle()" (keydown)="onKeydown($event)">
+    @if (searchable()) {
+      <label class="panel__search">
+        <span class="material-icons" aria-hidden="true">search</span>
+        <input #searchInput type="search" placeholder="Buscar..." autocomplete="off" (input)="onSearch($event)" />
+      </label>
+    }
+    <ul class="panel__list" role="listbox">
+      @for (option of filtered(); track option.label; let i = $index) {
+        <li
+          class="option"
+          role="option"
+          [class.option--active]="i === active()"
+          [class.option--selected]="isSelected(option)"
+          [attr.aria-selected]="isSelected(option)"
+          (mouseenter)="active.set(i)"
+          (mousedown)="$event.preventDefault()"
+          (click)="choose(option)"
+        >
+          <span class="option__label">{{ option.label }}</span>
+          @if (isSelected(option)) {
+            <span class="material-icons option__check" aria-hidden="true">check</span>
+          }
+        </li>
+      } @empty {
+        <li class="panel__empty">Sin resultados</li>
+      }
+    </ul>
+  </div>
+}

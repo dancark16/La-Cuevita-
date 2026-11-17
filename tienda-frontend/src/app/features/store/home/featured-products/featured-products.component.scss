@@ -18,9 +18,7 @@
 }
 
 .slash {
-  margin-right: 0.5rem;
-  font-style: italic;
-  color: var(--color-accent);
+  @include m.title-mark;
 }
 
 .featured__title {

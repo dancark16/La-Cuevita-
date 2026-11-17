@@ -48,10 +48,15 @@
           <div class="nav__menu">
             @for (group of groups(); track group.root.id) {
               <div class="nav__group">
-                <a routerLink="/tienda" [queryParams]="{ categoria: group.root.id }" class="nav__group-title">{{ group.root.name }}</a>
-                @for (child of group.children; track child.id) {
-                  <a routerLink="/tienda" [queryParams]="{ categoria: child.id }" class="nav__menu-link">{{ child.name }}</a>
-                }
+                <a routerLink="/tienda" [queryParams]="{ categoria: group.root.id }" class="nav__group-title">
+                  {{ group.root.name }}
+                  <span class="nav__group-all">Ver todo<span class="material-icons" aria-hidden="true">arrow_forward</span></span>
+                </a>
+                <div class="nav__children" [class.nav__children--wide]="group.children.length > 8">
+                  @for (child of group.children; track child.id) {
+                    <a routerLink="/tienda" [queryParams]="{ categoria: child.id }" class="nav__menu-link">{{ child.name }}</a>
+                  }
+                </div>
               </div>
             }
           </div>

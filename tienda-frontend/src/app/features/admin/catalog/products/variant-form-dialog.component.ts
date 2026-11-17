@@ -1,3 +1,5 @@
+import { SelectComponent, SelectOption } from '../../../../shared/components/select/select.component';
+import { ColorBackgroundPipe } from '../../../../shared/util/color-background.pipe';
 import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -53,7 +55,7 @@ function code(text: string): string {
 @Component({
   selector: 'app-variant-form-dialog',
   standalone: true,
-  imports: [
+  imports: [SelectComponent, ColorBackgroundPipe, 
     ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -74,6 +76,7 @@ export class VariantFormDialogComponent {
   readonly editing = this.data.variant !== null;
   readonly saving = signal(false);
   readonly statusOptions = STATUS_OPTIONS;
+  readonly statusChoices: SelectOption[] = STATUS_OPTIONS.map((o) => ({ value: o.value, label: o.label }));
 
   readonly selectedColors = signal<string[]>(this.data.variant ? [this.data.variant.colorId] : []);
   readonly selectedSizes = signal<string[]>(this.data.variant ? [this.data.variant.sizeId] : []);

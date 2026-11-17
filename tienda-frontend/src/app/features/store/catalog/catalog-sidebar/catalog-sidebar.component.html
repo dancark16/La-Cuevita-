@@ -80,7 +80,7 @@
                 [attr.aria-pressed]="selectedColor === color.name"
                 (click)="colorSelected.emit(selectedColor === color.name ? null : color.name)"
               >
-                <span class="color__dot" [style.background]="color.hex"></span>
+                <span class="color__dot" [style.background]="color.hex | colorBackground"></span>
                 {{ color.name }}
               </button>
             </li>

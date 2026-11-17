@@ -14,9 +14,6 @@
 
   <label class="sort">
     <span class="sort__label">Ordenar</span>
-    <select class="sort__select" (change)="onSortChange($any($event.target).value)">
-      <option value="NEWEST" [selected]="sort === 'NEWEST'">Más nuevos</option>
-      <option value="NAME" [selected]="sort === 'NAME'">Nombre (A-Z)</option>
-    </select>
+    <app-select class="sort__select" variant="filter" ariaLabel="Ordenar" [options]="sortOptions" [value]="sort" (changed)="onSortChange($any($event))" />
   </label>
 </div>

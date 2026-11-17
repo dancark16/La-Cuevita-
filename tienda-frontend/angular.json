@@ -40,6 +40,7 @@
             ],
             "styles": [
               "node_modules/@fontsource-variable/montserrat/index.css",
+              "node_modules/@fontsource-variable/playfair-display/wght-italic.css",
               "node_modules/material-icons/iconfont/material-icons.css",
               "src/styles.scss"
             ],

@@ -22,11 +22,7 @@
         <span class="material-icons search__icon" aria-hidden="true">search</span>
         <input class="search__input" type="search" placeholder="Buscar talla..." (input)="onSizeSearch($event)" />
       </label>
-      <select class="select" aria-label="Estado" (change)="onSizeStatus($event)">
-        <option value="">Todas</option>
-        <option value="ACTIVE">Activas</option>
-        <option value="INACTIVE">Inactivas</option>
-      </select>
+      <app-select class="filter" variant="filter" ariaLabel="Estado" [options]="statusOptions" [value]="sizeStatus()" (changed)="sizeStatus.set($any($event))" />
     </div>
 
     <table class="table">
@@ -103,7 +99,7 @@
         @for (color of visibleColors(); track color.id) {
           <tr [class.row--off]="!color.active">
             <td>
-              <span class="swatch" [style.background]="color.hex"></span>
+              <span class="swatch" [style.background]="color.hex | colorBackground"></span>
               <span class="strong">{{ color.name }}</span>
             </td>
             <td><span class="hex">{{ color.hex }}</span></td>

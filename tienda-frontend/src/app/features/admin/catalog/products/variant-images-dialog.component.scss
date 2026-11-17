@@ -1,3 +1,4 @@
+@use 'styles/mixins' as m;
 :host {
   display: block;
 }
@@ -20,9 +21,7 @@
 }
 
 .slash {
-  margin-right: 0.5rem;
-  font-style: italic;
-  color: var(--color-accent);
+  @include m.title-mark;
 }
 
 .dialog__close {
@@ -133,7 +132,7 @@
   border: 0;
   border-radius: 50%;
   background: var(--color-white);
-  box-shadow: 0 1px 4px rgb(0 0 0 / 30%);
+  box-shadow: 0 1px 4px rgb(20 40 75 / 30%);
   cursor: pointer;
 
   .material-icons {
@@ -152,7 +151,7 @@
   bottom: 0;
   left: 0;
   padding: 0.125rem;
-  background: rgb(0 0 0 / 65%);
+  background: rgb(20 40 75 / 65%);
   font-size: 0.625rem;
   font-weight: 700;
   text-align: center;

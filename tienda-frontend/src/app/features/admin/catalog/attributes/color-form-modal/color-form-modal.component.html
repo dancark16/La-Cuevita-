@@ -38,6 +38,39 @@
       }
     </div>
 
+    <label class="combine">
+      <input type="checkbox" formControlName="combine" />
+      <span>Color de dos tonos (ej. amarillo y blanco)</span>
+    </label>
+
+    @if (form.controls.combine.value) {
+      <div class="field">
+        <label class="field__label" for="color-hex2">Segundo color</label>
+        <div class="hex">
+          <input
+            class="hex__picker"
+            type="color"
+            aria-label="Elegir segundo color"
+            [value]="validPreview2()"
+            (input)="setHex2($any($event.target).value)"
+          />
+          <input
+            id="color-hex2"
+            class="field__input"
+            [class.field__input--invalid]="form.controls.hex2.touched && form.controls.hex2.invalid"
+            formControlName="hex2"
+            placeholder="#FFFFFF"
+            maxlength="7"
+          />
+        </div>
+      </div>
+    }
+
+    <div class="preview">
+      <span class="preview__swatch" [style.background]="combined | colorBackground"></span>
+      <span class="field__hint">Así se verá el color en la tienda: {{ form.controls.combine.value ? 'mitad y mitad' : 'liso' }}.</span>
+    </div>
+
     <label class="switch">
       <input type="checkbox" class="switch__input" formControlName="active" />
       <span class="switch__track" aria-hidden="true"></span>

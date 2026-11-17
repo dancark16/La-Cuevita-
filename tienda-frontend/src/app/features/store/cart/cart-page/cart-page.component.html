@@ -25,7 +25,7 @@
                     <p class="line__name">{{ line.productName }}</p>
                     <p class="line__meta">
                         Talla {{ line.sizeLabel }}
-                        <span class="line__dot" [style.background]="line.colorHex"></span>
+                        <span class="line__dot" [style.background]="line.colorHex | colorBackground"></span>
                         {{ line.colorName }}
                     </p>
                     <p class="line__unit">{{ line.unitPrice | currency: 'USD' }}</p>

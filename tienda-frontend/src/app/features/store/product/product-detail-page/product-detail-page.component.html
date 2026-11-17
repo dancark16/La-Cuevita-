@@ -17,12 +17,12 @@
   } @else {
     @if (product(); as p) {
       <nav class="crumbs" aria-label="Ruta de navegación">
-        <a routerLink="/">Inicio</a>
-        <span aria-hidden="true">/</span>
+        <a routerLink="/"><span class="crumbs__home material-icons" aria-hidden="true">home</span>Inicio</a>
+        <span class="crumbs__sep material-icons" aria-hidden="true">chevron_right</span>
         <a routerLink="/tienda">Tienda</a>
-        <span aria-hidden="true">/</span>
+        <span class="crumbs__sep material-icons" aria-hidden="true">chevron_right</span>
         <a routerLink="/tienda" [queryParams]="{ categoria: p.categoryId }">{{ p.categoryName }}</a>
-        <span aria-hidden="true">/</span>
+        <span class="crumbs__sep material-icons" aria-hidden="true">chevron_right</span>
         <span class="crumbs__current">{{ p.name }}</span>
       </nav>
 
@@ -73,6 +73,32 @@
           </p>
           <p class="info__tax">Precio con IVA incluido</p>
 
+          <ul class="specs" aria-label="Datos del producto">
+            <li class="spec">
+              <span class="material-icons spec__icon" aria-hidden="true">sell</span>
+              <span class="spec__text"><small>Categoría</small>{{ p.categoryName }}</span>
+            </li>
+            <li class="spec">
+              <span class="material-icons spec__icon" aria-hidden="true">palette</span>
+              <span class="spec__text">
+                <small>{{ colorCount() === 1 ? 'Color' : 'Colores' }}</small>
+                <span class="spec__colors">
+                  @for (color of colors(); track color.name) {
+                    <span class="spec__color"><span class="spec__dot" [style.background]="color.hex | colorBackground"></span>{{ color.name }}</span>
+                  }
+                </span>
+              </span>
+            </li>
+            <li class="spec">
+              <span class="material-icons spec__icon" aria-hidden="true">straighten</span>
+              <span class="spec__text"><small>{{ sizeLabels().length === 1 ? 'Talla' : 'Tallas' }}</small>{{ sizeLabels().join(', ') }}</span>
+            </li>
+            <li class="spec" [class.spec--out]="!inStock()">
+              <span class="material-icons spec__icon" aria-hidden="true">{{ inStock() ? 'check_circle' : 'remove_shopping_cart' }}</span>
+              <span class="spec__text"><small>Disponibilidad</small>{{ inStock() ? 'En stock' : 'Agotado' }}</span>
+            </li>
+          </ul>
+
           @if (p.description) {
             <p class="info__description">{{ p.description }}</p>
           }
@@ -93,7 +119,7 @@
                     [title]="color.name"
                     (click)="selectColor(color.name)"
                   >
-                    <span class="color__dot" [style.background]="color.hex"></span>
+                    <span class="color__dot" [style.background]="color.hex | colorBackground"></span>
                   </button>
                 </li>
               }
@@ -152,6 +178,13 @@
             </button>
           </div>
 
+          @if (whatsappUrl(); as wa) {
+            <a class="ask" [href]="wa" target="_blank" rel="noopener">
+              <span class="material-icons" aria-hidden="true">chat</span>
+              Consultar por este producto
+            </a>
+          }
+
           @if (added()) {
             <p class="added">
               Producto agregado.
@@ -159,11 +192,19 @@
             </p>
           }
 
-          @if (selectedVariant(); as variant) {
-            <p class="info__sku">Código: {{ variant.sku }}</p>
-          }
         </div>
       </div>
+
+      @if (related().length > 0) {
+        <section class="related" aria-labelledby="related-title">
+          <h2 id="related-title" class="related__title"><span class="related__slash" aria-hidden="true">/</span>También te puede gustar</h2>
+          <div class="related__grid">
+            @for (item of related(); track item.id) {
+              <app-product-card [product]="item" />
+            }
+          </div>
+        </section>
+      }
     }
   }
 </section>

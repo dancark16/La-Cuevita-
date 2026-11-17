@@ -1,28 +1,34 @@
+import { ColorBackgroundPipe } from '../../../../shared/util/color-background.pipe';
 import { CurrencyPipe } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { catchError, of, switchMap, tap } from 'rxjs';
 import { CartService } from '../../cart/cart.service';
+import { StoreSettingsService } from '../../../../core/settings/store-settings.service';
+import { whatsappLink } from '../../../../shared/util/whatsapp';
+import { ProductCardComponent } from '../../shared/product-card/product-card.component';
 import { StoreApiService } from '../../data/store-api.service';
-import { ColorSwatch, StoreProductDetail, StoreVariant } from '../../data/store.models';
+import { ColorSwatch, StoreProductDetail, StoreProductSummary, StoreVariant } from '../../data/store.models';
 
 @Component({
   selector: 'app-product-detail-page',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe],
+  imports: [ColorBackgroundPipe, RouterLink, CurrencyPipe, ProductCardComponent],
   templateUrl: './product-detail-page.component.html',
   styleUrl: './product-detail-page.component.scss',
 })
 export class ProductDetailPageComponent {
   private readonly api = inject(StoreApiService);
   private readonly cart = inject(CartService);
+  private readonly storeSettings = inject(StoreSettingsService);
 
   /** Id del producto, tomado de la ruta /producto/:id. */
   readonly id = input.required<string>();
 
   readonly product = signal<StoreProductDetail | null>(null);
   readonly loading = signal(true);
+  readonly related = signal<StoreProductSummary[]>([]);
   readonly notFound = signal(false);
 
   readonly selectedColor = signal<string | null>(null);
@@ -116,8 +122,38 @@ export class ProductDetailPageComponent {
         this.notFound.set(product === null);
         if (product) {
           this.setInitialSelection(product);
+          this.loadRelated(product);
+        } else {
+          this.related.set([]);
         }
       });
+  }
+
+  /** Enlace para preguntar por este producto por WhatsApp (solo si la tienda tiene número). */
+  readonly whatsappUrl = computed(() => {
+    const product = this.product();
+    if (!product) {
+      return null;
+    }
+    const variant = this.selectedVariant();
+    const detail = variant ? ` (talla ${variant.sizeLabel}, color ${variant.colorName})` : '';
+    return whatsappLink(
+      this.storeSettings.settings().whatsappNumber,
+      `Hola La Cuevita, quiero consultar por: ${product.name}${detail}`
+    );
+  });
+
+  readonly colorCount = computed(() => this.colors().length);
+
+  readonly sizeLabels = computed(() => [...new Set((this.product()?.variants ?? []).map((v) => v.sizeLabel))]);
+
+  private loadRelated(product: StoreProductDetail): void {
+    this.api
+      .searchProducts({ categoryId: product.categoryId, q: '', sort: 'NEWEST', page: 0, size: 5 })
+      .pipe(catchError(() => of(null)))
+      .subscribe((page) =>
+        this.related.set((page?.content ?? []).filter((item) => item.id !== product.id).slice(0, 4))
+      );
   }
 
   selectColor(name: string): void {

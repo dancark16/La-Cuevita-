@@ -1,3 +1,4 @@
+@use 'styles/mixins' as m;
 :host {
   position: fixed;
   inset: 0;
@@ -10,7 +11,7 @@
 .backdrop {
   position: absolute;
   inset: 0;
-  background: rgb(0 0 0 / 55%);
+  background: rgb(20 40 75 / 55%);
   animation: fade 0.15s ease-out;
 }
 
@@ -24,7 +25,7 @@
   border-top: 4px solid var(--color-accent);
   border-radius: 0.75rem;
   background: var(--color-white);
-  box-shadow: 0 24px 60px rgb(0 0 0 / 35%);
+  box-shadow: 0 24px 60px rgb(20 40 75 / 35%);
   animation: rise 0.18s ease-out;
 }
 
@@ -41,9 +42,7 @@
 }
 
 .modal__slash {
-  margin-right: 0.5rem;
-  font-style: italic;
-  color: var(--color-accent);
+  @include m.title-mark;
 }
 
 .modal__close {

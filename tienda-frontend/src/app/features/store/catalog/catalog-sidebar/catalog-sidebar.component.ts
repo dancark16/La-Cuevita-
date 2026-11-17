@@ -1,3 +1,4 @@
+import { ColorBackgroundPipe } from '../../../../shared/util/color-background.pipe';
 import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 import { StoreCategory, StoreFacets } from '../../data/store.models';
 
@@ -13,6 +14,7 @@ const ICONS: Record<string, string> = {
 @Component({
   selector: 'app-catalog-sidebar',
   standalone: true,
+  imports: [ColorBackgroundPipe],
   templateUrl: './catalog-sidebar.component.html',
   styleUrl: './catalog-sidebar.component.scss',
 })

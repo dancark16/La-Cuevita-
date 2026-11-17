@@ -1,3 +1,5 @@
+import { SelectComponent, SelectOption } from '../../../../shared/components/select/select.component';
+import { ColorBackgroundPipe } from '../../../../shared/util/color-background.pipe';
 import { DatePipe } from '@angular/common';
 import { Component, Input, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -30,7 +32,7 @@ const MAX_PHOTOS = 10;
 @Component({
   selector: 'app-product-detail-page',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, DatePipe],
+  imports: [SelectComponent, ColorBackgroundPipe, ReactiveFormsModule, RouterLink, DatePipe],
   templateUrl: './product-detail-page.component.html',
   styleUrl: './product-detail-page.component.scss',
 })
@@ -55,6 +57,9 @@ export class ProductDetailPageComponent implements OnInit {
   readonly variants = signal<Variant[]>([]);
   readonly stocks = signal<Record<string, number | undefined>>({});
   readonly categories = signal<Category[]>([]);
+  readonly categoryOptions = computed<SelectOption[]>(() =>
+    this.categories().map((c) => ({ value: c.id, label: c.name }))
+  );
   readonly sizes = signal<Size[]>([]);
   readonly colors = signal<Color[]>([]);
   readonly loading = signal(true);

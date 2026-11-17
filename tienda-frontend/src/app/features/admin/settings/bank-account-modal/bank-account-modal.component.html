@@ -16,10 +16,7 @@
     <div class="field-row">
       <div class="field">
         <label class="field__label" for="bank-type">Tipo de cuenta</label>
-        <select id="bank-type" class="field__input" formControlName="accountType">
-          <option value="Ahorros">Ahorros</option>
-          <option value="Corriente">Corriente</option>
-        </select>
+        <app-select inputId="bank-type" [options]="typeOptions" formControlName="accountType" />
       </div>
       <div class="field">
         <label class="field__label" for="bank-number">Número de cuenta</label>

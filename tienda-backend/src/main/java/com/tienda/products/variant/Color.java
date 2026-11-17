@@ -21,7 +21,7 @@ public class Color {
     @Column(nullable = false, unique = true, length = 50)
     private String name;
 
-    @Column(nullable = false, length = 7)
+    @Column(nullable = false, length = 16)
     private String hex;
 
     @Builder.Default

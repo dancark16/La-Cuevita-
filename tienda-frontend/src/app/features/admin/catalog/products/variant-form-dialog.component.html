@@ -20,7 +20,7 @@
             [attr.aria-pressed]="selectedColors().includes(color.id)"
             (click)="toggleColor(color.id)"
           >
-            <span class="chip__dot" [style.background]="color.hex"></span>{{ color.name }}
+            <span class="chip__dot" [style.background]="color.hex | colorBackground"></span>{{ color.name }}
           </button>
         }
       </div>
@@ -71,7 +71,7 @@
         <ul class="preview__list">
           @for (combo of combos(); track combo.size.id + combo.color.id) {
             <li [class.preview__item--dup]="combo.duplicate">
-              <span class="chip__dot" [style.background]="combo.color.hex"></span>
+              <span class="chip__dot" [style.background]="combo.color.hex | colorBackground"></span>
               {{ combo.color.name }} · {{ combo.size.label }}
               <span class="mono">{{ combo.duplicate ? 'ya existe' : skuFor(combo) }}</span>
             </li>
@@ -108,14 +108,10 @@
         <input matInput formControlName="barcode" />
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Estado</mat-label>
-        <mat-select formControlName="status">
-          @for (option of statusOptions; track option.value) {
-            <mat-option [value]="option.value">{{ option.label }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+      <div class="select-field">
+        <span class="select-field__label">Estado</span>
+        <app-select [options]="statusChoices" formControlName="status" />
+      </div>
     </div>
   </mat-dialog-content>
 

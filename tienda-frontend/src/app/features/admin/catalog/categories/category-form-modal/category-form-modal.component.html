@@ -19,12 +19,7 @@
 
     <div class="field">
       <label class="field__label" for="category-parent">Categoría padre</label>
-      <select id="category-parent" class="field__input" formControlName="parentId">
-        <option [ngValue]="null">Ninguna (categoría principal)</option>
-        @for (option of parentOptions; track option.id) {
-          <option [ngValue]="option.id">{{ option.name }}</option>
-        }
-      </select>
+      <app-select inputId="category-parent" placeholder="Ninguna (categoría principal)" [options]="parentChoices" formControlName="parentId" />
       <span class="field__hint">
         Opcional. Sirve para armar subcategorías: si eliges "Mujer" como padre de "Blusas", Blusas queda dentro de Mujer.
         Déjala en "Ninguna" si no la necesitas.

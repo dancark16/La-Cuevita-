@@ -21,18 +21,8 @@
       <span class="material-icons search__icon" aria-hidden="true">search</span>
       <input class="search__input" type="search" placeholder="Buscar por código o nombre..." [formControl]="searchControl" />
     </label>
-    <select class="select" aria-label="Categoría" [formControl]="categoryControl">
-      <option [ngValue]="null">Todas las categorías</option>
-      @for (category of categories(); track category.id) {
-        <option [ngValue]="category.id">{{ category.name }}</option>
-      }
-    </select>
-    <select class="select" aria-label="Estado" [formControl]="statusControl">
-      <option [ngValue]="null">Todos los estados</option>
-      <option value="ACTIVE">Activos</option>
-      <option value="DRAFT">Borradores</option>
-      <option value="INACTIVE">Inactivos</option>
-    </select>
+    <app-select class="filter" variant="filter" ariaLabel="Categoría" [options]="categoryOptions()" [formControl]="categoryControl" />
+    <app-select class="filter" variant="filter" ariaLabel="Estado" [options]="statusOptions" [formControl]="statusControl" />
     @if (searchControl.value || categoryControl.value || statusControl.value) {
       <button type="button" class="link" (click)="clearFilters()">Limpiar filtros</button>
     }
@@ -73,7 +63,7 @@
             <td>
               <div class="swatches">
                 @for (color of colorsOf(item); track color.name) {
-                  <span class="swatch" [style.background]="color.hex" [title]="color.name"></span>
+                  <span class="swatch" [style.background]="color.hex | colorBackground" [title]="color.name"></span>
                 }
               </div>
             </td>
@@ -128,7 +118,7 @@
                   <tbody>
                     @for (v of item.variants; track v.variantId) {
                       <tr>
-                        <td><span class="color"><span class="color__dot" [style.background]="v.colorHex"></span>{{ v.colorName }}</span></td>
+                        <td><span class="color"><span class="color__dot" [style.background]="v.colorHex | colorBackground"></span>{{ v.colorName }}</span></td>
                         <td><span class="size">{{ v.sizeLabel }}</span></td>
                         <td class="mono">{{ v.sku }}</td>
                         <td class="num">{{ (v.promoPrice ?? v.price) | currency: 'USD' }}</td>

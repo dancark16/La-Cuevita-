@@ -1,3 +1,5 @@
+import { SelectComponent, SelectOption } from '../../../../shared/components/select/select.component';
+import { ColorBackgroundPipe } from '../../../../shared/util/color-background.pipe';
 import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -20,7 +22,7 @@ const PAGE_SIZE = 20;
 @Component({
   selector: 'app-products-page',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, CurrencyPipe],
+  imports: [SelectComponent, ColorBackgroundPipe, ReactiveFormsModule, RouterLink, CurrencyPipe],
   templateUrl: './products-page.component.html',
   styleUrl: './products-page.component.scss',
 })
@@ -35,6 +37,18 @@ export class ProductsPageComponent implements OnInit {
   private readonly saved = this.listState.get();
 
   readonly categories = signal<Category[]>([]);
+  readonly categoryOptions = computed<SelectOption[]>(() => [
+    { value: null, label: 'Todas las categorías' },
+    ...this.categories().map((c) => ({ value: c.id, label: c.name })),
+  ]);
+
+  readonly statusOptions: SelectOption[] = [
+    { value: null, label: 'Todos los estados' },
+    { value: 'ACTIVE', label: 'Activos' },
+    { value: 'DRAFT', label: 'Borradores' },
+    { value: 'INACTIVE', label: 'Inactivos' },
+  ];
+
   readonly rows = signal<ProductRow[]>([]);
   readonly expanded = signal<string | null>(null);
   readonly total = signal(0);

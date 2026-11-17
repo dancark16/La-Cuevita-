@@ -35,7 +35,7 @@
     @if (product.colors.length > 1) {
       <span class="card__colors" aria-label="Colores disponibles">
         @for (color of product.colors; track color.name) {
-          <span class="card__color" [style.background]="color.hex" [attr.title]="color.name"></span>
+          <span class="card__color" [style.background]="color.hex | colorBackground" [attr.title]="color.name"></span>
         }
       </span>
     }

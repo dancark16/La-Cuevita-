@@ -1,3 +1,4 @@
+import { SelectComponent, SelectOption } from '../../../../shared/components/select/select.component';
 import { Component, OnInit, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BankAccount } from '../../../../core/settings/store-settings.service';
@@ -22,7 +23,7 @@ const BANKS = [
 @Component({
   selector: 'app-bank-account-modal',
   standalone: true,
-  imports: [ReactiveFormsModule, ModalComponent],
+  imports: [SelectComponent, ReactiveFormsModule, ModalComponent],
   templateUrl: './bank-account-modal.component.html',
   styleUrl: './bank-account-modal.component.scss',
 })
@@ -37,6 +38,10 @@ export class BankAccountModalComponent implements OnInit {
   readonly cancelled = output<void>();
 
   readonly banks = BANKS;
+  readonly typeOptions: SelectOption[] = [
+    { value: 'Ahorros', label: 'Ahorros' },
+    { value: 'Corriente', label: 'Corriente' },
+  ];
   readonly saving = signal(false);
 
   readonly form = this.fb.nonNullable.group({

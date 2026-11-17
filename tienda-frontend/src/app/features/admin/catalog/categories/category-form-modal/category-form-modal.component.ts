@@ -1,3 +1,4 @@
+import { SelectComponent, SelectOption } from '../../../../../shared/components/select/select.component';
 import { Component, OnInit, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../../shared/components/modal/modal.component';
@@ -12,7 +13,7 @@ const URL_PATTERN = /^https?:\/\/\S+$/i;
 @Component({
   selector: 'app-category-form-modal',
   standalone: true,
-  imports: [ReactiveFormsModule, ModalComponent],
+  imports: [SelectComponent, ReactiveFormsModule, ModalComponent],
   templateUrl: './category-form-modal.component.html',
   styleUrl: './category-form-modal.component.scss',
 })
@@ -29,6 +30,7 @@ export class CategoryFormModalComponent implements OnInit {
 
   readonly saving = signal(false);
   parentOptions: Category[] = [];
+  parentChoices: SelectOption[] = [];
 
   readonly form = this.fb.group({
     name: this.fb.nonNullable.control('', Validators.required),
@@ -41,6 +43,10 @@ export class CategoryFormModalComponent implements OnInit {
   ngOnInit(): void {
     const current = this.category();
     this.parentOptions = this.buildParentOptions(current);
+    this.parentChoices = [
+      { value: null, label: 'Ninguna (categoría principal)' },
+      ...this.parentOptions.map((option) => ({ value: option.id, label: option.name })),
+    ];
 
     if (current) {
       this.form.setValue({

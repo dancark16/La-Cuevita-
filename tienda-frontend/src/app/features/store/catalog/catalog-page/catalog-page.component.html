@@ -50,14 +50,14 @@
       />
 
       <nav class="crumbs" aria-label="Ruta de navegación">
-        <a routerLink="/">Inicio</a>
-        <span aria-hidden="true">/</span>
+        <a routerLink="/"><span class="crumbs__home material-icons" aria-hidden="true">home</span>Inicio</a>
+        <span class="crumbs__sep material-icons" aria-hidden="true">chevron_right</span>
         @if (breadcrumb().length === 0) {
           <span class="crumbs__current">Tienda</span>
         } @else {
           <a routerLink="/tienda">Tienda</a>
           @for (crumb of breadcrumb(); track $index) {
-            <span aria-hidden="true">/</span>
+            <span class="crumbs__sep material-icons" aria-hidden="true">chevron_right</span>
             @if (crumb.categoryId) {
               <a routerLink="/tienda" [queryParams]="{ categoria: crumb.categoryId }">{{ crumb.label }}</a>
             } @else {

@@ -23,9 +23,7 @@
 }
 
 .slash {
-  margin-right: 0.5rem;
-  font-style: italic;
-  color: var(--color-accent);
+  @include m.title-mark;
 }
 
 .categories__link {
@@ -77,12 +75,12 @@
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgb(0 0 0 / 22%);
+    box-shadow: 0 10px 24px rgb(20 40 75 / 22%);
   }
 }
 
 .tile--photo {
-  background-image: linear-gradient(90deg, rgb(0 0 0 / 55%) 0%, rgb(0 0 0 / 5%) 70%), var(--tile-image);
+  background-image: linear-gradient(90deg, rgb(20 40 75 / 55%) 0%, rgb(20 40 75 / 5%) 70%), var(--tile-image);
   background-position: right center;
   background-size: cover;
 }
