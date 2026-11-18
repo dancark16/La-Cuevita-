@@ -1,6 +1,9 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
+import { filter, switchMap } from 'rxjs';
+import { confirmAction } from '../../../../shared/components/confirm-dialog.component';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { httpErrorMessage } from '../../../../shared/util/http-error';
 import { ORDER_STATUS_LABEL, OrderStatus } from '../../../../shared/util/order-status';
@@ -33,6 +36,7 @@ const PAGE_SIZE = 20;
 export class OrdersPageComponent implements OnInit {
   private readonly api = inject(AdminOrdersService);
   private readonly notify = inject(NotificationService);
+  private readonly dialog = inject(MatDialog);
 
   /** Pestaña inicial tomada de la URL (?estado=PENDING). */
   readonly estado = input<string | undefined>();
@@ -84,6 +88,26 @@ export class OrdersPageComponent implements OnInit {
       this.pageIndex.set(0);
       this.load();
     }, 300);
+  }
+
+  remove(order: AdminOrderSummary): void {
+    confirmAction(this.dialog, {
+      title: 'Eliminar pedido',
+      message: `¿Eliminar el pedido #${order.orderNumber} de ${order.customerName}? Se borra con su comprobante, pago y factura. Si ya había descontado stock, se devuelve al inventario. Esta acción no se puede deshacer.`,
+      confirmLabel: 'Eliminar',
+    })
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.api.delete(order.id))
+      )
+      .subscribe({
+        next: () => {
+          this.notify.success(`Pedido #${order.orderNumber} eliminado`);
+          this.api.stats().subscribe({ next: (stats) => this.stats.set(stats), error: () => undefined });
+          this.load();
+        },
+        error: (error) => this.notify.error(httpErrorMessage(error)),
+      });
   }
 
   goTo(page: number): void {

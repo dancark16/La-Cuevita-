@@ -1,4 +1,4 @@
-<app-modal [title]="account().bankName" (closed)="closed.emit()">
+<app-modal icon="account_balance" [title]="account().bankName" (closed)="closed.emit()">
   @if (logoOf(account().bankName); as logo) {
     <img class="logo" [src]="logo.src" [style.background]="logo.background" [alt]="account().bankName" />
   }

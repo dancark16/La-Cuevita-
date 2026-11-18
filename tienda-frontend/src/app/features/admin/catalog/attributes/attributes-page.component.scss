@@ -133,29 +133,54 @@
 
 .table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
   font-size: 0.875rem;
 
   th {
-    padding: 0.875rem 1rem;
-    background: rgb(255 79 163 / 8%);
-    font-size: 0.8125rem;
+    padding: 0.8125rem 1rem;
+    background: var(--color-black);
+    font-size: 0.6875rem;
     font-weight: 700;
+    letter-spacing: 0.08em;
     text-align: left;
+    text-transform: uppercase;
+    color: var(--color-white);
 
     &:first-child {
-      border-radius: var(--radius-md) 0 0 var(--radius-md);
+      border-radius: 0.75rem 0 0 0.75rem;
     }
 
     &:last-child {
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      border-radius: 0 0.75rem 0.75rem 0;
     }
   }
 
-  td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--color-gray-soft);
+  tbody td {
+    padding: 0.875rem 1rem;
+    border-block: 1px solid #d6e8f5;
+    background: linear-gradient(180deg, #ffffff 0%, #f6fbff 100%);
     vertical-align: middle;
+    transition: background-color 0.15s, border-color 0.15s;
+
+    &:first-child {
+      border-left: 1px solid #d6e8f5;
+      border-radius: 0.75rem 0 0 0.75rem;
+    }
+
+    &:last-child {
+      border-right: 1px solid #d6e8f5;
+      border-radius: 0 0.75rem 0.75rem 0;
+    }
+  }
+
+  tbody tr:hover td {
+    border-color: #9cc7e6;
+    background: #e9f4fc;
+  }
+
+  tbody tr:hover td:first-child {
+    box-shadow: inset 4px 0 0 var(--color-accent);
   }
 }
 

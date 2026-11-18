@@ -46,6 +46,21 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
                  OR LOWER(p.name) LIKE LOWER(CONCAT('%', CAST(:q AS string), '%'))
                  OR EXISTS (SELECT 1 FROM ProductVariant v WHERE v.product = p
                             AND LOWER(v.sku) LIKE LOWER(CONCAT('%', CAST(:q AS string), '%'))))
+            AND (:stock IS NULL
+                 OR (CAST(:stock AS string) = 'OUT' AND (
+                        SELECT COALESCE(SUM(i.quantityOnHand), 0) FROM Inventory i
+                        WHERE i.variant.product = p
+                        AND i.variant.status <> com.tienda.products.variant.VariantStatus.DISCONTINUED) = 0)
+                 OR (CAST(:stock AS string) = 'LOW' AND EXISTS (
+                        SELECT 1 FROM Inventory i
+                        WHERE i.variant.product = p
+                        AND i.variant.status <> com.tienda.products.variant.VariantStatus.DISCONTINUED
+                        AND i.quantityOnHand BETWEEN 1 AND 2))
+                 OR (CAST(:stock AS string) = 'IN' AND EXISTS (
+                        SELECT 1 FROM Inventory i
+                        WHERE i.variant.product = p
+                        AND i.variant.status <> com.tienda.products.variant.VariantStatus.DISCONTINUED
+                        AND i.quantityOnHand > 0)))
             """,
             countQuery = """
             SELECT COUNT(p) FROM Product p
@@ -55,9 +70,25 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
                  OR LOWER(p.name) LIKE LOWER(CONCAT('%', CAST(:q AS string), '%'))
                  OR EXISTS (SELECT 1 FROM ProductVariant v WHERE v.product = p
                             AND LOWER(v.sku) LIKE LOWER(CONCAT('%', CAST(:q AS string), '%'))))
+            AND (:stock IS NULL
+                 OR (CAST(:stock AS string) = 'OUT' AND (
+                        SELECT COALESCE(SUM(i.quantityOnHand), 0) FROM Inventory i
+                        WHERE i.variant.product = p
+                        AND i.variant.status <> com.tienda.products.variant.VariantStatus.DISCONTINUED) = 0)
+                 OR (CAST(:stock AS string) = 'LOW' AND EXISTS (
+                        SELECT 1 FROM Inventory i
+                        WHERE i.variant.product = p
+                        AND i.variant.status <> com.tienda.products.variant.VariantStatus.DISCONTINUED
+                        AND i.quantityOnHand BETWEEN 1 AND 2))
+                 OR (CAST(:stock AS string) = 'IN' AND EXISTS (
+                        SELECT 1 FROM Inventory i
+                        WHERE i.variant.product = p
+                        AND i.variant.status <> com.tienda.products.variant.VariantStatus.DISCONTINUED
+                        AND i.quantityOnHand > 0)))
             """)
     Page<Product> searchAdmin(@Param("categoryId") UUID categoryId, @Param("q") String q,
-                              @Param("status") String status, Pageable pageable);
+                              @Param("status") String status, @Param("stock") String stock,
+                              Pageable pageable);
 
     Optional<Product> findFirstByNameIgnoreCase(String name);
 

@@ -1,0 +1,139 @@
+@use 'styles/mixins' as m;
+
+:host {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 2000;
+  pointer-events: none;
+
+  @include m.up(md) {
+    left: auto;
+    width: 24rem;
+  }
+}
+
+.toasts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.toast {
+  --tone: var(--color-black);
+  --tone-soft: rgb(31 58 147 / 12%);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 2.5rem 0.875rem 0.875rem;
+  overflow: hidden;
+  border: 1px solid #d6e8f5;
+  border-left: 5px solid var(--tone);
+  border-radius: 0.75rem;
+  background: linear-gradient(160deg, #ffffff 0%, #eef7fd 100%);
+  box-shadow: 0 14px 34px rgb(15 29 74 / 28%);
+  pointer-events: auto;
+  animation: toast-in 0.22s ease-out;
+}
+
+.toast--success {
+  --tone: #1f9d55;
+  --tone-soft: rgb(31 157 85 / 14%);
+}
+
+.toast--error {
+  --tone: #e5483f;
+  --tone-soft: rgb(229 72 63 / 14%);
+}
+
+.toast--warning {
+  --tone: #d98a00;
+  --tone-soft: rgb(217 138 0 / 16%);
+}
+
+.toast__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--tone-soft);
+
+  .material-icons {
+    font-size: 1.375rem;
+    color: var(--tone);
+  }
+}
+
+.toast__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+  min-width: 0;
+}
+
+.toast__title {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.toast__message {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: #4a5d78;
+  overflow-wrap: anywhere;
+}
+
+.toast__close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--color-muted);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-sky);
+    color: var(--color-black);
+  }
+
+  .material-icons {
+    font-size: 1.125rem;
+  }
+}
+
+// Barra que se vacía hasta que el aviso se va
+.toast__bar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--tone);
+  transform-origin: left;
+  animation: toast-bar linear forwards;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.98);
+  }
+}
+
+@keyframes toast-bar {
+  to {
+    transform: scaleX(0);
+  }
+}

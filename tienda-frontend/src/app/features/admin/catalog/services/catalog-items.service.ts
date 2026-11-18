@@ -9,6 +9,7 @@ export interface CatalogItemSearch {
   categoryId: string | null;
   q: string;
   status: string | null;
+  stock?: string | null;
   page: number;
   size: number;
 }
@@ -42,6 +43,9 @@ export class CatalogItemsService {
     }
     if (search.q.trim()) {
       params = params.set('q', search.q.trim());
+    }
+    if (search.stock) {
+      params = params.set('stock', search.stock);
     }
     return this.http.get<Page<ProductRow>>(`${this.url}/products`, { params });
   }

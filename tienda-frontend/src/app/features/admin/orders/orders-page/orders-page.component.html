@@ -79,7 +79,12 @@
               </span>
             </td>
             <td>
-              <a [routerLink]="['/admin/pedidos', order.id]" class="button button--small">Ver</a>
+              <div class="row-actions">
+                <a [routerLink]="['/admin/pedidos', order.id]" class="button button--small">Ver</a>
+                <button type="button" class="icon-btn icon-btn--danger" aria-label="Eliminar pedido" title="Eliminar pedido" (click)="remove(order)">
+                  <span class="material-icons" aria-hidden="true">delete_outline</span>
+                </button>
+              </div>
             </td>
           </tr>
         }

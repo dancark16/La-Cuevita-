@@ -30,4 +30,6 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     @org.springframework.data.jpa.repository.Query("SELECT o.status, COUNT(o) FROM Order o GROUP BY o.status")
     java.util.List<Object[]> countByStatus();
+
+    long countByReceiptFileId(java.util.UUID receiptFileId);
 }

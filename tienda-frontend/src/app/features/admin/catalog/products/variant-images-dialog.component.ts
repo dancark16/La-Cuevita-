@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { httpErrorMessage } from '../../../../shared/util/http-error';
 import { Variant, VariantImage } from '../catalog.models';
@@ -13,6 +14,7 @@ export interface VariantImagesData {
 @Component({
   selector: 'app-variant-images-dialog',
   standalone: true,
+  imports: [ModalComponent],
   templateUrl: './variant-images-dialog.component.html',
   styleUrl: './variant-images-dialog.component.scss',
 })

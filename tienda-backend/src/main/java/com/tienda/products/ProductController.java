@@ -44,6 +44,12 @@ public class ProductController {
         return productService.update(id, request);
     }
 
+    /** Elimina el producto de verdad si nunca se vendió; si no, solo lo oculta. */
+    @DeleteMapping("/{id}/permanent")
+    public java.util.Map<String, Boolean> deletePermanently(@PathVariable UUID id) {
+        return java.util.Map.of("deleted", productService.deletePermanently(id));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         productService.softDelete(id);

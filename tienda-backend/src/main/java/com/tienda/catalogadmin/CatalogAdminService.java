@@ -49,16 +49,17 @@ public class CatalogAdminService {
 
     /** Catálogo agrupado: un renglón por producto, con sus colores y tallas dentro. */
     @Transactional(readOnly = true)
-    public Page<ProductRowResponse> searchProducts(UUID categoryId, String q, String status, Pageable pageable) {
+    public Page<ProductRowResponse> searchProducts(UUID categoryId, String q, String status, String stock, Pageable pageable) {
         String term = (q == null || q.isBlank()) ? null : q.trim();
         Page<Product> page = productRepository.searchAdmin(categoryId, term,
-                (status == null || status.isBlank()) ? null : status, pageable);
+                (status == null || status.isBlank()) ? null : status,
+                (stock == null || stock.isBlank()) ? null : stock, pageable);
 
         List<UUID> productIds = page.getContent().stream().map(Product::getId).toList();
         List<ProductVariant> all = productIds.isEmpty()
                 ? List.of()
                 : variantRepository.findAvailableWithDetailsByProductIds(productIds);
-        Map<UUID, Integer> stock = all.isEmpty() ? Map.of()
+        Map<UUID, Integer> stockByVariant = all.isEmpty() ? Map.of()
                 : inventoryRepository.findByVariantIdIn(all.stream().map(ProductVariant::getId).toList()).stream()
                         .collect(Collectors.toMap(i -> i.getVariant().getId(), Inventory::getQuantityOnHand));
         Map<UUID, List<ProductVariant>> byProduct = all.stream()
@@ -72,7 +73,7 @@ public class CatalogAdminService {
             List<ProductRowResponse.Variant> rows = variants.stream()
                     .map(v -> new ProductRowResponse.Variant(v.getId(), v.getSku(), v.getSize().getLabel(),
                             v.getColor().getName(), v.getColor().getHex(), v.getPrice(), v.getPromoPrice(),
-                            stock.getOrDefault(v.getId(), 0)))
+                            stockByVariant.getOrDefault(v.getId(), 0)))
                     .toList();
             BigDecimal min = variants.stream().map(v -> v.getPrice()).min(Comparator.naturalOrder()).orElse(BigDecimal.ZERO);
             BigDecimal max = variants.stream().map(v -> v.getPrice()).max(Comparator.naturalOrder()).orElse(BigDecimal.ZERO);

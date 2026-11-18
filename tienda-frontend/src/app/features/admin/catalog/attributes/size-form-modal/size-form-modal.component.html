@@ -1,4 +1,4 @@
-<app-modal [title]="size() ? 'Editar talla' : 'Agregar talla'" (closed)="cancelled.emit()">
+<app-modal icon="straighten" [title]="size() ? 'Editar talla' : 'Agregar talla'" (closed)="cancelled.emit()">
   <form class="form" [formGroup]="form" (ngSubmit)="save()" novalidate>
     <div class="field">
       <label class="field__label" for="size-label">Talla</label>

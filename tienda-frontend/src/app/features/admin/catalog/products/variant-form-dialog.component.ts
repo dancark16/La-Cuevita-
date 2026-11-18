@@ -1,3 +1,4 @@
+import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { SelectComponent, SelectOption } from '../../../../shared/components/select/select.component';
 import { ColorBackgroundPipe } from '../../../../shared/util/color-background.pipe';
 import { Component, computed, inject, signal } from '@angular/core';
@@ -9,11 +10,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { concatMap, from, toArray } from 'rxjs';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { httpErrorMessage } from '../../../../shared/util/http-error';
@@ -55,14 +52,7 @@ function code(text: string): string {
 @Component({
   selector: 'app-variant-form-dialog',
   standalone: true,
-  imports: [SelectComponent, ColorBackgroundPipe, 
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-  ],
+  imports: [ColorBackgroundPipe, ReactiveFormsModule, MatDialogModule, ModalComponent, SelectComponent],
   templateUrl: './variant-form-dialog.component.html',
   styleUrl: './variant-form-dialog.component.scss',
 })
@@ -118,6 +108,10 @@ export class VariantFormDialogComponent {
     this.form.controls.price.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe(() => this.form.controls.promoPrice.updateValueAndValidity());
+  }
+
+  cancel(): void {
+    this.dialogRef.close(false);
   }
 
   get missingAttributes(): boolean {

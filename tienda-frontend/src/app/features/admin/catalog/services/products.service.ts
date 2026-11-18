@@ -44,6 +44,11 @@ export class ProductsService {
     return this.http.put<Product>(`${this.url}/${id}`, request);
   }
 
+  /** Borra el producto si nunca se vendió; si ya tiene pedidos, solo lo oculta. */
+  deletePermanently(id: string): Observable<{ deleted: boolean }> {
+    return this.http.delete<{ deleted: boolean }>(`${this.url}/${id}/permanent`);
+  }
+
   deactivate(id: string): Observable<void> {
     return this.http.delete<void>(`${this.url}/${id}`);
   }

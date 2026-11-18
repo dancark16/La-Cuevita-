@@ -33,8 +33,9 @@ public class CatalogAdminController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) String q,
             @RequestParam(required = false) String status,
-            @PageableDefault(size = 20, sort = "name") Pageable pageable) {
-        return service.searchProducts(categoryId, q, status, pageable);
+            @RequestParam(required = false) String stock,
+            @PageableDefault(size = 20, sort = {"category.name", "name"}) Pageable pageable) {
+        return service.searchProducts(categoryId, q, status, stock, pageable);
     }
 
     @PatchMapping("/{variantId}")

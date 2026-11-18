@@ -1,0 +1,370 @@
+1. Levantar Postgres (Docker)
+cd C:\tienda-backend
+docker compose up -d
+docker compose start
+aa
+Terminar docker
+docker compose stop
+
+Verifica que quedó corriendo:
+docker ps
+
+
+2. Correr el backend (Spring Boot)
+cd C:\tienda-backend
+mvn spring-boot:run
+
+Ver las tablas de Postgres directamente (opcional)
+docker exec -it tienda-postgres psql -U tienda_user -d tienda -c "\dt"
+
+
+Swagger UI (documentación interactiva)	http://localhost:8080/swagger-ui.html
+
+
+
+cliente1@lacuevita.com
+clave12345
+
+
+
+{
+  "id": "0c462380-4f77-4079-a629-3b75c1c6560c",
+  "name": "Camisetas",
+  "slug": "camisetas",
+  "parentId": null,
+  "createdAt": "2026-09-29T00:47:34.072388500Z"
+}
+
+Producto
+{
+  "id": "d8e05f19-4c6c-4999-b531-04193db44b5f",
+  "categoryId": "0c462380-4f77-4079-a629-3b75c1c6560c",
+  "categoryName": "Camisetas",
+  "name": "Camisetas",
+  "description": "Camisa de algodón corte oversize",
+  "baseStatus": "ACTIVE",
+  "createdAt": "2026-09-29T00:52:03.471254Z",
+  "updatedAt": "2026-09-29T00:52:03.471254Z"
+}
+
+
+
+Color
+{
+  "id": "c59f88be-7eb2-4719-8315-5f5b39f8809e",
+  "name": "Negro",
+  "hex": "#1A1A1A"
+}
+
+
+{
+  "id": "6ce3c24b-c92f-4e8f-8bbc-6e101b292189",
+  "name": "Blanco",
+  "hex": "#FFFFFF"
+}
+
+
+Size 
+{
+  "id": "fdf619cd-7717-46ca-96ef-fa8bd7dd77d5",
+  "label": "M"
+}
+
+
+
+Variant
+{
+  "id": "6b4f42d1-0e6d-4af5-bb4d-85ddb4bd633b",
+  "productId": "d8e05f19-4c6c-4999-b531-04193db44b5f",
+  "productName": "Camisetas",
+  "sizeId": "fdf619cd-7717-46ca-96ef-fa8bd7dd77d5",
+  "sizeLabel": "M",
+  "colorId": "c59f88be-7eb2-4719-8315-5f5b39f8809e",
+  "colorName": "Negro",
+  "colorHex": "#1A1A1A",
+  "sku": "CAM-001-M-NEG",
+  "barcode": "string",
+  "price": 0,
+  "promoPrice": 25,
+  "status": "ACTIVE",
+  "images": [],
+  "createdAt": "2026-09-29T01:53:25.024358100Z",
+  "updatedAt": "2026-09-29T01:53:25.024358100Z"
+}
+
+
+*****************************************************
+
+{
+  "id": "683a97ea-07b7-4970-a17b-e355414f8e9a",
+  "productId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "productName": "string",
+  "sizeId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "sizeLabel": "string",
+  "colorId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "colorName": "string",
+  "colorHex": "string",
+  "sku": "string",
+  "barcode": "string",
+  "price": 0,
+  "promoPrice": 0,
+  "status": "ACTIVE",
+  "images": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "url": "string",
+      "sortOrder": 0
+    }
+  ],
+  "createdAt": "2026-09-30T00:49:12.996Z",
+  "updatedAt": "2026-09-30T00:49:12.996Z"
+}
+
+
+
+
+order
+{
+  "id": "f2ce3dfe-0974-4a4e-a32e-824f173e847b",
+  "variantId": "683a97ea-07b7-4970-a17b-e355414f8e9a",
+  "sku": "CAM-001-M-BLA",
+  "type": "ENTRADA",
+  "quantity": 50,
+  "reason": "Compra inicial a proveedor",
+  "reference": "string",
+  "orderId": null,
+  "userId": "e2d07816-f5f3-4172-8ce0-dbe0d06c429e",
+  "userEmail": "cliente1@lacuevita.com",
+  "createdAt": "2026-09-30T01:02:52.461244200Z"
+}
+****************************************************
+{
+  "id": "289394cb-fa22-407a-a1a4-aed7541333c8",
+  "status": "PENDING",
+  "customerId": "ca63692a-f63a-4994-b7d9-e22174274c10",
+  "customerName": "DC",
+  "address": {
+    "line1": "AVC",
+    "line2": "ÑSMÑLSM",
+    "city": "QUITO",
+    "province": "Pichincha",
+    "reference": "Push"
+  },
+  "items": [
+    {
+      "variantId": "683a97ea-07b7-4970-a17b-e355414f8e9a",
+      "sku": "CAM-001-M-BLA",
+      "productName": "Camisetas",
+      "sizeLabel": "M",
+      "colorName": "Blanco",
+      "quantity": 5,
+      "unitPrice": 25,
+      "subtotal": 125
+    }
+  ],
+  "subtotal": 125,
+  "discount": 0,
+  "total": 125,
+  "createdAt": "2026-10-02T00:59:24.259005900Z",
+  "updatedAt": "2026-10-02T00:59:24.259005900Z"
+}
+*********************************************************************
+{
+  "id": "886b144b-711d-4e18-994a-97b78e594c92",
+  "status": "PENDING",
+  "customerId": "ca63692a-f63a-4994-b7d9-e22174274c10",
+  "customerName": "vc",
+  "address": {
+    "line1": "cvc",
+    "line2": "cv",
+    "city": "vc",
+    "province": "cv",
+    "reference": "cv"
+  },
+  "items": [
+    {
+      "variantId": "683a97ea-07b7-4970-a17b-e355414f8e9a",
+      "sku": "CAM-001-M-BLA",
+      "productName": "Camisetas",
+      "sizeLabel": "M",
+      "colorName": "Blanco",
+      "quantity": 6,
+      "unitPrice": 25,
+      "subtotal": 150
+    }
+  ],
+  "subtotal": 150,
+  "discount": 0,
+  "total": 150,
+  "createdAt": "2026-10-02T01:09:18.421612Z",
+  "updatedAt": "2026-10-02T01:09:18.421612Z"
+}
+________________________________________________________
+salida de productos sin pago
+{
+  "id": "28b6d2e6-e4cf-4030-936d-bac2c66915b0",
+  "variantId": "683a97ea-07b7-4970-a17b-e355414f8e9a",
+  "sku": "CAM-001-M-BLA",
+  "type": "VENTA",
+  "quantity": 10,
+  "reason": "prueba de venta",
+  "reference": "string",
+  "orderId": null,
+  "userId": "e2d07816-f5f3-4172-8ce0-dbe0d06c429e",
+  "userEmail": "cliente1@lacuevita.com",
+  "createdAt": "2026-09-30T01:05:01.484310Z"
+}
+********************************************************************
+{
+  "id": "3370a445-c696-4fd3-be33-b0f95c68ae5d",
+  "orderId": "886b144b-711d-4e18-994a-97b78e594c92",
+  "method": "string",
+  "status": "DECLINED",
+  "amount": 150,
+  "providerReference": null,
+  "createdAt": "2026-10-02T01:10:53.260294400Z"
+}
+
+
+
+
+****************************************************************
+2
+{
+  "id": "a246bf22-c4bc-4a9c-abec-a967e2fb3226",
+  "status": "PENDING",
+  "customerId": "ca63692a-f63a-4994-b7d9-e22174274c10",
+  "customerName": "string",
+  "address": {
+    "line1": "Quillalacta y Rupai",
+    "line2": "Av. CondorÑam",
+    "city": "Quito",
+    "province": "Pichincha",
+    "reference": "Diagonal a HardBody Gym"
+  },
+  "items": [
+    {
+      "variantId": "683a97ea-07b7-4970-a17b-e355414f8e9a",
+      "sku": "CAM-001-M-BLA",
+      "productName": "Camisetas",
+      "sizeLabel": "M",
+      "colorName": "Blanco",
+      "quantity": 2,
+      "unitPrice": 25,
+      "subtotal": 50
+    }
+  ],
+  "subtotal": 50,
+  "discount": 0,
+  "total": 50,
+  "createdAt": "2026-10-01T01:18:03.983941900Z",
+  "updatedAt": "2026-10-01T01:18:03.983941900Z"
+}
+3************************************************************
+{
+  "id": "e2ee158e-bbe2-4d33-9a31-7c5fc2cea6cb",
+  "status": "PENDING",
+  "customerId": "ca63692a-f63a-4994-b7d9-e22174274c10",
+  "customerName": "Duncanwalfoit",
+  "address": {
+    "line1": "Quillalacta y Rupai",
+    "line2": "Av. CondorÑam",
+    "city": "Quito",
+    "province": "Pichincha",
+    "reference": "Diagonal a HardBody Gym"
+  },
+  "items": [
+    {
+      "variantId": "683a97ea-07b7-4970-a17b-e355414f8e9a",
+      "sku": "CAM-001-M-BLA",
+      "productName": "Camisetas",
+      "sizeLabel": "M",
+      "colorName": "Blanco",
+      "quantity": 4,
+      "unitPrice": 25,
+      "subtotal": 100
+    }
+  ],
+  "subtotal": 100,
+  "discount": 0,
+  "total": 100,
+  "createdAt": "2026-10-01T01:45:07.565351700Z",
+  "updatedAt": "2026-10-01T01:45:07.565351700Z"
+}
+
+**********************************************************
+4
+{
+  "id": "532b50ec-2974-4468-bbf7-56c62648e4b7",
+  "status": "PENDING",
+  "customerId": "ca63692a-f63a-4994-b7d9-e22174274c10",
+  "customerName": "DX",
+  "address": {
+    "line1": "Quillalacta y Rupai",
+    "line2": "Av. CondorÑam",
+    "city": "Quito",
+    "province": "Pichincha",
+    "reference": "Diagonal a HardBody Gym"
+  },
+  "items": [
+    {
+      "variantId": "683a97ea-07b7-4970-a17b-e355414f8e9a",
+      "sku": "CAM-001-M-BLA",
+      "productName": "Camisetas",
+      "sizeLabel": "M",
+      "colorName": "Blanco",
+      "quantity": 2,
+      "unitPrice": 25,
+      "subtotal": 50
+    }
+  ],
+  "subtotal": 50,
+  "discount": 0,
+  "total": 50,
+  "createdAt": "2026-10-01T01:57:58.903559200Z",
+  "updatedAt": "2026-10-01T01:57:58.903559200Z"
+}
+
+
+PEDIDO PAGADO 
+{
+  "id": "dce7992a-3681-4e22-a4e2-ca68a152b95f",
+  "orderId": "e2ee158e-bbe2-4d33-9a31-7c5fc2cea6cb",
+  "method": "TARGETA",
+  "status": "APPROVED",
+  "amount": 100,
+  "providerReference": null,
+  "createdAt": "2026-10-01T01:46:57.322917500Z"
+}
+
+***************************************************
+{
+  "id": "f4ba964c-d779-4bbf-916d-e86edc0ee3ce",
+  "orderId": "289394cb-fa22-407a-a1a4-aed7541333c8",
+  "method": "TARJETA",
+  "status": "APPROVED",
+  "amount": 125,
+  "providerReference": null,
+  "createdAt": "2026-10-02T01:01:14.044995600Z"
+}
+
+_______________________________________________________
+
+invoice
+{
+  "id": "3ce6a66e-f8b6-46d8-ada6-6677e2f5bc91",
+  "orderId": "289394cb-fa22-407a-a1a4-aed7541333c8",
+  "status": "AUTHORIZED",
+  "invoiceNumber": "001-001-000000001",
+  "accessKey": "695529e05d5a4b58990f94bef9b6dd76",
+  "xmlUrl": "https://mock-billing.local/xml/289394cb-fa22-407a-a1a4-aed7541333c8.xml",
+  "pdfUrl": "https://mock-billing.local/pdf/289394cb-fa22-407a-a1a4-aed7541333c8.pdf",
+  "taxAmount": 16.3,
+  "total": 125,
+  "createdAt": "2026-10-02T01:01:14.073408Z",
+  "updatedAt": "2026-10-02T01:01:14.075030Z"
+}
+
+
+
+

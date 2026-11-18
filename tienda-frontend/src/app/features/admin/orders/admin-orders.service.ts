@@ -68,4 +68,8 @@ export class AdminOrdersService {
   cancel(id: string, note: string): Observable<Order> {
     return this.http.post<Order>(`${this.url}/${id}/cancel`, { note });
   }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${id}`);
+  }
 }

@@ -1,4 +1,4 @@
-<app-modal [title]="account() ? 'Editar cuenta' : 'Agregar cuenta'" (closed)="cancelled.emit()">
+<app-modal icon="account_balance" [title]="account() ? 'Editar cuenta' : 'Agregar cuenta'" (closed)="cancelled.emit()">
   <form class="form" [formGroup]="form" (ngSubmit)="save()" novalidate>
     <div class="field">
       <label class="field__label" for="bank-name">Banco</label>

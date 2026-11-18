@@ -331,7 +331,7 @@ export class ProductDetailPageComponent implements OnInit {
   openVariantForm(variant: Variant | null): void {
     this.dialog
       .open<VariantFormDialogComponent, VariantFormData, boolean>(VariantFormDialogComponent, {
-        width: '560px',
+        width: '640px',
         data: { productId: this.id, variant, sizes: this.sizes(), colors: this.colors(), existing: this.variants() },
       })
       .afterClosed()

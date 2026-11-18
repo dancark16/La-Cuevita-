@@ -17,6 +17,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductService {
 
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
+
+
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
@@ -67,6 +71,38 @@ public class ProductService {
         Product product = getOrThrow(id);
         product.setBaseStatus(ProductStatus.INACTIVE);
         productRepository.save(product);
+    }
+
+    /**
+     * Elimina el producto por completo si nunca se vendió. Si ya tiene pedidos, solo se
+     * desactiva (se oculta) para no romper el historial. Devuelve true si se borró.
+     */
+    @Transactional
+    public boolean deletePermanently(UUID id) {
+        Product product = getOrThrow(id);
+        long sold = entityManager
+                .createQuery("SELECT COUNT(i) FROM OrderItem i WHERE i.variant.product.id = :id", Long.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        if (sold > 0) {
+            product.setBaseStatus(ProductStatus.INACTIVE);
+            productRepository.save(product);
+            return false;
+        }
+        entityManager.createQuery(
+                "DELETE FROM InventoryMovement m WHERE m.inventory.id IN "
+                        + "(SELECT n.id FROM Inventory n WHERE n.variant.id IN (SELECT v.id FROM ProductVariant v WHERE v.product.id = :id))")
+                .setParameter("id", id).executeUpdate();
+        entityManager.createQuery("DELETE FROM Inventory n WHERE n.variant.id IN (SELECT v.id FROM ProductVariant v WHERE v.product.id = :id)")
+                .setParameter("id", id).executeUpdate();
+        entityManager.createQuery("DELETE FROM ProductImage im WHERE im.variant.id IN (SELECT v.id FROM ProductVariant v WHERE v.product.id = :id)")
+                .setParameter("id", id).executeUpdate();
+        entityManager.createQuery("DELETE FROM ProductVariant v WHERE v.product.id = :id")
+                .setParameter("id", id).executeUpdate();
+        entityManager.flush();
+        entityManager.clear();
+        productRepository.deleteById(id);
+        return true;
     }
 
     private Category getCategoryOrThrow(UUID categoryId) {

@@ -1,4 +1,4 @@
-<app-modal [title]="category() ? 'Editar categoría' : 'Nueva categoría'" (closed)="cancelled.emit()">
+<app-modal icon="category" [title]="category() ? 'Editar categoría' : 'Nueva categoría'" (closed)="cancelled.emit()">
   <form class="form" [formGroup]="form" (ngSubmit)="save()" novalidate>
     <div class="field">
       <label class="field__label" for="category-name">Nombre</label>

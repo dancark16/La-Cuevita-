@@ -31,6 +31,12 @@ public class OrderTransferService {
     private final FileStorageService fileStorage;
     private final PaymentService paymentService;
 
+    @org.springframework.beans.factory.annotation.Value("${app.orders.allow-delete:false}")
+    private boolean allowDelete;
+
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
+
     // ---- clienta ----
 
     @Transactional
@@ -135,6 +141,46 @@ public class OrderTransferService {
         order.setStatus(OrderStatus.CANCELLED);
         order.setAdminNote(clean(reason, "Pedido cancelado"));
         return orderMapper.toResponse(orderRepository.save(order));
+    }
+
+    /**
+     * Borra un pedido por completo (para pruebas). Si ya había descontado stock, lo devuelve;
+     * también elimina su pago, factura, envío y comprobante.
+     */
+    @Transactional
+    public void delete(UUID id) {
+        if (!allowDelete) {
+            throw new InvalidOrderStateException("Borrar pedidos está desactivado en este entorno");
+        }
+        Order order = getOrThrow(id);
+        StoredFile receipt = order.getReceiptFile();
+        UUID receiptId = receipt != null ? receipt.getId() : null;
+        Path receiptPath = receipt != null ? fileStorage.pathOf(receipt) : null;
+
+        // Devuelve al inventario lo que este pedido había descontado
+        entityManager.createNativeQuery(
+                "UPDATE inventory i SET quantity_on_hand = quantity_on_hand + m.q "
+                        + "FROM (SELECT inventory_id, SUM(quantity) AS q FROM inventory_movements "
+                        + "WHERE order_id = :id AND type = 'VENTA' GROUP BY inventory_id) m "
+                        + "WHERE i.id = m.inventory_id")
+                .setParameter("id", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM inventory_movements WHERE order_id = :id")
+                .setParameter("id", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM invoices WHERE order_id = :id")
+                .setParameter("id", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM payments WHERE order_id = :id")
+                .setParameter("id", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM shipping WHERE order_id = :id")
+                .setParameter("id", id).executeUpdate();
+        entityManager.flush();
+        entityManager.clear();
+
+        orderRepository.deleteById(id);
+        orderRepository.flush();
+
+        if (receiptId != null && orderRepository.countByReceiptFileId(receiptId) == 0) {
+            fileStorage.removeById(receiptId, receiptPath);
+        }
     }
 
     private AdminOrderSummary toSummary(Order order) {

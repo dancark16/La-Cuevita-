@@ -12,6 +12,7 @@ import { NotificationService } from '../../../../shared/services/notification.se
 import { httpErrorMessage } from '../../../../shared/util/http-error';
 import { Category, Product, ProductRow } from '../catalog.models';
 import { CatalogItemsService } from '../services/catalog-items.service';
+import { DashboardService } from '../../dashboard/dashboard.service';
 import { CategoriesService } from '../services/categories.service';
 import { ProductsListStateService } from '../services/products-list-state.service';
 import { ProductsService } from '../services/products.service';
@@ -34,6 +35,7 @@ export class ProductsPageComponent implements OnInit {
   private readonly notify = inject(NotificationService);
   private readonly router = inject(Router);
   private readonly listState = inject(ProductsListStateService);
+  private readonly dashboard = inject(DashboardService);
   private readonly saved = this.listState.get();
 
   readonly categories = signal<Category[]>([]);
@@ -62,6 +64,14 @@ export class ProductsPageComponent implements OnInit {
   readonly searchControl = new FormControl(this.saved.q, { nonNullable: true });
   readonly categoryControl = new FormControl<string | null>(this.saved.categoryId);
   readonly statusControl = new FormControl<string | null>(this.saved.status);
+  readonly stockControl = new FormControl<string | null>(this.saved.stock);
+
+  readonly stockOptions: SelectOption[] = [
+    { value: null, label: 'Todo el stock' },
+    { value: 'OUT', label: 'Agotados' },
+    { value: 'LOW', label: 'Poco stock (1-2)' },
+    { value: 'IN', label: 'Con stock' },
+  ];
 
   constructor() {
     this.searchControl.valueChanges
@@ -70,15 +80,34 @@ export class ProductsPageComponent implements OnInit {
 
     this.categoryControl.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.resetAndLoad());
     this.statusControl.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.resetAndLoad());
+    this.stockControl.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.resetAndLoad());
   }
 
   ngOnInit(): void {
+    const firstVisit = !this.listState.hasSaved();
     this.categoriesApi.list().subscribe({
       next: (categories) =>
         this.categories.set([...categories].sort((a, b) => a.name.localeCompare(b.name, 'es'))),
       error: (error) => this.notify.error(httpErrorMessage(error)),
     });
-    this.load();
+
+    if (!firstVisit) {
+      this.load();
+      return;
+    }
+    // Primera vez: arranca en la primera categoría (A-Z) que tenga productos.
+    this.dashboard.catalog().subscribe({
+      next: (stats) => {
+        const first = [...stats.categories]
+          .filter((category) => category.products > 0)
+          .sort((a, b) => a.name.localeCompare(b.name, 'es'))[0];
+        if (first) {
+          this.categoryControl.setValue(first.id, { emitEvent: false });
+        }
+        this.load();
+      },
+      error: () => this.load(),
+    });
   }
 
   load(): void {
@@ -86,6 +115,7 @@ export class ProductsPageComponent implements OnInit {
       q: this.searchControl.value,
       categoryId: this.categoryControl.value,
       status: this.statusControl.value,
+      stock: this.stockControl.value,
       page: this.pageIndex(),
     });
     this.loading.set(true);
@@ -94,6 +124,7 @@ export class ProductsPageComponent implements OnInit {
         categoryId: this.categoryControl.value,
         q: this.searchControl.value,
         status: this.statusControl.value,
+        stock: this.stockControl.value,
         page: this.pageIndex(),
         size: PAGE_SIZE,
       })
@@ -120,6 +151,7 @@ export class ProductsPageComponent implements OnInit {
     this.searchControl.setValue('');
     this.categoryControl.setValue(null);
     this.statusControl.setValue(null);
+    this.stockControl.setValue(null);
   }
 
   newProduct(): void {
@@ -148,6 +180,25 @@ export class ProductsPageComponent implements OnInit {
 
   sizesOf(row: ProductRow): string[] {
     return [...new Set(row.variants.map((v) => v.sizeLabel))];
+  }
+
+  remove(item: ProductRow): void {
+    confirmAction(this.dialog, {
+      title: 'Eliminar producto',
+      message: `¿Eliminar "${item.name}" con sus ${item.variants.length === 1 ? 'variante' : 'variantes'}, fotos y stock? Si ya tiene pedidos no se borra: se oculta para conservar el historial. Esta acción no se puede deshacer.`,
+      confirmLabel: 'Eliminar',
+    })
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.products.deletePermanently(item.productId))
+      )
+      .subscribe({
+        next: ({ deleted }) => {
+          this.notify.success(deleted ? 'Producto eliminado' : 'El producto ya tiene pedidos: quedó oculto, no borrado');
+          this.load();
+        },
+        error: (error) => this.notify.error(httpErrorMessage(error)),
+      });
   }
 
   deactivate(item: ProductRow): void {

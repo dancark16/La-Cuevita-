@@ -1,4 +1,4 @@
-<app-modal [title]="color() ? 'Editar color' : 'Agregar color'" (closed)="cancelled.emit()">
+<app-modal icon="palette" [title]="color() ? 'Editar color' : 'Agregar color'" (closed)="cancelled.emit()">
   <form class="form" [formGroup]="form" (ngSubmit)="save()" novalidate>
     <div class="field">
       <label class="field__label" for="color-name">Nombre</label>

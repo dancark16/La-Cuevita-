@@ -149,6 +149,16 @@ public class FileStorageService {
                 .orElseThrow(() -> new ResourceNotFoundException("Archivo no encontrado: " + id));
     }
 
+    /** Borra el archivo del disco y su registro. */
+    public void removeById(UUID id, Path path) {
+        try {
+            java.nio.file.Files.deleteIfExists(path);
+        } catch (java.io.IOException ignored) {
+            // si el archivo ya no estaba, no pasa nada
+        }
+        repository.deleteById(id);
+    }
+
     public Path pathOf(StoredFile file) {
         return resolve(file.getStoragePath());
     }

@@ -16,3 +16,21 @@ $theme: mat.define-light-theme((color: (primary: $primary,
         ));
 
 @include mat.all-component-themes($theme);
+
+// Los diálogos de Material solo aportan foco y capa; el aspecto lo pone <app-modal [embedded]="true">.
+.app-dialog {
+    --mdc-dialog-container-color: transparent;
+    --mdc-dialog-container-shape: 1rem;
+    --mdc-dialog-container-elevation-shadow: none;
+    --mdc-dialog-container-elevation: none;
+}
+
+.app-dialog .mat-mdc-dialog-surface {
+    overflow: visible;
+    background: transparent;
+    box-shadow: none;
+}
+
+.cdk-overlay-dark-backdrop {
+    background: rgb(15 29 74 / 60%);
+}

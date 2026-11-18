@@ -100,7 +100,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 0.875rem;
-  background: linear-gradient(180deg, #3f7bd0 0%, #2a5caa 100%);
+  background: var(--color-black);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 28%);
 
   .material-icons {

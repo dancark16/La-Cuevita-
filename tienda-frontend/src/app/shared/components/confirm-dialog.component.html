@@ -1,0 +1,17 @@
+<app-modal
+  [embedded]="true"
+  size="sm"
+  [title]="data.title"
+  [icon]="danger ? 'delete_outline' : 'help_outline'"
+  [tone]="danger ? 'danger' : 'default'"
+  (closed)="close(false)"
+>
+  <p class="message">{{ data.message }}</p>
+
+  <div modalFooter>
+    <button type="button" class="btn btn--outline" (click)="close(false)">Cancelar</button>
+    <button type="button" class="btn" [class.btn--danger]="danger" [class.btn--main]="!danger" (click)="close(true)" cdkFocusInitial>
+      {{ data.confirmLabel ?? 'Confirmar' }}
+    </button>
+  </div>
+</app-modal>

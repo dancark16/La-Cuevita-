@@ -1,0 +1,54 @@
+<form [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <app-modal
+    [embedded]="true"
+    [title]="data.product ? 'Editar producto' : 'Nuevo producto'"
+    subtitle="Después podrás agregar sus colores, tallas y fotos."
+    [icon]="data.product ? 'edit' : 'add_box'"
+    (closed)="cancel()"
+  >
+    <div class="form">
+      @if (data.categories.length === 0) {
+        <p class="alert">Primero crea al menos una categoría.</p>
+      }
+
+      <div class="field">
+        <label class="field__label" for="product-category">Categoría</label>
+        <app-select
+          inputId="product-category"
+          placeholder="Elige una categoría"
+          [options]="categoryOptions"
+          [invalid]="form.controls.categoryId.touched && form.controls.categoryId.invalid"
+          formControlName="categoryId"
+        />
+        @if (form.controls.categoryId.touched && form.controls.categoryId.invalid) {
+          <span class="field__error">Selecciona una categoría</span>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="product-name">Nombre</label>
+        <input id="product-name" class="field__input" [class.field__input--invalid]="form.controls.name.touched && form.controls.name.invalid" formControlName="name" />
+        @if (form.controls.name.touched && form.controls.name.invalid) {
+          <span class="field__error">El nombre es obligatorio</span>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="product-description">Descripción</label>
+        <textarea id="product-description" class="field__input" rows="3" formControlName="description" placeholder="Tela, corte, cuidados..."></textarea>
+      </div>
+
+      <div class="field">
+        <span class="field__label">Estado</span>
+        <app-select [options]="statusChoices" formControlName="baseStatus" />
+      </div>
+    </div>
+
+    <div modalFooter>
+      <button type="button" class="button button--outline" (click)="cancel()">Cancelar</button>
+      <button type="submit" class="button button--primary" [disabled]="saving() || data.categories.length === 0">
+        {{ saving() ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </app-modal>
+</form>

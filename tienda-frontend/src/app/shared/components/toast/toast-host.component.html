@@ -1,0 +1,17 @@
+<div class="toasts" aria-live="polite">
+  @for (toast of notifications.toasts(); track toast.id) {
+    <div class="toast" [class]="'toast toast--' + toast.tone" [attr.role]="toast.tone === 'error' ? 'alert' : 'status'">
+      <span class="toast__icon" aria-hidden="true">
+        <span class="material-icons">{{ iconOf(toast.tone) }}</span>
+      </span>
+      <div class="toast__text">
+        <strong class="toast__title">{{ titleOf(toast.tone) }}</strong>
+        <span class="toast__message">{{ toast.message }}</span>
+      </div>
+      <button type="button" class="toast__close" aria-label="Cerrar aviso" (click)="notifications.dismiss(toast.id)">
+        <span class="material-icons" aria-hidden="true">close</span>
+      </button>
+      <span class="toast__bar" [style.animation-duration.ms]="toast.duration"></span>
+    </div>
+  }
+</div>

@@ -77,6 +77,13 @@ public class AdminOrderController {
         return service.deliver(id);
     }
 
+    /** Borra el pedido por completo (solo mientras se hacen pruebas). */
+    @DeleteMapping("/{id}")
+    public org.springframework.http.ResponseEntity<Void> delete(@PathVariable UUID id) {
+        service.delete(id);
+        return org.springframework.http.ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/{id}/cancel")
     public OrderResponse cancel(@PathVariable UUID id, @Valid @RequestBody OrderNoteRequest request) {
         return service.cancel(id, request.note());

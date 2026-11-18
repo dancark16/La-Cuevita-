@@ -175,7 +175,7 @@
     </div>
 
     @if (noteAction(); as action) {
-      <app-modal [title]="copy[action].title" (closed)="closeNote()">
+      <app-modal icon="receipt_long" [title]="copy[action].title" (closed)="closeNote()">
         <div class="form">
           <div class="field">
             <label class="field__label" for="order-note">{{ copy[action].label }}</label>

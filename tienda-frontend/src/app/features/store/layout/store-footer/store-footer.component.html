@@ -1,5 +1,5 @@
 <footer class="footer">
-  <ul class="footer__features">
+  <ul class="features">
     @for (item of features(); track item.title) {
       <li>
         @if (item.href) {
@@ -15,7 +15,70 @@
     }
   </ul>
 
-  <p class="footer__legal">© {{ year }} La Cuevita. Todos los derechos reservados.</p>
+  <div class="main">
+    <div class="brand">
+      <a routerLink="/" aria-label="La Cuevita, ir al inicio"><app-brand-logo /></a>
+      @if (instagram() || whatsappUrl()) {
+        <div class="social">
+          @if (instagram()) {
+            <a class="social__link" [href]="'https://www.instagram.com/' + instagram()" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <span class="material-icons" aria-hidden="true">photo_camera</span>
+            </a>
+          }
+          @if (whatsappUrl()) {
+            <a class="social__link" [href]="whatsappUrl()" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+              <span class="material-icons" aria-hidden="true">chat</span>
+            </a>
+          }
+        </div>
+      }
+    </div>
+
+    <nav class="column" aria-label="Tienda">
+      <h2 class="column__title">Tienda</h2>
+      <a routerLink="/" class="column__link">Inicio</a>
+      <a routerLink="/tienda" class="column__link">Todo el catálogo</a>
+      <a routerLink="/tienda" [queryParams]="{ orden: 'NEWEST' }" class="column__link">Novedades</a>
+      <a routerLink="/cuenta/pedidos" class="column__link">Mis pedidos</a>
+    </nav>
+
+    @if (categories().length > 0) {
+      <nav class="column" aria-label="Categorías">
+        <h2 class="column__title">Categorías</h2>
+        @for (category of categories(); track category.id) {
+          <a routerLink="/tienda" [queryParams]="{ categoria: category.id }" class="column__link">{{ category.name }}</a>
+        }
+      </nav>
+    }
+
+    <div class="column">
+      <h2 class="column__title">Contacto</h2>
+      @if (whatsappUrl()) {
+        <a class="column__link column__link--icon" [href]="whatsappUrl()" target="_blank" rel="noopener noreferrer">
+          <span class="material-icons" aria-hidden="true">chat</span>{{ whatsappLabel() }}
+        </a>
+      }
+      @if (instagram()) {
+        <a class="column__link column__link--icon" [href]="'https://www.instagram.com/' + instagram()" target="_blank" rel="noopener noreferrer">
+          <span class="material-icons" aria-hidden="true">photo_camera</span>&#64;{{ instagram() }}
+        </a>
+      }
+      @if (banks().length > 0) {
+        <p class="column__label">Medios de pago</p>
+        <div class="banks">
+          @for (bank of banks(); track bank.name) {
+            @if (bank.logo; as logo) {
+              <img class="bank" [src]="logo.src" [style.background]="logo.background" [alt]="bank.name" [title]="bank.name" />
+            } @else {
+              <span class="bank bank--text">{{ bank.name }}</span>
+            }
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <p class="legal">© {{ year }} La Cuevita. Todos los derechos reservados.</p>
 </footer>
 
 <ng-template #content let-item>

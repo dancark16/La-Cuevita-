@@ -1,5 +1,5 @@
 import { SelectComponent, SelectOption } from '../../../../shared/components/select/select.component';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { filter, switchMap } from 'rxjs';
 import { confirmAction } from '../../../../shared/components/confirm-dialog.component';
@@ -9,6 +9,21 @@ import { DashboardService } from '../../dashboard/dashboard.service';
 import { Category } from '../catalog.models';
 import { CategoriesService } from '../services/categories.service';
 import { CategoryFormModalComponent } from './category-form-modal/category-form-modal.component';
+
+const FILTERS_KEY = 'admin.categories.filters';
+
+function readSavedFilters(): { category: string; parent: string; status: string; saved: boolean } {
+  try {
+    const raw = sessionStorage.getItem(FILTERS_KEY);
+    if (raw) {
+      const value = JSON.parse(raw);
+      return { category: value.category ?? '', parent: value.parent ?? '', status: value.status ?? '', saved: true };
+    }
+  } catch {
+    // se ignora
+  }
+  return { category: '', parent: '', status: '', saved: false };
+}
 
 @Component({
   selector: 'app-categories-page',
@@ -23,15 +38,33 @@ export class CategoriesPageComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotificationService);
 
+  private readonly savedFilters = readSavedFilters();
+  private readonly firstVisit = !this.savedFilters.saved;
+  private started = false;
+
+  constructor() {
+    // Recuerda los filtros para volver exactamente donde estabas.
+    effect(() => {
+      try {
+        sessionStorage.setItem(
+          FILTERS_KEY,
+          JSON.stringify({ category: this.categoryFilter(), parent: this.parentFilter(), status: this.statusFilter() })
+        );
+      } catch {
+        // sin almacenamiento: queda solo en memoria
+      }
+    });
+  }
+
   readonly categories = signal<Category[]>([]);
   readonly loading = signal(true);
   readonly search = signal('');
   /** '' = todas, o el id de una categoría concreta. */
-  readonly categoryFilter = signal('');
+  readonly categoryFilter = signal(this.savedFilters.category);
   /** '' = todos, 'ROOT' = sin padre, o el id de una categoría padre. */
-  readonly parentFilter = signal('');
+  readonly parentFilter = signal(this.savedFilters.parent);
   /** '' = todos, 'ACTIVE' o 'INACTIVE'. */
-  readonly statusFilter = signal('');
+  readonly statusFilter = signal(this.savedFilters.status);
   readonly counts = signal<Map<string, number>>(new Map());
   readonly editing = signal<Category | null>(null);
   readonly formOpen = signal(false);
@@ -87,7 +120,7 @@ export class CategoriesPageComponent implements OnInit {
         return false;
       }
       return true;
-    });
+    }).sort((a, b) => a.name.localeCompare(b.name, 'es'));
   });
 
   ngOnInit(): void {
@@ -121,7 +154,19 @@ export class CategoriesPageComponent implements OnInit {
   load(): void {
     this.loading.set(true);
     this.dashboard.catalog().subscribe({
-      next: (stats) => this.counts.set(new Map(stats.categories.map((c) => [c.id, c.products] as const))),
+      next: (stats) => {
+        this.counts.set(new Map(stats.categories.map((c) => [c.id, c.products] as const)));
+        // Primera vez: arranca en la primera categoría (A-Z) que tenga productos, no en «Todas».
+        if (this.firstVisit && !this.started) {
+          const first = [...stats.categories]
+            .filter((category) => category.products > 0)
+            .sort((a, b) => a.name.localeCompare(b.name, 'es'))[0];
+          if (first) {
+            this.categoryFilter.set(first.id);
+          }
+        }
+        this.started = true;
+      },
       error: () => undefined,
     });
     this.api.list().subscribe({

@@ -1,0 +1,16 @@
+@use '../../admin-ui';
+
+@include admin-ui.form-fields;
+@include admin-ui.buttons;
+
+:host {
+  display: block;
+}
+
+.alert {
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: #fef3c7;
+  font-size: 0.875rem;
+  color: #78350f;
+}

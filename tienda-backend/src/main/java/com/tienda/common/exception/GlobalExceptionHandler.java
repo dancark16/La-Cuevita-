@@ -57,6 +57,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(Exception ex) {
+        org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class).error("Error no controlado", ex);
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor", List.of());
     }
 

@@ -42,6 +42,9 @@ app:
     tax-rate: 0.15
   cookie:
     secure: false
+  orders:
+    # Solo para pruebas: permite borrar pedidos desde el panel. En producción poner ORDERS_ALLOW_DELETE=false.
+    allow-delete: ${ORDERS_ALLOW_DELETE:true}
   store:
     new-product-days: 30
   google:

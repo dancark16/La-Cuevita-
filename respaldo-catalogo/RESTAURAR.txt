@@ -1,0 +1,7 @@
+Restaurar el catalogo en otra maquina
+1) Clona el repo, crea tienda-backend/.env y levanta la BD:  docker compose up -d
+2) Arranca el backend UNA vez (mvn spring-boot:run) para que Flyway cree las tablas, y detenlo.
+3) Copia la carpeta "uploads" de aqui a  tienda-backend/uploads  (o a la ruta de app.storage.root).
+4) Carga los datos:
+   docker exec -i tienda-postgres psql -U tienda_user -d tienda < catalogo.sql
+5) Arranca el backend de nuevo.

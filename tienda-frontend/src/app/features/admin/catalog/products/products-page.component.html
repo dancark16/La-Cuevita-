@@ -23,7 +23,8 @@
     </label>
     <app-select class="filter" variant="filter" ariaLabel="Categoría" [options]="categoryOptions()" [formControl]="categoryControl" />
     <app-select class="filter" variant="filter" ariaLabel="Estado" [options]="statusOptions" [formControl]="statusControl" />
-    @if (searchControl.value || categoryControl.value || statusControl.value) {
+    <app-select class="filter" variant="filter" ariaLabel="Stock" [options]="stockOptions" [formControl]="stockControl" />
+    @if (searchControl.value || categoryControl.value || statusControl.value || stockControl.value) {
       <button type="button" class="link" (click)="clearFilters()">Limpiar filtros</button>
     }
     <span class="toolbar__count">{{ total() }} {{ total() === 1 ? 'resultado' : 'resultados' }}</span>
@@ -102,8 +103,11 @@
                 <a class="icon-btn" aria-label="Editar producto" title="Editar" [routerLink]="['/admin/productos', item.productId]">
                   <span class="material-icons" aria-hidden="true">edit</span>
                 </a>
-                <button type="button" class="icon-btn icon-btn--danger" aria-label="Desactivar" (click)="deactivate(item)">
+                <button type="button" class="icon-btn" aria-label="Desactivar" title="Ocultar de la tienda" (click)="deactivate(item)">
                   <span class="material-icons" aria-hidden="true">visibility_off</span>
+                </button>
+                <button type="button" class="icon-btn icon-btn--danger" aria-label="Eliminar" title="Eliminar producto" (click)="remove(item)">
+                  <span class="material-icons" aria-hidden="true">delete_outline</span>
                 </button>
               </div>
             </td>
