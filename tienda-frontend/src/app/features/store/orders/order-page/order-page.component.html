@@ -9,10 +9,13 @@
   } @else {
     @if (order(); as o) {
       <header class="order__head">
-        <div>
-          <p class="order__eyebrow">Pedido</p>
-          <h1 class="order__number">#{{ o.orderNumber }}</h1>
-          <p class="order__date">{{ o.createdAt | date: "d 'de' MMMM, y · HH:mm" }}</p>
+        <div class="order__head-main">
+          <span class="order__icon material-icons" aria-hidden="true">receipt_long</span>
+          <div>
+            <p class="order__eyebrow">Pedido</p>
+            <h1 class="order__number">#{{ o.orderNumber }}</h1>
+            <p class="order__date">{{ o.createdAt | date: "d 'de' MMMM, y · HH:mm" }}</p>
+          </div>
         </div>
         <span class="status" [class.status--ok]="o.status === 'PAID' || o.status === 'SHIPPED' || o.status === 'DELIVERED'" [class.status--off]="o.status === 'CANCELLED'">
           {{ statusLabel[o.status] }}
@@ -20,20 +23,52 @@
       </header>
 
       @if (o.status !== 'CANCELLED') {
-        <ol class="steps" aria-label="Estado del pedido">
-          @for (step of steps; track step.status; let i = $index) {
-            <li class="step" [class.step--done]="i <= stepIndex()" [class.step--current]="i === stepIndex()">
-              <span class="step__dot">{{ i < stepIndex() ? '✓' : i + 1 }}</span>
-              <span class="step__label">{{ step.label }}</span>
-            </li>
-          }
-        </ol>
+        <div class="steps-card">
+          <ol class="steps" aria-label="Estado del pedido">
+            @for (step of steps; track step.status; let i = $index) {
+              <li class="step" [class.step--done]="i <= stepIndex()" [class.step--current]="i === stepIndex()">
+                <span class="step__dot">
+                  <span class="material-icons" aria-hidden="true">{{ stepIcons[i] }}</span>
+                </span>
+                <span class="step__label">{{ step.label }}</span>
+              </li>
+            }
+          </ol>
+        </div>
       }
 
       @if (o.adminNote) {
         <p class="alert" [class.alert--info]="o.status !== 'PENDING' && o.status !== 'CANCELLED'">
           <strong>Mensaje de La Cuevita:</strong> {{ o.adminNote }}
         </p>
+      }
+
+      @if (o.status === 'PAID' || o.status === 'PROCESSING' || o.status === 'CONFIRMED') {
+        <div class="banner">
+          <span class="banner__icon material-icons" aria-hidden="true">celebration</span>
+          <div>
+            <strong>¡Recibimos tu pago!</strong>
+            <p>Estamos preparando tu pedido y te escribiremos por WhatsApp para coordinar el envío.</p>
+          </div>
+        </div>
+      }
+      @if (o.status === 'SHIPPED') {
+        <div class="banner">
+          <span class="banner__icon material-icons" aria-hidden="true">local_shipping</span>
+          <div>
+            <strong>¡Tu pedido va en camino!</strong>
+            <p>Sigue tu paquete aquí abajo. Cualquier duda, escríbenos por WhatsApp.</p>
+          </div>
+        </div>
+      }
+      @if (o.status === 'DELIVERED') {
+        <div class="banner banner--ok">
+          <span class="banner__icon material-icons" aria-hidden="true">check_circle</span>
+          <div>
+            <strong>¡Pedido entregado!</strong>
+            <p>Gracias por comprar en La Cuevita. ¡Esperamos que lo disfrutes!</p>
+          </div>
+        </div>
       }
 
       <div class="order__layout">
@@ -135,19 +170,6 @@
             </section>
           }
 
-          @if (o.status === 'PAID' || o.status === 'PROCESSING' || o.status === 'CONFIRMED') {
-            <p class="alert alert--info">
-              ¡Recibimos tu pago! Estamos preparando tu pedido y te escribiremos por WhatsApp para coordinar el envío.
-            </p>
-          }
-          @if (o.status === 'SHIPPED') {
-            <p class="alert alert--info">Tu pedido va en camino. Cualquier duda, escríbenos por WhatsApp.</p>
-          }
-          @if (o.status === 'DELIVERED') {
-            <p class="alert alert--info">Tu pedido fue entregado. ¡Gracias por comprar en La Cuevita!</p>
-          }
-        </div>
-
         <aside class="card summary">
           <h2 class="card__title"><span class="slash" aria-hidden="true">/</span>Resumen</h2>
           <ul class="items">
@@ -171,8 +193,69 @@
               <br /><small>{{ o.address.reference }}</small>
             }
           </p>
+          @if (hasInvoice()) {
+            <button type="button" class="invoice-btn" [disabled]="invoiceBusy()" (click)="downloadInvoice()">
+              <span class="material-icons" aria-hidden="true">description</span>
+              {{ invoiceBusy() ? 'Preparando...' : 'Descargar factura' }}
+            </button>
+          }
           <a routerLink="/cuenta/pedidos" class="link">Ver todos mis pedidos</a>
         </aside>
+        </div>
+
+        <div class="order__side">
+        @if (o.tracking; as tr) {
+          <section class="card tracking">
+            <h2 class="card__title"><span class="slash" aria-hidden="true">/</span>Seguimiento de tu envío</h2>
+            <dl class="tracking__data">
+              @if (tr.carrierName) {
+                <div><dt>Transportista</dt><dd>{{ tr.carrierName }}</dd></div>
+              }
+              @if (tr.trackingNumber) {
+                <div>
+                  <dt>Número de guía</dt>
+                  <dd>
+                    {{ tr.trackingNumber }}
+                    <button type="button" class="tracking__copy" (click)="copy('guia', tr.trackingNumber)">
+                      {{ copied() === 'guia' ? '¡Copiado!' : 'Copiar' }}
+                    </button>
+                  </dd>
+                </div>
+              }
+            </dl>
+            @if (tr.trackingUrl) {
+              <a class="tracking__button" [href]="tr.trackingUrl" target="_blank" rel="noopener">
+                <span class="material-icons" aria-hidden="true">travel_explore</span>
+                Rastrear mi paquete
+              </a>
+            }
+            <ol class="tracking__events">
+              @for (event of trackingEvents(); track event.id; let last = $last) {
+                <li class="tracking__event" [class.tracking__event--last]="last">
+                  <span class="tracking__dot" aria-hidden="true"></span>
+                  <div>
+                    <strong>{{ event.message }}</strong>
+                    <small>{{ event.createdAt | date: "d 'de' MMM, HH:mm" }}</small>
+                  </div>
+                </li>
+              }
+            </ol>
+          </section>
+        }
+
+          @if (helpUrl()) {
+            <section class="card help">
+              <span class="help__icon material-icons" aria-hidden="true">support_agent</span>
+              <div>
+                <strong>¿Necesitas ayuda?</strong>
+                <p>Escríbenos y te respondemos.</p>
+              </div>
+              <a class="help__button" [href]="helpUrl()" target="_blank" rel="noopener">
+                <span class="material-icons" aria-hidden="true">chat</span>WhatsApp
+              </a>
+            </section>
+          }
+        </div>
       </div>
     }
   }

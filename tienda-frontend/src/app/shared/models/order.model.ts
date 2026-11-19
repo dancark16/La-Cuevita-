@@ -21,6 +21,22 @@ export interface OrderAddress {
   reference: string | null;
 }
 
+export interface TrackingEvent {
+  id: string;
+  message: string;
+  createdAt: string;
+}
+
+/** Seguimiento del envío: transportista, guía y novedades. */
+export interface OrderTracking {
+  carrierName: string | null;
+  trackingNumber: string | null;
+  trackingUrl: string | null;
+  shippedAt: string;
+  deliveredAt: string | null;
+  events: TrackingEvent[];
+}
+
 export interface Order {
   id: string;
   orderNumber: number;
@@ -42,6 +58,7 @@ export interface Order {
   shippedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  tracking: OrderTracking | null;
 }
 
 export interface CheckoutPayload {

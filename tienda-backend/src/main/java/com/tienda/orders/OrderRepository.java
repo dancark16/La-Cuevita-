@@ -32,4 +32,6 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     java.util.List<Object[]> countByStatus();
 
     long countByReceiptFileId(java.util.UUID receiptFileId);
+
+    java.util.List<Order> findByStatusAndCreatedAtBefore(OrderStatus status, java.time.Instant before);
 }

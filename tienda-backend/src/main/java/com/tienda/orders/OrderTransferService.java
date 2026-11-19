@@ -30,6 +30,7 @@ public class OrderTransferService {
     private final OrderMapper orderMapper;
     private final FileStorageService fileStorage;
     private final PaymentService paymentService;
+    private final com.tienda.shipping.ShippingService shippingService;
 
     @org.springframework.beans.factory.annotation.Value("${app.orders.allow-delete:false}")
     private boolean allowDelete;
@@ -112,7 +113,8 @@ public class OrderTransferService {
     }
 
     @Transactional
-    public OrderResponse ship(UUID id, String note) {
+    public OrderResponse ship(UUID id, com.tienda.shipping.dto.ShippingDtos.ShipRequest request) {
+        String note = request.note();
         Order order = getOrThrow(id);
         if (order.getStatus() != OrderStatus.PAID && order.getStatus() != OrderStatus.PROCESSING) {
             throw new InvalidOrderStateException(
@@ -123,6 +125,7 @@ public class OrderTransferService {
         if (note != null && !note.isBlank()) {
             order.setAdminNote(note.trim());
         }
+        shippingService.markShipped(order, request);
         return orderMapper.toResponse(orderRepository.save(order));
     }
 
@@ -131,6 +134,8 @@ public class OrderTransferService {
         Order order = getOrThrow(id);
         requireStatus(order, OrderStatus.SHIPPED, "Solo se puede marcar como entregado un pedido enviado");
         order.setStatus(OrderStatus.DELIVERED);
+        order.setDeliveredAt(Instant.now());
+        shippingService.markDelivered(order);
         return orderMapper.toResponse(orderRepository.save(order));
     }
 
@@ -140,7 +145,35 @@ public class OrderTransferService {
         requireStatus(order, OrderStatus.PENDING, "Solo se puede cancelar un pedido pendiente de pago");
         order.setStatus(OrderStatus.CANCELLED);
         order.setAdminNote(clean(reason, "Pedido cancelado"));
+        orderService.releaseReservation(order);
         return orderMapper.toResponse(orderRepository.save(order));
+    }
+
+    @Transactional
+    public OrderResponse addTrackingEvent(UUID id, String message, boolean notify) {
+        Order order = getOrThrow(id);
+        shippingService.addEvent(order, message, notify);
+        return orderMapper.toResponse(order);
+    }
+
+    @Transactional
+    public OrderResponse deleteTrackingEvent(UUID id, UUID eventId) {
+        Order order = getOrThrow(id);
+        shippingService.deleteEvent(id, eventId);
+        return orderMapper.toResponse(order);
+    }
+
+    /** Cancela un pedido pendiente cuya reserva venció sin recibir el pago. */
+    @Transactional
+    public void expire(UUID id) {
+        Order order = getOrThrow(id);
+        if (order.getStatus() != OrderStatus.PENDING) {
+            return;
+        }
+        order.setStatus(OrderStatus.CANCELLED);
+        order.setAdminNote("La reserva venció: no se recibió el pago a tiempo");
+        orderService.releaseReservation(order);
+        orderRepository.save(order);
     }
 
     /**
@@ -153,6 +186,9 @@ public class OrderTransferService {
             throw new InvalidOrderStateException("Borrar pedidos está desactivado en este entorno");
         }
         Order order = getOrThrow(id);
+        if (order.getStatus() == OrderStatus.PENDING) {
+            orderService.releaseReservation(order);
+        }
         StoredFile receipt = order.getReceiptFile();
         UUID receiptId = receipt != null ? receipt.getId() : null;
         Path receiptPath = receipt != null ? fileStorage.pathOf(receipt) : null;

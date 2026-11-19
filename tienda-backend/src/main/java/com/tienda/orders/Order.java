@@ -72,6 +72,18 @@ public class Order {
     @Column(name = "shipped_at")
     private Instant shippedAt;
 
+    @Column(name = "delivered_at")
+    private Instant deliveredAt;
+
+    @Column(name = "carrier_name", length = 80)
+    private String carrierName;
+
+    @Column(name = "tracking_number", length = 80)
+    private String trackingNumber;
+
+    @Column(name = "tracking_url", length = 500)
+    private String trackingUrl;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

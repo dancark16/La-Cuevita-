@@ -1,3 +1,5 @@
+import { InvoiceFilesService } from '../../../../shared/services/invoice-files.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -22,6 +24,9 @@ import { Order } from '../../../../shared/models/order.model';
 })
 export class OrderPageComponent {
   private readonly api = inject(OrderApiService);
+  private readonly invoices = inject(InvoiceFilesService);
+  private readonly notify = inject(NotificationService);
+  readonly invoiceBusy = signal(false);
 
   /** Id del pedido, tomado de la ruta /pedido/:id. */
   readonly id = input.required<string>();
@@ -35,6 +40,7 @@ export class OrderPageComponent {
   readonly copied = signal<string | null>(null);
 
   readonly steps = ORDER_STEPS;
+  readonly stepIcons = ['receipt_long', 'payments', 'local_shipping', 'inventory_2'];
   readonly statusLabel = ORDER_STATUS_LABEL;
   private readonly settings = inject(StoreSettingsService);
   readonly logoOf = bankLogo;
@@ -55,6 +61,40 @@ export class OrderPageComponent {
     const text = `Hola La Cuevita, soy ${order.customerName}. Ya hice la transferencia del pedido #${order.orderNumber} por $${order.total.toFixed(2)}. Te envío el comprobante.`;
     return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
   });
+
+  /** Enlace de WhatsApp para consultas generales sobre este pedido. */
+  readonly helpUrl = computed(() => {
+    const order = this.order();
+    const number = this.settings.settings().whatsappNumber;
+    if (!order || !number) {
+      return null;
+    }
+    const text = `Hola La Cuevita, tengo una consulta sobre mi pedido #${order.orderNumber}.`;
+    return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
+  });
+
+  /** Novedades del envío, la más reciente primero. */
+  readonly trackingEvents = computed(() => [...(this.order()?.tracking?.events ?? [])].reverse());
+
+  readonly hasInvoice = computed(() => {
+    const status = this.order()?.status;
+    return status === 'PAID' || status === 'PROCESSING' || status === 'SHIPPED' || status === 'DELIVERED' || status === 'CONFIRMED';
+  });
+
+  downloadInvoice(): void {
+    const order = this.order();
+    if (!order) {
+      return;
+    }
+    this.invoiceBusy.set(true);
+    this.invoices.download(order.id, order.orderNumber).subscribe({
+      next: () => this.invoiceBusy.set(false),
+      error: () => {
+        this.invoiceBusy.set(false);
+        this.notify.error('No pudimos descargar la factura. Inténtalo de nuevo en unos minutos.');
+      },
+    });
+  }
 
   constructor() {
     this.settings.bankAccounts().subscribe((accounts) => this.accounts.set(accounts));

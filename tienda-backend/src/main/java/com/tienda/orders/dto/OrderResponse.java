@@ -28,6 +28,7 @@ public record OrderResponse(
         Instant paidAt,
         Instant shippedAt,
         Instant createdAt,
-        Instant updatedAt
+        Instant updatedAt,
+        com.tienda.shipping.dto.ShippingDtos.TrackingInfo tracking
         ) {
 }

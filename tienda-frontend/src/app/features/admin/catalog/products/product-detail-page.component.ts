@@ -56,6 +56,7 @@ export class ProductDetailPageComponent implements OnInit {
   readonly product = signal<Product | null>(null);
   readonly variants = signal<Variant[]>([]);
   readonly stocks = signal<Record<string, number | undefined>>({});
+  readonly reserved = signal<Record<string, number | undefined>>({});
   readonly categories = signal<Category[]>([]);
   readonly categoryOptions = computed<SelectOption[]>(() =>
     this.categories().map((c) => ({ value: c.id, label: c.name }))
@@ -386,8 +387,14 @@ export class ProductDetailPageComponent implements OnInit {
       )
     ).subscribe((results) => {
       const map: Record<string, number> = {};
-      variants.forEach((variant, index) => (map[variant.id] = results[index].quantityOnHand));
+      const held: Record<string, number> = {};
+      variants.forEach((variant, index) => {
+        const info = results[index] as { quantityOnHand: number; quantityReserved?: number };
+        map[variant.id] = info.quantityOnHand;
+        held[variant.id] = info.quantityReserved ?? 0;
+      });
       this.stocks.set(map);
+      this.reserved.set(held);
     });
   }
 }

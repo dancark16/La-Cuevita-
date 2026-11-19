@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+@lombok.RequiredArgsConstructor
 public class OrderMapper {
+
+    private final com.tienda.shipping.ShippingEventRepository shippingEvents;
 
     public OrderResponse toResponse(Order order) {
         List<OrderItemResponse> items = order.getItems().stream()
@@ -43,7 +46,19 @@ public class OrderMapper {
                 order.getPaidAt(),
                 order.getShippedAt(),
                 order.getCreatedAt(),
-                order.getUpdatedAt());
+                order.getUpdatedAt(),
+                trackingOf(order));
+    }
+
+    private com.tienda.shipping.dto.ShippingDtos.TrackingInfo trackingOf(Order order) {
+        if (order.getShippedAt() == null) {
+            return null;
+        }
+        var events = shippingEvents.findByOrderIdOrderByCreatedAtAsc(order.getId()).stream()
+                .map(e -> new com.tienda.shipping.dto.ShippingDtos.TrackingEventResponse(e.getId(), e.getMessage(), e.getCreatedAt()))
+                .toList();
+        return new com.tienda.shipping.dto.ShippingDtos.TrackingInfo(order.getCarrierName(), order.getTrackingNumber(),
+                order.getTrackingUrl(), order.getShippedAt(), order.getDeliveredAt(), events);
     }
 
     private OrderItemResponse toItemResponse(OrderItem item) {

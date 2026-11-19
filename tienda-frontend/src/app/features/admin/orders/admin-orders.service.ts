@@ -21,6 +21,12 @@ export interface AdminOrderSummary {
 
 export type OrderStats = Record<OrderStatus, number>;
 
+export interface ShipPayload {
+  carrierId: string | null;
+  trackingNumber: string | null;
+  note: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AdminOrdersService {
   private readonly http = inject(HttpClient);
@@ -57,8 +63,16 @@ export class AdminOrdersService {
     return this.http.post<Order>(`${this.url}/${id}/reject-receipt`, { note });
   }
 
-  ship(id: string, note: string): Observable<Order> {
-    return this.http.post<Order>(`${this.url}/${id}/ship`, { note });
+  ship(id: string, request: ShipPayload): Observable<Order> {
+    return this.http.post<Order>(`${this.url}/${id}/ship`, request);
+  }
+
+  addTrackingEvent(id: string, message: string, notifyCustomer: boolean): Observable<Order> {
+    return this.http.post<Order>(`${this.url}/${id}/tracking-events`, { message, notifyCustomer });
+  }
+
+  deleteTrackingEvent(id: string, eventId: string): Observable<Order> {
+    return this.http.delete<Order>(`${this.url}/${id}/tracking-events/${eventId}`);
   }
 
   deliver(id: string): Observable<Order> {

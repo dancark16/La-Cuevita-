@@ -320,3 +320,13 @@
     color: var(--color-accent-deep);
   }
 }
+
+.stock__reserved {
+  padding: 0.1875rem 0.625rem;
+  border-radius: var(--radius-pill);
+  background: #fef3c7;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #92400e;
+}

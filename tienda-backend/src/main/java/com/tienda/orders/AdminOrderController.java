@@ -27,6 +27,7 @@ import java.util.UUID;
 public class AdminOrderController {
 
     private final OrderTransferService service;
+    private final com.tienda.invoices.InvoiceEmailService invoiceEmailService;
 
     @GetMapping
     public Page<AdminOrderSummary> search(
@@ -68,8 +69,20 @@ public class AdminOrderController {
     }
 
     @PostMapping("/{id}/ship")
-    public OrderResponse ship(@PathVariable UUID id, @Valid @RequestBody OrderNoteRequest request) {
-        return service.ship(id, request.note());
+    public OrderResponse ship(@PathVariable UUID id,
+            @Valid @RequestBody com.tienda.shipping.dto.ShippingDtos.ShipRequest request) {
+        return service.ship(id, request);
+    }
+
+    @PostMapping("/{id}/tracking-events")
+    public OrderResponse addTrackingEvent(@PathVariable UUID id,
+            @Valid @RequestBody com.tienda.shipping.dto.ShippingDtos.TrackingEventRequest request) {
+        return service.addTrackingEvent(id, request.message(), request.notifyCustomer());
+    }
+
+    @DeleteMapping("/{id}/tracking-events/{eventId}")
+    public OrderResponse deleteTrackingEvent(@PathVariable UUID id, @PathVariable UUID eventId) {
+        return service.deleteTrackingEvent(id, eventId);
     }
 
     @PostMapping("/{id}/deliver")
@@ -81,6 +94,13 @@ public class AdminOrderController {
     @DeleteMapping("/{id}")
     public org.springframework.http.ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.delete(id);
+        return org.springframework.http.ResponseEntity.noContent().build();
+    }
+
+    /** Reenvía la factura por correo a la clienta. */
+    @PostMapping("/{id}/invoice/email")
+    public org.springframework.http.ResponseEntity<Void> resendInvoice(@PathVariable UUID id) {
+        invoiceEmailService.send(id);
         return org.springframework.http.ResponseEntity.noContent().build();
     }
 

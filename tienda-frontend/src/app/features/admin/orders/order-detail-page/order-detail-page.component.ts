@@ -1,3 +1,4 @@
+import { InvoiceFilesService } from '../../../../shared/services/invoice-files.service';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, OnDestroy, computed, inject, input, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -13,6 +14,8 @@ import { NotificationService } from '../../../../shared/services/notification.se
 import { httpErrorMessage } from '../../../../shared/util/http-error';
 import { ORDER_STATUS_LABEL, ORDER_STEPS, orderStepIndex } from '../../../../shared/util/order-status';
 import { whatsappLink } from '../../../../shared/util/whatsapp';
+import { SelectComponent, SelectOption } from '../../../../shared/components/select/select.component';
+import { Carrier, CarriersService } from '../../settings/carriers.service';
 import { AdminOrdersService } from '../admin-orders.service';
 
 type NoteAction = 'reject' | 'ship' | 'cancel';
@@ -27,8 +30,8 @@ const NOTE_COPY: Record<NoteAction, { title: string; label: string; hint: string
   },
   ship: {
     title: 'Marcar como enviado',
-    label: 'Guía o nota de envío (opcional)',
-    hint: 'Ej: Servientrega, guía 123456. La clienta la verá en su pedido.',
+    label: 'Nota para la clienta (opcional)',
+    hint: 'Ej: Te llegará en 2 a 3 días hábiles.',
     button: 'Marcar como enviado',
     required: false,
   },
@@ -44,7 +47,7 @@ const NOTE_COPY: Record<NoteAction, { title: string; label: string; hint: string
 @Component({
   selector: 'app-order-detail-page',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, DatePipe, FormsModule, ModalComponent],
+  imports: [RouterLink, CurrencyPipe, DatePipe, FormsModule, ModalComponent, SelectComponent],
   templateUrl: './order-detail-page.component.html',
   styleUrl: './order-detail-page.component.scss',
 })
@@ -53,6 +56,8 @@ export class OrderDetailPageComponent implements OnDestroy {
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotificationService);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly invoices = inject(InvoiceFilesService);
+  readonly invoiceBusy = signal(false);
 
   /** Id del pedido, tomado de la ruta /admin/pedidos/:id. */
   readonly id = input.required<string>();
@@ -67,7 +72,45 @@ export class OrderDetailPageComponent implements OnDestroy {
   readonly receiptRaw = signal<string | null>(null);
   readonly receiptLoading = signal(false);
 
+  private readonly carriersApi = inject(CarriersService);
+  readonly carrierOptions = signal<SelectOption[]>([]);
+  readonly carrierId = signal<string | null>(null);
+  readonly trackingNumber = signal('');
+  readonly eventText = signal('');
+  readonly eventNotify = signal(true);
   readonly noteAction = signal<NoteAction | null>(null);
+
+  addEvent(): void {
+    const order = this.order();
+    const message = this.eventText().trim();
+    if (!order || !message) {
+      return;
+    }
+    this.busy.set(true);
+    this.api.addTrackingEvent(order.id, message, this.eventNotify()).subscribe({
+      next: (updated) => {
+        this.busy.set(false);
+        this.apply(updated, false);
+        this.eventText.set('');
+        this.notify.success(this.eventNotify() ? 'Novedad agregada y avisada a la clienta' : 'Novedad agregada');
+      },
+      error: (error) => {
+        this.busy.set(false);
+        this.notify.error(httpErrorMessage(error));
+      },
+    });
+  }
+
+  removeEvent(eventId: string): void {
+    const order = this.order();
+    if (!order) {
+      return;
+    }
+    this.api.deleteTrackingEvent(order.id, eventId).subscribe({
+      next: (updated) => this.apply(updated, false),
+      error: (error) => this.notify.error(httpErrorMessage(error)),
+    });
+  }
   readonly noteText = signal('');
 
   readonly steps = ORDER_STEPS;
@@ -116,6 +159,45 @@ export class OrderDetailPageComponent implements OnDestroy {
     }
     return whatsappLink(order.customerPhone, text);
   });
+
+  /** La factura existe desde que se confirma el pago. */
+  readonly hasInvoice = computed(() => {
+    const status = this.order()?.status;
+    return status === 'PAID' || status === 'PROCESSING' || status === 'SHIPPED' || status === 'DELIVERED' || status === 'CONFIRMED';
+  });
+
+  downloadInvoice(): void {
+    const order = this.order();
+    if (!order) {
+      return;
+    }
+    this.invoiceBusy.set(true);
+    this.invoices.download(order.id, order.orderNumber).subscribe({
+      next: () => this.invoiceBusy.set(false),
+      error: (error) => {
+        this.invoiceBusy.set(false);
+        this.notify.error(httpErrorMessage(error, 'No se pudo descargar la factura.'));
+      },
+    });
+  }
+
+  emailInvoice(): void {
+    const order = this.order();
+    if (!order) {
+      return;
+    }
+    this.invoiceBusy.set(true);
+    this.invoices.sendByEmail(order.id).subscribe({
+      next: () => {
+        this.invoiceBusy.set(false);
+        this.notify.success(`Factura enviada a ${order.customerEmail}`);
+      },
+      error: (error) => {
+        this.invoiceBusy.set(false);
+        this.notify.error(httpErrorMessage(error, 'No se pudo enviar el correo.'));
+      },
+    });
+  }
 
   private objectUrl: string | null = null;
 
@@ -171,6 +253,15 @@ export class OrderDetailPageComponent implements OnDestroy {
 
   openNote(action: NoteAction): void {
     this.noteText.set('');
+    if (action === 'ship') {
+      this.trackingNumber.set('');
+      this.carrierId.set(null);
+      this.carriersApi.list().subscribe({
+        next: (list: Carrier[]) =>
+          this.carrierOptions.set(list.filter((c) => c.active).map((c) => ({ value: c.id, label: c.name }))),
+        error: () => undefined,
+      });
+    }
     this.noteAction.set(action);
   }
 
@@ -189,11 +280,19 @@ export class OrderDetailPageComponent implements OnDestroy {
       this.notify.error('Escribe el motivo.');
       return;
     }
+    if (action === 'ship' && !this.carrierId()) {
+      this.notify.error('Elige cómo se envía el pedido.');
+      return;
+    }
     const call$ =
       action === 'reject'
         ? this.api.rejectReceipt(order.id, note)
         : action === 'ship'
-          ? this.api.ship(order.id, note)
+          ? this.api.ship(order.id, {
+              carrierId: this.carrierId(),
+              trackingNumber: this.trackingNumber().trim() || null,
+              note: note || null,
+            })
           : this.api.cancel(order.id, note);
     this.run(call$).subscribe(() => this.noteAction.set(null));
   }

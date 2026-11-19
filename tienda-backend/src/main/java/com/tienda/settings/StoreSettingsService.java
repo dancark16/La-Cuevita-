@@ -54,6 +54,33 @@ public class StoreSettingsService {
         return adminSettings();
     }
 
+    @Transactional(readOnly = true)
+    public com.tienda.settings.dto.SettingsDtos.BillingProfile billingProfile() {
+        StoreSettings s = load();
+        return new com.tienda.settings.dto.SettingsDtos.BillingProfile(s.getBusinessName(), s.getTradeName(),
+                s.getRuc(), s.getHeadOfficeAddress(), s.getBranchAddress(), s.getSpecialTaxpayer(),
+                s.isAccountingRequired());
+    }
+
+    @Transactional
+    public com.tienda.settings.dto.SettingsDtos.BillingProfile updateBillingProfile(
+            com.tienda.settings.dto.SettingsDtos.BillingProfile request) {
+        StoreSettings s = load();
+        s.setBusinessName(blankToNull(request.businessName()));
+        s.setTradeName(blankToNull(request.tradeName()));
+        String ruc = blankToNull(request.ruc());
+        if (ruc != null && !ruc.matches("\\d{13}")) {
+            throw new IllegalArgumentException("El RUC debe tener 13 dígitos");
+        }
+        s.setRuc(ruc);
+        s.setHeadOfficeAddress(blankToNull(request.headOfficeAddress()));
+        s.setBranchAddress(blankToNull(request.branchAddress()));
+        s.setSpecialTaxpayer(blankToNull(request.specialTaxpayer()));
+        s.setAccountingRequired(request.accountingRequired());
+        settingsRepository.save(s);
+        return billingProfile();
+    }
+
     @Transactional
     public BankAccountResponse createBank(BankAccountRequest request) {
         BankAccount account = BankAccount.builder()

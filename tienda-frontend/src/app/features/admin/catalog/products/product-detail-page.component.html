@@ -190,6 +190,9 @@
                           (input)="setStockDraft(variant.id, $any($event.target).value)"
                           (keydown.enter)="saveStock(variant)"
                         />
+                        @if ((reserved()[variant.id] ?? 0) > 0) {
+                          <span class="stock__reserved" title="Apartadas en pedidos pendientes de pago">{{ reserved()[variant.id] }} reservadas</span>
+                        }
                         @if (stockChanged(variant.id)) {
                           <button type="button" class="stock__save" [disabled]="stockSaving() === variant.id" (click)="saveStock(variant)">
                             Guardar

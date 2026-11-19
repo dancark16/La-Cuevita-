@@ -1,5 +1,20 @@
 <section class="orders">
-  <h1 class="orders__title">Mis pedidos</h1>
+  <header class="hero">
+    <div class="hero__main">
+      <span class="hero__icon material-icons" aria-hidden="true">shopping_bag</span>
+      <div>
+        <h1 class="hero__title">Mis pedidos</h1>
+        <p class="hero__text">Sigue tus compras, descarga tus facturas y revisa dónde va tu paquete.</p>
+      </div>
+    </div>
+    @if (!loading() && orders().length > 0) {
+      <ul class="hero__stats" aria-label="Resumen">
+        <li class="stat"><strong>{{ orders().length }}</strong><span>{{ orders().length === 1 ? 'pedido' : 'pedidos' }}</span></li>
+        <li class="stat"><strong>{{ onTheWay() }}</strong><span>en camino</span></li>
+        <li class="stat"><strong>{{ delivered() }}</strong><span>{{ delivered() === 1 ? 'entregado' : 'entregados' }}</span></li>
+      </ul>
+    }
+  </header>
 
   @if (loading()) {
     <p class="empty">Cargando...</p>
@@ -7,30 +22,44 @@
     <p class="empty" role="alert">No pudimos cargar tus pedidos. Intenta de nuevo.</p>
   } @else if (orders().length === 0) {
     <div class="empty">
+      <span class="empty__icon material-icons" aria-hidden="true">shopping_bag</span>
       <p class="empty__title">Todavía no tienes pedidos</p>
+      <p class="empty__text">Cuando hagas tu primera compra, la verás aquí con su seguimiento.</p>
       <a routerLink="/tienda" class="button">Ir a la tienda</a>
     </div>
   } @else {
     <ul class="list">
       @for (order of orders(); track order.id) {
         <li>
-          <a [routerLink]="['/pedido', order.id]" class="row">
+          <a [routerLink]="['/pedido', order.id]" class="row" [class]="'row row--' + tone(order.status)">
+            <span class="row__icon" aria-hidden="true">
+              <span class="material-icons">{{ iconOf(order.status) }}</span>
+            </span>
+
             <span class="row__main">
-              <strong class="row__number">Pedido #{{ order.orderNumber }}</strong>
+              <span class="row__top">
+                <strong class="row__number">Pedido #{{ order.orderNumber }}</strong>
+                <span class="status" [class]="'status status--' + tone(order.status)">{{ statusLabel[order.status] }}</span>
+              </span>
               <span class="row__meta">
-                {{ order.createdAt | date: 'd/MM/yyyy' }} · {{ order.items.length }}
+                {{ order.createdAt | date: "d 'de' MMM y" }} · {{ order.items.length }}
                 {{ order.items.length === 1 ? 'producto' : 'productos' }}
               </span>
+              <span class="row__items">{{ summary(order) }}</span>
+              @if (order.status !== 'CANCELLED') {
+                <span class="progress" aria-hidden="true">
+                  <span class="progress__bar" [style.width.%]="progress(order.status)"></span>
+                </span>
+              }
             </span>
-            <span class="row__total">{{ order.total | currency: 'USD' }}</span>
-            <span
-              class="status"
-              [class.status--ok]="order.status === 'PAID' || order.status === 'SHIPPED' || order.status === 'DELIVERED'"
-              [class.status--off]="order.status === 'CANCELLED'"
-            >
-              {{ statusLabel[order.status] }}
+
+            <span class="row__side">
+              <span class="row__total">{{ order.total | currency: 'USD' }}</span>
+              <span class="row__cta">
+                Ver pedido
+                <span class="material-icons" aria-hidden="true">arrow_forward</span>
+              </span>
             </span>
-            <span class="material-icons row__arrow" aria-hidden="true">chevron_right</span>
           </a>
         </li>
       }

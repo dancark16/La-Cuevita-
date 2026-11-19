@@ -140,6 +140,22 @@
             }
           </div>
 
+          @if (hasInvoice()) {
+            <div class="invoice">
+              <h3 class="invoice__title">Factura</h3>
+              <div class="actions">
+                <button type="button" class="button button--outline" [disabled]="invoiceBusy()" (click)="downloadInvoice()">
+                  <span class="material-icons" aria-hidden="true">description</span>
+                  Descargar PDF
+                </button>
+                <button type="button" class="button button--outline" [disabled]="invoiceBusy()" (click)="emailInvoice()">
+                  <span class="material-icons" aria-hidden="true">forward_to_inbox</span>
+                  Enviar por correo
+                </button>
+              </div>
+            </div>
+          }
+
           @if (whatsapp(); as url) {
             <a class="button button--whatsapp" [href]="url" target="_blank" rel="noopener">
               <span class="material-icons" aria-hidden="true">chat</span>
@@ -149,6 +165,56 @@
             <p class="muted-text">La clienta no dejó un teléfono válido.</p>
           }
         </section>
+
+        @if (o.tracking; as tr) {
+          <section class="card">
+            <h2 class="card__title"><span class="slash" aria-hidden="true">/</span>Seguimiento</h2>
+            <dl class="track">
+              <div><dt>Transportista</dt><dd>{{ tr.carrierName ?? 'Sin transportista' }}</dd></div>
+              @if (tr.trackingNumber) {
+                <div><dt>Guía</dt><dd>{{ tr.trackingNumber }}</dd></div>
+              }
+            </dl>
+            @if (tr.trackingUrl) {
+              <a class="track__link" [href]="tr.trackingUrl" target="_blank" rel="noopener">
+                <span class="material-icons" aria-hidden="true">open_in_new</span>Abrir rastreo del transportista
+              </a>
+            }
+            <ol class="events">
+              @for (event of tr.events; track event.id) {
+                <li class="event">
+                  <span class="event__dot" aria-hidden="true"></span>
+                  <div class="event__text">
+                    <span>{{ event.message }}</span>
+                    <small>{{ event.createdAt | date: 'd/MM/yyyy HH:mm' }}</small>
+                  </div>
+                  <button type="button" class="icon-btn icon-btn--danger" aria-label="Quitar novedad" (click)="removeEvent(event.id)">
+                    <span class="material-icons" aria-hidden="true">close</span>
+                  </button>
+                </li>
+              }
+            </ol>
+            @if (o.status === 'SHIPPED') {
+              <div class="event-form">
+                <input
+                  class="field__input"
+                  placeholder="Nueva novedad: Llegó a la agencia de Quito..."
+                  maxlength="300"
+                  [ngModel]="eventText()"
+                  (ngModelChange)="eventText.set($event)"
+                  (keydown.enter)="addEvent()"
+                />
+                <label class="check">
+                  <input type="checkbox" [ngModel]="eventNotify()" (ngModelChange)="eventNotify.set($event)" />
+                  <span>Avisar por correo a la clienta</span>
+                </label>
+                <button type="button" class="button button--outline" [disabled]="busy() || !eventText().trim()" (click)="addEvent()">
+                  Agregar novedad
+                </button>
+              </div>
+            }
+          </section>
+        }
 
         <section class="card">
           <h2 class="card__title"><span class="slash" aria-hidden="true">/</span>Clienta</h2>
@@ -177,6 +243,26 @@
     @if (noteAction(); as action) {
       <app-modal icon="receipt_long" [title]="copy[action].title" (closed)="closeNote()">
         <div class="form">
+          @if (action === 'ship') {
+            <div class="field">
+              <label class="field__label" for="ship-carrier">¿Con quién se envía?</label>
+              <app-select
+                inputId="ship-carrier"
+                placeholder="Elige un transportista"
+                [options]="carrierOptions()"
+                [value]="carrierId()"
+                (changed)="carrierId.set($any($event))"
+              />
+              @if (carrierOptions().length === 0) {
+                <span class="field__hint">Aún no tienes transportistas. Agrégalos en Configuración.</span>
+              }
+            </div>
+            <div class="field">
+              <label class="field__label" for="ship-guide">Número de guía <span class="field__opt">(opcional)</span></label>
+              <input id="ship-guide" class="field__input" [ngModel]="trackingNumber()" (ngModelChange)="trackingNumber.set($event)" maxlength="80" />
+              <span class="field__hint">La clienta lo verá en su pedido y en el correo, con el enlace para rastrearlo.</span>
+            </div>
+          }
           <div class="field">
             <label class="field__label" for="order-note">{{ copy[action].label }}</label>
             <textarea

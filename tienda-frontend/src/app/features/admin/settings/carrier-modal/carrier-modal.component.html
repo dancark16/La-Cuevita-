@@ -1,0 +1,47 @@
+<app-modal
+  icon="local_shipping"
+  [title]="carrier() ? 'Editar transportista' : 'Agregar transportista'"
+  subtitle="Así lo eliges al enviar un pedido y lo ve la clienta."
+  (closed)="cancelled.emit()"
+>
+  <form class="form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="field">
+      <label class="field__label" for="carrier-name">Nombre</label>
+      <input
+        id="carrier-name"
+        class="field__input"
+        [class.field__input--invalid]="form.controls.name.touched && form.controls.name.invalid"
+        formControlName="name"
+        placeholder="Servientrega, Cooperativa Ejemplo, Moto..."
+      />
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <span class="field__error">El nombre es obligatorio</span>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="carrier-url">Enlace de rastreo <span class="field__opt">(opcional)</span></label>
+      <input id="carrier-url" class="field__input" formControlName="trackingUrl" placeholder="https://www.transportista.com/rastreo?guia={guia}" />
+      <span class="field__hint">
+        Copia la dirección de la página donde se rastrea un paquete y pon <code>&#123;guia&#125;</code> donde va el número de guía.
+        El sistema lo reemplaza solo en cada pedido. Si no tienes enlace, déjalo vacío: la clienta verá solo el número de guía.
+      </span>
+    </div>
+
+    <label class="switch">
+      <input type="checkbox" class="switch__input" formControlName="active" />
+      <span class="switch__track" aria-hidden="true"></span>
+      <span class="switch__text">
+        <strong>{{ form.controls.active.value ? 'Disponible' : 'Oculto' }}</strong>
+        <span class="field__hint">Los ocultos no aparecen al marcar un pedido como enviado.</span>
+      </span>
+    </label>
+
+    <div class="form__actions">
+      <button type="button" class="button button--outline" (click)="cancelled.emit()">Cancelar</button>
+      <button type="submit" class="button button--primary" [disabled]="saving()">
+        {{ saving() ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</app-modal>

@@ -67,6 +67,12 @@ public class InventoryService {
                             .formatted(inventory.getVariant().getSku(), inventory.getQuantityOnHand(), Math.abs(delta)));
         }
 
+        if (delta < 0 && request.type() != MovementType.VENTA && newQuantity < inventory.getQuantityReserved()) {
+            throw new InsufficientStockException(
+                    "El SKU %s tiene %d unidades reservadas en pedidos pendientes: el stock no puede bajar de eso"
+                            .formatted(inventory.getVariant().getSku(), inventory.getQuantityReserved()));
+        }
+
         inventory.setQuantityOnHand(newQuantity);
         inventoryRepository.save(inventory);
 

@@ -23,6 +23,7 @@ public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
     private final BillingIntegrationService billingIntegrationService;
+    private final InvoicePdfService pdfService;
 
     @Value("${app.billing.tax-rate}")
     private BigDecimal taxRate;
@@ -64,7 +65,7 @@ public class InvoiceService {
     @Transactional(readOnly = true)
     public byte[] downloadPdf(Order order) {
         Invoice invoice = getAuthorizedInvoiceOrThrow(order);
-        return billingIntegrationService.downloadPdf(invoice.getExternalReference());
+        return pdfService.render(invoice);
     }
 
     private Invoice createAndProcessInvoice(Order order, String idempotencyKey) {

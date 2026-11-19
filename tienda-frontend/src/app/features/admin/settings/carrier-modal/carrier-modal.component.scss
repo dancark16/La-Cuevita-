@@ -1,0 +1,17 @@
+@use '../../admin-ui';
+
+@include admin-ui.form-fields;
+@include admin-ui.buttons;
+@include admin-ui.switch;
+
+.field__opt {
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+code {
+  padding: 0.0625rem 0.375rem;
+  border-radius: 0.25rem;
+  background: var(--color-sky);
+  font-size: 0.75rem;
+}

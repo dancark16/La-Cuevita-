@@ -27,6 +27,8 @@ public class PaymentService {
     private final PaymentMapper paymentMapper;
     private final OrderService orderService;
     private final InventoryService inventoryService;
+    private final com.tienda.inventory.StockReservationService stockReservation;
+    private final com.tienda.invoices.InvoiceEmailService invoiceEmailService;
     private final InvoiceService invoiceService;
 
     @Transactional
@@ -88,7 +90,8 @@ public class PaymentService {
         if (status == PaymentStatus.APPROVED) {
             deductInventory(order, user);
             orderService.markAsPaid(order);
-            invoiceService.requestInvoice(order);   // <-- nueva línea
+            invoiceService.requestInvoice(order);
+            invoiceEmailService.sendAfterCommit(order.getId());
         }
 
         return paymentMapper.toResponse(payment);
@@ -96,6 +99,8 @@ public class PaymentService {
 
     private void deductInventory(Order order, User user) {
         for (OrderItem item : order.getItems()) {
+            // La reserva de este pedido se convierte en venta
+            stockReservation.release(item.getVariant().getId(), item.getQuantity());
             inventoryService.registerMovement(
                     new MovementRequest(
                             item.getVariant().getId(),

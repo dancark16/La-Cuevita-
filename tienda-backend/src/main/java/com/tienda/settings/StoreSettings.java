@@ -27,6 +27,27 @@ public class StoreSettings {
     @Column(name = "payphone_enabled", nullable = false)
     private boolean payphoneEnabled;
 
+    @Column(name = "business_name", length = 200)
+    private String businessName;
+
+    @Column(name = "trade_name", length = 200)
+    private String tradeName;
+
+    @Column(length = 13)
+    private String ruc;
+
+    @Column(name = "head_office_address", length = 300)
+    private String headOfficeAddress;
+
+    @Column(name = "branch_address", length = 300)
+    private String branchAddress;
+
+    @Column(name = "special_taxpayer", length = 30)
+    private String specialTaxpayer;
+
+    @Column(name = "accounting_required", nullable = false)
+    private boolean accountingRequired;
+
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 

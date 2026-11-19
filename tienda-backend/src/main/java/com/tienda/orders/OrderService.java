@@ -4,8 +4,7 @@ import com.tienda.common.exception.ResourceNotFoundException;
 import com.tienda.customers.Address;
 import com.tienda.customers.Customer;
 import com.tienda.customers.CustomerService;
-import com.tienda.inventory.InsufficientStockException;
-import com.tienda.inventory.InventoryRepository;
+import com.tienda.inventory.StockReservationService;
 import com.tienda.orders.dto.CheckoutRequest;
 import com.tienda.orders.dto.OrderItemRequest;
 import com.tienda.orders.dto.OrderResponse;
@@ -33,7 +32,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CustomerService customerService;
     private final ProductVariantRepository variantRepository;
-    private final InventoryRepository inventoryRepository;
+    private final StockReservationService stockReservation;
     private final CouponRepository couponRepository;
     private final OrderMapper orderMapper;
 
@@ -56,15 +55,8 @@ public class OrderService {
                 throw new IllegalArgumentException("La variante " + variant.getSku() + " no está disponible");
             }
 
-            int availableStock = inventoryRepository.findByVariantId(variant.getId())
-                    .map(inv -> inv.getQuantityOnHand())
-                    .orElse(0);
-
-            if (availableStock < itemRequest.quantity()) {
-                throw new InsufficientStockException(
-                        "Stock insuficiente para el SKU %s: disponible %d, solicitado %d"
-                                .formatted(variant.getSku(), availableStock, itemRequest.quantity()));
-            }
+            // Aparta las unidades para esta clienta mientras paga (se libera si no paga)
+            stockReservation.reserve(variant.getId(), variant.getSku(), itemRequest.quantity());
 
             BigDecimal unitPrice = variant.getPromoPrice() != null ? variant.getPromoPrice() : variant.getPrice();
             BigDecimal itemSubtotal = unitPrice.multiply(BigDecimal.valueOf(itemRequest.quantity()));
@@ -158,7 +150,16 @@ public class OrderService {
         }
 
         order.setStatus(OrderStatus.CANCELLED);
+        releaseReservation(order);
         return orderMapper.toResponse(orderRepository.save(order));
+    }
+
+    /** Devuelve al inventario disponible las unidades que un pedido pendiente tenía apartadas. */
+    @Transactional
+    public void releaseReservation(Order order) {
+        for (OrderItem item : order.getItems()) {
+            stockReservation.release(item.getVariant().getId(), item.getQuantity());
+        }
     }
 
     private Coupon resolveCoupon(String code) {

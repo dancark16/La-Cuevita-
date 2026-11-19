@@ -36,6 +36,17 @@ public class SettingsController {
         return service.update(request);
     }
 
+    @GetMapping("/api/admin/settings/billing")
+    public com.tienda.settings.dto.SettingsDtos.BillingProfile billingProfile() {
+        return service.billingProfile();
+    }
+
+    @PutMapping("/api/admin/settings/billing")
+    public com.tienda.settings.dto.SettingsDtos.BillingProfile updateBillingProfile(
+            @Valid @RequestBody com.tienda.settings.dto.SettingsDtos.BillingProfile request) {
+        return service.updateBillingProfile(request);
+    }
+
     @PostMapping("/api/admin/settings/bank-accounts")
     @ResponseStatus(HttpStatus.CREATED)
     public BankAccountResponse createBank(@Valid @RequestBody BankAccountRequest request) {

@@ -39,6 +39,18 @@ public final class SettingsDtos {
     ) {
     }
 
+    /** Datos del emisor que salen en la factura. */
+    public record BillingProfile(
+            @Size(max = 200) String businessName,
+            @Size(max = 200) String tradeName,
+            @Size(max = 13) String ruc,
+            @Size(max = 300) String headOfficeAddress,
+            @Size(max = 300) String branchAddress,
+            @Size(max = 30) String specialTaxpayer,
+            boolean accountingRequired
+    ) {
+    }
+
     public record BankAccountRequest(
             @NotBlank @Size(max = 80) String bankName,
             @NotBlank @Size(max = 20) String accountType,

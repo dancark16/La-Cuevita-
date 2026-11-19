@@ -108,7 +108,7 @@ public class StoreCatalogService {
         return inventoryRepository.findByVariantIdIn(variantIds).stream()
                 .collect(Collectors.toMap(
                         inventory -> inventory.getVariant().getId(),
-                        Inventory::getQuantityOnHand));
+                        inventory -> Math.max(0, inventory.getQuantityOnHand() - inventory.getQuantityReserved())));
     }
 
     private StoreDto.ProductSummary toSummary(Product product, List<ProductVariant> variants,

@@ -17,6 +17,16 @@ export interface SettingsRequest {
   payphoneEnabled: boolean;
 }
 
+export interface BillingProfile {
+  businessName: string | null;
+  tradeName: string | null;
+  ruc: string | null;
+  headOfficeAddress: string | null;
+  branchAddress: string | null;
+  specialTaxpayer: string | null;
+  accountingRequired: boolean;
+}
+
 export interface BankAccountRequest {
   bankName: string;
   accountType: string;
@@ -32,6 +42,14 @@ export interface BankAccountRequest {
 export class AdminSettingsService {
   private readonly http = inject(HttpClient);
   private readonly url = `${environment.apiUrl}/admin/settings`;
+
+  getBilling(): Observable<BillingProfile> {
+    return this.http.get<BillingProfile>(`${this.url}/billing`);
+  }
+
+  updateBilling(request: BillingProfile): Observable<BillingProfile> {
+    return this.http.put<BillingProfile>(`${this.url}/billing`, request);
+  }
 
   get(): Observable<AdminSettings> {
     return this.http.get<AdminSettings>(this.url);

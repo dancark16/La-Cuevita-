@@ -158,3 +158,31 @@
 .account__main {
   flex: 1;
 }
+
+.billing__title {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed #b7d5ea;
+}
+
+.billing__hint {
+  margin-bottom: 1rem;
+}
+
+.field__opt {
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.carriers__hint {
+  margin-bottom: 1rem;
+}

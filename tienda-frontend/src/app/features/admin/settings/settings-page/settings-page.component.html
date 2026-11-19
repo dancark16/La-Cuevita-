@@ -31,6 +31,48 @@
       </div>
     </form>
 
+    <h2 class="card__title billing__title"><span class="slash" aria-hidden="true">/</span>Datos de facturación</h2>
+    <p class="field__hint billing__hint">Salen en la factura que recibe tu clienta. Si aún no los tienes, déjalos vacíos.</p>
+    <form class="form" [formGroup]="billingForm" (ngSubmit)="saveBilling()">
+      <div class="field">
+        <label class="field__label" for="bill-business">Razón social</label>
+        <input id="bill-business" class="field__input" formControlName="businessName" placeholder="Nombre legal del negocio o de la persona" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field__label" for="bill-trade">Nombre comercial</label>
+          <input id="bill-trade" class="field__input" formControlName="tradeName" placeholder="La Cuevita" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="bill-ruc">RUC</label>
+          <input id="bill-ruc" class="field__input" formControlName="ruc" inputmode="numeric" maxlength="13" placeholder="13 dígitos" />
+        </div>
+      </div>
+      <div class="field">
+        <label class="field__label" for="bill-head">Dirección matriz</label>
+        <input id="bill-head" class="field__input" formControlName="headOfficeAddress" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field__label" for="bill-branch">Dirección sucursal <span class="field__opt">(opcional)</span></label>
+          <input id="bill-branch" class="field__input" formControlName="branchAddress" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="bill-special">Contribuyente especial <span class="field__opt">(opcional)</span></label>
+          <input id="bill-special" class="field__input" formControlName="specialTaxpayer" />
+        </div>
+      </div>
+      <label class="check">
+        <input type="checkbox" formControlName="accountingRequired" />
+        <span>Obligado a llevar contabilidad</span>
+      </label>
+      <div class="form__actions">
+        <button type="submit" class="button button--primary" [disabled]="savingBilling()">
+          {{ savingBilling() ? 'Guardando...' : 'Guardar datos de facturación' }}
+        </button>
+      </div>
+    </form>
+
     <div class="soon">
       <span class="material-icons" aria-hidden="true">credit_card</span>
       <div>
@@ -88,8 +130,53 @@
       </ul>
     }
   </section>
+  <section class="card">
+    <header class="card__head">
+      <h2 class="card__title"><span class="slash" aria-hidden="true">/</span>Transportistas</h2>
+      <button type="button" class="button button--outline button--small" (click)="openCarrier(null)">
+        <span class="material-icons" aria-hidden="true">add</span>
+        Agregar transportista
+      </button>
+    </header>
+    <p class="field__hint carriers__hint">
+      Con qué envías tus pedidos. Pon el enlace de rastreo de cada uno y tus clientas podrán seguir su paquete desde su pedido.
+    </p>
+    @if (carriers().length === 0) {
+      <p class="empty">Todavía no hay transportistas.</p>
+    } @else {
+      <ul class="accounts">
+        @for (carrier of carriers(); track carrier.id) {
+          <li class="account" [class.account--off]="!carrier.active">
+            <div class="account__main">
+              <p class="account__bank">
+                {{ carrier.name }}
+                @if (!carrier.active) {
+                  <span class="account__hidden">Oculto</span>
+                }
+              </p>
+              <p class="account__holder">
+                {{ carrier.trackingUrl ? 'Rastreo configurado' : 'Sin enlace de rastreo: la clienta verá solo la guía' }}
+              </p>
+            </div>
+            <div class="account__actions">
+              <button type="button" class="icon-btn" aria-label="Editar transportista" (click)="openCarrier(carrier)">
+                <span class="material-icons" aria-hidden="true">edit</span>
+              </button>
+              <button type="button" class="icon-btn icon-btn--danger" aria-label="Eliminar transportista" (click)="removeCarrier(carrier)">
+                <span class="material-icons" aria-hidden="true">delete_outline</span>
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </section>
 </div>
 
 @if (modalOpen()) {
   <app-bank-account-modal [account]="editing()" (saved)="onSaved()" (cancelled)="modalOpen.set(false)" />
+}
+
+@if (carrierModalOpen()) {
+  <app-carrier-modal [carrier]="editingCarrier()" (saved)="onCarrierSaved()" (cancelled)="carrierModalOpen.set(false)" />
 }
