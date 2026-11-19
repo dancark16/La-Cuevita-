@@ -78,7 +78,15 @@
     </div>
   </div>
 
-  <p class="legal">© {{ year }} La Cuevita. Todos los derechos reservados.</p>
+  <div class="legal">
+    <nav class="legal__links" aria-label="Información legal">
+      <a routerLink="/legal/terminos">Términos y condiciones</a>
+      <a routerLink="/legal/privacidad">Privacidad</a>
+      <a routerLink="/legal/devoluciones">Cambios y devoluciones</a>
+      <a routerLink="/legal/contacto">Contacto</a>
+    </nav>
+    <p class="legal__copy">© {{ year }} La Cuevita. Todos los derechos reservados.</p>
+  </div>
 </footer>
 
 <ng-template #content let-item>

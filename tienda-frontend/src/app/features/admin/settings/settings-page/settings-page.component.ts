@@ -116,6 +116,7 @@ export class SettingsPageComponent implements OnInit {
   readonly form = this.fb.nonNullable.group({
     whatsappNumber: [''],
     instagramUser: [''],
+    contactEmail: [''],
   });
 
   ngOnInit(): void {
@@ -129,6 +130,7 @@ export class SettingsPageComponent implements OnInit {
       .update({
         whatsappNumber: value.whatsappNumber.trim() || null,
         instagramUser: value.instagramUser.trim() || null,
+        contactEmail: value.contactEmail.trim() || null,
         payphoneEnabled: this.payphoneEnabled(),
       })
       .subscribe({
@@ -207,6 +209,7 @@ export class SettingsPageComponent implements OnInit {
     this.form.setValue({
       whatsappNumber: settings.whatsappNumber ?? '',
       instagramUser: settings.instagramUser ?? '',
+      contactEmail: settings.contactEmail ?? '',
     });
     this.payphoneEnabled.set(settings.payphoneEnabled);
     this.accounts.set(settings.bankAccounts);

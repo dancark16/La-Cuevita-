@@ -1,0 +1,39 @@
+<section class="nf">
+  <div class="nf__card">
+    <div class="nf__code" aria-hidden="true">
+      <span>4</span>
+      <svg class="nf__crown" viewBox="0 0 24 24"><path d="M3 18 1.5 8 7 12l5-8 5 8 5.5-4L21 18H3Z M4 20h16v2H4z" /></svg>
+      <span>4</span>
+    </div>
+
+    <h1 class="nf__title">No encontramos esta página</h1>
+    <p class="nf__text">
+      Puede que el enlace esté roto o que el producto ya no esté disponible. Prueba buscando lo que necesitas o vuelve a la tienda.
+    </p>
+
+    <form class="nf__search" role="search" (submit)="search($event, term.value)">
+      <label class="visually-hidden" for="nf-search">Buscar productos</label>
+      <span class="material-icons nf__search-icon" aria-hidden="true">search</span>
+      <input #term id="nf-search" class="nf__input" type="search" placeholder="Buscar productos..." />
+      <button type="submit" class="nf__go">Buscar</button>
+    </form>
+
+    <div class="nf__actions">
+      <a routerLink="/" class="nf__button nf__button--primary">
+        <span class="material-icons" aria-hidden="true">home</span>Ir al inicio
+      </a>
+      <a routerLink="/tienda" class="nf__button nf__button--outline">
+        <span class="material-icons" aria-hidden="true">checkroom</span>Ver la tienda
+      </a>
+    </div>
+
+    @if (categories().length > 0) {
+      <div class="nf__chips">
+        <span class="nf__chips-label">O mira por categoría:</span>
+        @for (category of categories(); track category.id) {
+          <a class="nf__chip" routerLink="/tienda" [queryParams]="{ categoria: category.id }">{{ category.name }}</a>
+        }
+      </div>
+    }
+  </div>
+</section>

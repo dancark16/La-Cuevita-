@@ -57,10 +57,22 @@ export const STORE_ROUTES: Routes = [
                     ),
             },
             {
+                path: 'legal',
+                loadChildren: () => import('./legal/legal.routes').then((m) => m.LEGAL_ROUTES),
+            },
+            {
                 path: 'carrito',
                 title: 'Carrito | La Cuevita',
                 loadComponent: () =>
                     import('./cart/cart-page/cart-page.component').then((m) => m.CartPageComponent),
+            },
+            {
+                path: '**',
+                title: 'Página no encontrada | La Cuevita',
+                loadComponent: () =>
+                    import('./not-found/not-found-page/not-found-page.component').then(
+                        (m) => m.NotFoundPageComponent
+                    ),
             },
         ],
     },

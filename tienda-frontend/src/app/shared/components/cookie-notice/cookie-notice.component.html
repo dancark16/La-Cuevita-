@@ -1,0 +1,10 @@
+@if (visible()) {
+  <aside class="notice" role="region" aria-label="Aviso sobre el navegador">
+    <span class="notice__icon material-icons" aria-hidden="true">cookie</span>
+    <p class="notice__text">
+      Usamos el almacenamiento de tu navegador solo para mantener tu sesión y tu carrito. No usamos cookies de publicidad.
+      <a routerLink="/legal/privacidad">Más información</a>
+    </p>
+    <button type="button" class="notice__button" (click)="accept()">Entendido</button>
+  </aside>
+}

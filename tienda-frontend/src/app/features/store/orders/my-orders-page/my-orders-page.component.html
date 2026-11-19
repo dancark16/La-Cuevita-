@@ -42,7 +42,7 @@
                 <span class="status" [class]="'status status--' + tone(order.status)">{{ statusLabel[order.status] }}</span>
               </span>
               <span class="row__meta">
-                {{ order.createdAt | date: "d 'de' MMM y" }} · {{ order.items.length }}
+                {{ order.createdAt | date: "d 'de' MMM y" : undefined : 'es' }} · {{ order.items.length }}
                 {{ order.items.length === 1 ? 'producto' : 'productos' }}
               </span>
               <span class="row__items">{{ summary(order) }}</span>

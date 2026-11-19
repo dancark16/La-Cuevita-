@@ -26,7 +26,8 @@ public class StoreSettingsService {
                 .distinct()
                 .toList();
         return new PublicSettings(settings.getWhatsappNumber(), settings.getInstagramUser(),
-                settings.isPayphoneEnabled(), names);
+                settings.isPayphoneEnabled(), names, settings.getContactEmail(), settings.getTradeName(),
+                settings.getBusinessName(), settings.getRuc(), settings.getHeadOfficeAddress());
     }
 
     @Transactional(readOnly = true)
@@ -41,7 +42,8 @@ public class StoreSettingsService {
         StoreSettings settings = load();
         return new AdminSettings(settings.getWhatsappNumber(), settings.getInstagramUser(),
                 settings.isPayphoneEnabled(),
-                bankRepository.findAllByOrderBySortOrderAscCreatedAtAsc().stream().map(this::toResponse).toList());
+                bankRepository.findAllByOrderBySortOrderAscCreatedAtAsc().stream().map(this::toResponse).toList(),
+                settings.getContactEmail());
     }
 
     @Transactional
@@ -50,6 +52,7 @@ public class StoreSettingsService {
         settings.setWhatsappNumber(normalizeWhatsapp(request.whatsappNumber()));
         settings.setInstagramUser(normalizeInstagram(request.instagramUser()));
         settings.setPayphoneEnabled(request.payphoneEnabled());
+        settings.setContactEmail(request.contactEmail() == null || request.contactEmail().isBlank() ? null : request.contactEmail().trim());
         settingsRepository.save(settings);
         return adminSettings();
     }

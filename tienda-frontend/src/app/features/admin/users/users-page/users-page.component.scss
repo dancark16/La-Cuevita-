@@ -1,0 +1,144 @@
+@use '../../admin-ui';
+
+:host {
+  display: block;
+}
+
+@include admin-ui.page-header;
+@include admin-ui.card;
+@include admin-ui.buttons;
+@include admin-ui.data-table;
+
+.card {
+  margin-top: 1.5rem;
+  overflow: hidden;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.125rem 1.25rem 0.75rem;
+}
+
+.toolbar__count {
+  margin-left: auto;
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.search {
+  position: relative;
+  flex: 1;
+  min-width: 14rem;
+  max-width: 24rem;
+}
+
+.search__icon {
+  position: absolute;
+  top: 50%;
+  left: 0.75rem;
+  font-size: 1.25rem;
+  color: var(--color-muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search__input {
+  width: 100%;
+  padding: 0.625rem 1rem 0.625rem 2.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(160deg, #ffffff 0%, #eaf5fc 100%);
+  font: inherit;
+  font-size: 0.875rem;
+
+  &:focus {
+    border-color: var(--color-black);
+    box-shadow: 0 0 0 3px rgb(255 79 163 / 25%);
+    outline: none;
+  }
+}
+
+.table--loading {
+  opacity: 0.5;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.person__avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffffff 0%, #bfe3f7 100%);
+  border: 1px solid #b7d5ea;
+  font-weight: 800;
+  color: var(--color-accent-deep);
+}
+
+.person__text {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.person__me {
+  padding: 0.0625rem 0.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  color: var(--color-white);
+}
+
+.role {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: #e3e9f0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #5f6f85;
+}
+
+.role--admin {
+  background: #dbe5ff;
+  color: #1f3a93;
+}
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid #d6e8f5;
+  background: linear-gradient(180deg, #ffffff 0%, #eaf5fc 100%);
+}
+
+.pager__info,
+.pager__page {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.pager__buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .button {
+    padding: 0.5rem 1rem;
+  }
+}

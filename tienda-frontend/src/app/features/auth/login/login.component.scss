@@ -1,3 +1,13 @@
 @use '../auth-form';
 
 @include auth-form.auth-form;
+
+.forgot {
+  align-self: flex-end;
+  margin-top: -0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-accent-deep);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

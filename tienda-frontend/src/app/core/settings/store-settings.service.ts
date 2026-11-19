@@ -8,6 +8,11 @@ export interface PublicSettings {
   instagramUser: string | null;
   payphoneEnabled: boolean;
   bankNames: string[];
+  contactEmail: string | null;
+  tradeName: string | null;
+  businessName: string | null;
+  ruc: string | null;
+  headOfficeAddress: string | null;
 }
 
 export interface BankAccount {
@@ -27,6 +32,11 @@ const DEFAULTS: PublicSettings = {
   instagramUser: null,
   payphoneEnabled: false,
   bankNames: [],
+  contactEmail: null,
+  tradeName: null,
+  businessName: null,
+  ruc: null,
+  headOfficeAddress: null,
 };
 
 /** Configuración de la tienda (WhatsApp, Instagram, bancos...) que administra el dueño desde el panel. */

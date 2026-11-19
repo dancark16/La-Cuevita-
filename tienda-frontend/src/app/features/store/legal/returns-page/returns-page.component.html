@@ -1,0 +1,68 @@
+<div class="prose">
+  <p class="prose__lead">
+    Queremos que quedes feliz con tu compra. Si algo no es lo que esperabas, así funcionan los cambios y las devoluciones.
+  </p>
+
+  <section id="cambios">
+    <h2><span class="num">1</span>Cambios por talla o por gusto</h2>
+    <p>
+      Puedes pedir un cambio dentro de <strong>{{ info.policy.changeDays }} días hábiles</strong> desde que recibes tu pedido,
+      siempre que la prenda:
+    </p>
+    <ul>
+      <li>esté sin uso y sin lavar,</li>
+      <li>conserve sus etiquetas y su empaque,</li>
+      <li>vaya acompañada de tu número de pedido.</li>
+    </ul>
+    <p>El cambio está sujeto a que tengamos stock de la talla o el producto que pides. El costo del envío de este cambio corre por tu cuenta.</p>
+  </section>
+
+  <section id="defectos">
+    <h2><span class="num">2</span>Productos con defecto o error en tu pedido</h2>
+    <p>
+      Si tu producto llegó con un defecto de fabricación, dañado o distinto a lo que pediste, avísanos dentro de las
+      <strong>{{ info.policy.defectHours }} horas</strong> siguientes a recibirlo, con fotos claras. En estos casos asumimos el
+      costo del envío y te ofrecemos el cambio por el mismo producto, otro de igual valor o la devolución de tu dinero.
+    </p>
+  </section>
+
+  <section id="no-aplican">
+    <h2><span class="num">3</span>Lo que no se puede cambiar</h2>
+    <ul>
+      <li>Ropa interior, trajes de baño y accesorios de uso personal, por razones de higiene, salvo que tengan un defecto.</li>
+      <li>Prendas usadas, lavadas, sin etiquetas o con señales de uso o de daño causado después de la entrega.</li>
+    </ul>
+  </section>
+
+  <section id="reembolso">
+    <h2><span class="num">4</span>Devolución del dinero</h2>
+    <p>
+      Cuando aprobamos una devolución, te devolvemos el dinero por <strong>transferencia a tu cuenta</strong> en un plazo de
+      {{ info.policy.refundDays }} días hábiles. Si el motivo no fue un error nuestro, se descuenta el costo del envío.
+    </p>
+  </section>
+
+  <section id="como">
+    <h2><span class="num">5</span>Cómo pedirlo</h2>
+    <ul>
+      <li>Escríbenos con tu <strong>número de pedido</strong>, qué producto quieres cambiar o devolver y el motivo.</li>
+      <li>Si es un defecto o un error, adjunta fotos.</li>
+      <li>Te confirmamos si aplica y cómo enviarnos la prenda.</li>
+    </ul>
+    @if (info.whatsapp('Hola, quiero pedir un cambio o una devolución. Mi número de pedido es: '); as link) {
+      <p>
+        <a class="cta" [href]="link" target="_blank" rel="noopener">
+          <span class="material-icons" aria-hidden="true">chat</span>
+          Pedir un cambio por WhatsApp
+        </a>
+      </p>
+    } @else {
+      <p>Escríbenos desde la página de <a routerLink="/legal/contacto">contacto</a>.</p>
+    }
+  </section>
+
+  <p class="note">
+    <span class="material-icons" aria-hidden="true">info</span>
+    <span>Esto no limita los derechos que la Ley Orgánica de Defensa del Consumidor te reconoce como consumidora o consumidor.</span>
+  </p>
+</div>

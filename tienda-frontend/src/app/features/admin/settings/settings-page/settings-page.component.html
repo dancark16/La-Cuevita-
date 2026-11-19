@@ -24,6 +24,12 @@
         <span class="field__hint">Solo el usuario, sin el arroba.</span>
       </div>
 
+      <div class="field">
+        <label class="field__label" for="set-email">Correo de contacto</label>
+        <input id="set-email" class="field__input" formControlName="contactEmail" type="email" placeholder="hola@tutienda.com" />
+        <span class="field__hint">Aparece en la página de contacto y en la política de privacidad, donde las clientas piden sobre sus datos.</span>
+      </div>
+
       <div class="form__actions">
         <button type="submit" class="button button--primary" [disabled]="saving() || loading()">
           {{ saving() ? 'Guardando...' : 'Guardar cambios' }}

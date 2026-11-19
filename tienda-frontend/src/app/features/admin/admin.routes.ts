@@ -48,6 +48,12 @@ export const ADMIN_ROUTES: Routes = [
                     ),
             },
             {
+                path: 'usuarios',
+                title: 'Cuentas | La Cuevita',
+                loadComponent: () =>
+                    import('./users/users-page/users-page.component').then((m) => m.UsersPageComponent),
+            },
+            {
                 path: 'configuracion',
                 title: 'Configuración | La Cuevita',
                 loadComponent: () =>

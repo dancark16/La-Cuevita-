@@ -37,6 +37,15 @@ export class AuthService {
       .pipe(tap((response) => this.setSession(response)));
   }
 
+  /** Pide el enlace para crear una contraseña nueva. Siempre responde igual, exista o no el correo. */
+  forgotPassword(email: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, password: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/reset-password`, { token, password });
+  }
+
   register(request: LoginRequest): Observable<AccessTokenResponse> {
     return this.http
       .post(`${environment.apiUrl}/auth/register`, request)

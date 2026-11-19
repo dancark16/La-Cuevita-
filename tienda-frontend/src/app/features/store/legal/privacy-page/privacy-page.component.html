@@ -1,0 +1,128 @@
+<div class="prose">
+  <p class="prose__lead">
+    En <strong>{{ info.name() }}</strong> cuidamos tus datos personales. Esta política explica qué datos recogemos cuando compras,
+    para qué los usamos, con quién los compartimos y cómo puedes ejercer tus derechos según la Ley Orgánica de Protección de
+    Datos Personales del Ecuador.
+  </p>
+
+  <dl class="facts">
+    <div>
+      <dt>Responsable</dt>
+      <dd>{{ info.legalName() || info.name() }}@if (info.ruc()) { · RUC {{ info.ruc() }} }</dd>
+    </div>
+    @if (info.address()) {
+      <div><dt>Dirección</dt><dd>{{ info.address() }}</dd></div>
+    }
+    @if (info.email()) {
+      <div><dt>Correo para tus datos</dt><dd>{{ info.email() }}</dd></div>
+    }
+    @if (info.whatsappNumber()) {
+      <div><dt>WhatsApp</dt><dd>{{ info.whatsappLabel() }}</dd></div>
+    }
+  </dl>
+
+  <section id="datos">
+    <h2><span class="num">1</span>Qué datos recogemos</h2>
+    <ul>
+      <li><strong>De tu cuenta:</strong> correo electrónico y contraseña (que guardamos cifrada, nunca en texto legible). Si entras con Google, recibimos tu correo y tu nombre desde tu cuenta.</li>
+      <li><strong>De tus pedidos:</strong> nombre, tipo y número de documento (cédula, RUC o pasaporte), teléfono, dirección de entrega y los productos que compras.</li>
+      <li><strong>De tus pagos:</strong> la imagen o el PDF del comprobante de transferencia que subes. No pedimos ni guardamos datos de tarjetas.</li>
+      <li><strong>Del uso del sitio:</strong> tu sesión y tu carrito se guardan en tu navegador para que no los pierdas.</li>
+    </ul>
+  </section>
+
+  <section id="uso">
+    <h2><span class="num">2</span>Para qué usamos tus datos</h2>
+    <ul>
+      <li>Procesar y entregar tus pedidos, y verificar tus pagos.</li>
+      <li>Emitir tu factura y cumplir con nuestras obligaciones tributarias y contables.</li>
+      <li>Comunicarnos contigo sobre tu pedido por correo o WhatsApp: confirmación del pago, envío, número de guía y novedades.</li>
+      <li>Atender tus consultas, cambios y devoluciones.</li>
+      <li>Mantener la seguridad de la tienda y prevenir fraudes.</li>
+    </ul>
+    <p>No usamos tus datos para publicidad de terceros ni los vendemos.</p>
+  </section>
+
+  <section id="base">
+    <h2><span class="num">3</span>Por qué podemos usarlos</h2>
+    <p>
+      Los usamos porque son necesarios para cumplir la compra que pides, porque la ley nos obliga a facturar y a conservar
+      registros, y, en lo demás, porque tú nos das tu consentimiento al crear tu cuenta y hacer tu pedido. Puedes retirar tu
+      consentimiento cuando quieras, aunque eso puede impedir que sigamos atendiendo ciertos pedidos.
+    </p>
+  </section>
+
+  <section id="compartimos">
+    <h2><span class="num">4</span>Con quién los compartimos</h2>
+    <p>Solo compartimos lo necesario para que tu compra llegue a buen término:</p>
+    <ul>
+      <li><strong>Transportistas:</strong> tu nombre, teléfono y dirección, para entregarte el paquete.</li>
+      <li><strong>Proveedores de facturación electrónica:</strong> los datos de tu factura, como exige el SRI.</li>
+      <li><strong>Servicios de correo y de acceso:</strong> el envío de correos del pedido y, si lo eliges, el inicio de sesión con Google.</li>
+      <li><strong>Autoridades:</strong> cuando la ley lo exija.</li>
+    </ul>
+  </section>
+
+  <section id="conservacion">
+    <h2><span class="num">5</span>Cuánto tiempo los guardamos</h2>
+    <p>
+      Guardamos tus datos mientras tengas una cuenta y el tiempo que exijan las normas tributarias y contables. Los
+      comprobantes de venta se conservan por varios años por obligación legal. Terminado ese tiempo, los eliminamos o los
+      dejamos anónimos.
+    </p>
+  </section>
+
+  <section id="derechos">
+    <h2><span class="num">6</span>Tus derechos</h2>
+    <p>La ley te reconoce, entre otros, estos derechos sobre tus datos:</p>
+    <ul>
+      <li><strong>Acceso:</strong> saber qué datos tuyos tenemos y cómo los usamos.</li>
+      <li><strong>Rectificación y actualización:</strong> corregir datos incorrectos o desactualizados.</li>
+      <li><strong>Eliminación:</strong> pedir que borremos tus datos cuando ya no sean necesarios y la ley no nos obligue a conservarlos.</li>
+      <li><strong>Oposición y suspensión:</strong> negarte a ciertos usos o pedir que los pausemos.</li>
+      <li><strong>Portabilidad:</strong> recibir tus datos en un formato que puedas llevar a otro servicio.</li>
+    </ul>
+    <p>
+      Para ejercerlos, escríbenos
+      @if (info.email()) {
+        a <strong>{{ info.email() }}</strong>
+        @if (info.whatsappNumber()) { o por WhatsApp al {{ info.whatsappLabel() }} }
+      } @else if (info.whatsappNumber()) {
+        por WhatsApp al <strong>{{ info.whatsappLabel() }}</strong>
+      } @else {
+        desde la página de <a routerLink="/legal/contacto">contacto</a>
+      }
+      indicando tu nombre y tu número de documento. Si no estás conforme con nuestra respuesta, puedes presentar un reclamo ante
+      la autoridad de protección de datos personales del Ecuador.
+    </p>
+  </section>
+
+  <section id="seguridad">
+    <h2><span class="num">7</span>Cómo protegemos tus datos</h2>
+    <ul>
+      <li>Las contraseñas se guardan cifradas.</li>
+      <li>Tus comprobantes de pago solo pueden verlos tú y el personal autorizado de la tienda.</li>
+      <li>Limitamos quién puede entrar al panel de administración.</li>
+    </ul>
+    <p>Ningún sistema es perfecto: si detectamos un incidente que afecte tus datos, te avisaremos como manda la ley.</p>
+  </section>
+
+  <section id="cookies">
+    <h2><span class="num">8</span>Cookies y almacenamiento del navegador</h2>
+    <p>
+      Usamos el almacenamiento de tu navegador únicamente para lo esencial: mantener tu sesión iniciada y recordar el contenido
+      de tu carrito. No usamos cookies de publicidad ni de seguimiento de terceros. Si borras los datos de tu navegador,
+      perderás tu carrito y tendrás que iniciar sesión otra vez.
+    </p>
+  </section>
+
+  <section id="menores">
+    <h2><span class="num">9</span>Menores de edad</h2>
+    <p>Este sitio no está dirigido a menores de 18 años. Si crees que un menor nos dio sus datos, escríbenos y los eliminaremos.</p>
+  </section>
+
+  <section id="cambios">
+    <h2><span class="num">10</span>Cambios en esta política</h2>
+    <p>Si cambiamos cómo tratamos tus datos, actualizaremos esta página con la nueva fecha.</p>
+  </section>
+</div>

@@ -47,6 +47,12 @@ springdoc:
     path: /v3/api-docs
 
 app:
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:4200}
+  bootstrap:
+    # Crea el administrador la primera vez si no existe (solo con las dos variables definidas).
+    admin-email: ${ADMIN_EMAIL:}
+    admin-password: ${ADMIN_PASSWORD:}
   # Dirección pública de la tienda; sale en los botones de los correos.
   frontend-url: ${FRONTEND_URL:http://localhost:4200}
   mail:
@@ -70,4 +76,3 @@ app:
     client-id: ${GOOGLE_CLIENT_ID:820353047340-34r03a8plv0qtjsm3j3pefeuv716u7dv.apps.googleusercontent.com}
   storage:
     root: ${UPLOAD_DIR:uploads}
-  public-base-url: ${PUBLIC_BASE_URL:http://localhost:8080}

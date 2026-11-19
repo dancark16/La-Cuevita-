@@ -1,0 +1,44 @@
+@use '../../admin-ui';
+
+@include admin-ui.form-fields;
+@include admin-ui.buttons;
+
+.pw {
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+
+  .field__input {
+    padding-right: 2.75rem;
+  }
+}
+
+.pw__btn {
+  position: absolute;
+  top: 50%;
+  right: 5.5rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  transform: translateY(-50%);
+
+  &:hover {
+    background: var(--color-sky);
+    color: var(--color-black);
+  }
+
+  .material-icons {
+    font-size: 1.25rem;
+  }
+}
+
+.pw__gen {
+  flex: none;
+  padding-inline: 1rem;
+}

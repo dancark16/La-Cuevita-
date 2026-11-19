@@ -28,6 +28,7 @@ export class AdminLayoutComponent {
     { label: 'Productos', icon: 'checkroom', route: '/admin/productos' },
     { label: 'Importar Excel', icon: 'upload_file', route: '/admin/importar' },
     { label: 'Tallas y colores', icon: 'palette', route: '/admin/atributos' },
+    { label: 'Cuentas', icon: 'group', route: '/admin/usuarios' },
     { label: 'Configuración', icon: 'settings', route: '/admin/configuracion' },
   ];
 

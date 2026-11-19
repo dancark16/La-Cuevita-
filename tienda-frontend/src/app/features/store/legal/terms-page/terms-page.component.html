@@ -1,0 +1,138 @@
+<div class="prose">
+  <p class="prose__lead">
+    Estos términos explican cómo funciona la compra en <strong>{{ info.name() }}</strong>. Al crear una cuenta o hacer un pedido
+    aceptas lo que sigue, así que te pedimos que los leas con calma.
+  </p>
+
+  <dl class="facts">
+    <div><dt>Tienda</dt><dd>{{ info.name() }}</dd></div>
+    @if (info.legalName()) {
+      <div><dt>Razón social</dt><dd>{{ info.legalName() }}</dd></div>
+    }
+    @if (info.ruc()) {
+      <div><dt>RUC</dt><dd>{{ info.ruc() }}</dd></div>
+    }
+    @if (info.address()) {
+      <div><dt>Dirección</dt><dd>{{ info.address() }}</dd></div>
+    }
+    @if (info.whatsappNumber()) {
+      <div><dt>WhatsApp</dt><dd>{{ info.whatsappLabel() }}</dd></div>
+    }
+    @if (info.email()) {
+      <div><dt>Correo</dt><dd>{{ info.email() }}</dd></div>
+    }
+  </dl>
+
+  <section id="uso">
+    <h2><span class="num">1</span>Uso del sitio</h2>
+    <p>
+      Este sitio es una tienda en línea de ropa y accesorios. Puedes navegar y ver los productos sin una cuenta; para comprar
+      necesitas crear una. Debes ser mayor de edad y usar el sitio de buena fe, sin intentar dañarlo, copiarlo ni acceder a
+      partes que no son tuyas.
+    </p>
+  </section>
+
+  <section id="cuenta">
+    <h2><span class="num">2</span>Tu cuenta</h2>
+    <ul>
+      <li>Los datos que nos das (nombre, documento de identidad, teléfono, correo y dirección) deben ser verdaderos y estar al día.</li>
+      <li>Puedes entrar con tu correo y contraseña o con tu cuenta de Google.</li>
+      <li>Tú cuidas tu contraseña. Si crees que alguien más entró a tu cuenta, avísanos de inmediato.</li>
+    </ul>
+  </section>
+
+  <section id="productos">
+    <h2><span class="num">3</span>Productos y precios</h2>
+    <ul>
+      <li>Los precios están en dólares de los Estados Unidos e <strong>incluyen IVA</strong>.</li>
+      <li>Las fotos son referenciales: el tono de un color puede verse un poco distinto según tu pantalla.</li>
+      <li>Vendemos hasta agotar stock. Si un producto se agota o hay un error evidente en un precio, te avisamos y puedes elegir otro producto o cancelar sin costo.</li>
+    </ul>
+  </section>
+
+  <section id="compra">
+    <h2><span class="num">4</span>Cómo funciona una compra</h2>
+    <ul>
+      <li>Eliges tus productos, color y talla, y los agregas al carrito.</li>
+      <li>Al pulsar <strong>Pagar</strong> completas tus datos de entrega y confirmas el pedido, que queda <strong>pendiente de pago</strong>.</li>
+      <li>Apartamos tu stock durante <strong>{{ info.policy.reservationHours }} horas</strong> para que alcances a pagar. Si no recibimos el pago en ese tiempo, el pedido se cancela solo y el stock vuelve a la tienda.</li>
+      <li>Haces la transferencia a una de nuestras cuentas, sube tu comprobante en la página del pedido y nosotros lo revisamos.</li>
+      <li>Cuando confirmamos que el dinero llegó, el pedido pasa a <strong>pagado</strong> y lo preparamos para el envío.</li>
+    </ul>
+  </section>
+
+  <section id="pagos">
+    <h2><span class="num">5</span>Pagos</h2>
+    <p>
+      Recibimos pagos por <strong>transferencia bancaria</strong> a las cuentas que ves al finalizar tu compra. El pedido no se
+      considera pagado hasta que verificamos la transferencia en nuestra cuenta; un comprobante por sí solo no es un pago.
+      Si el valor no coincide o el comprobante no se puede verificar, te pediremos que lo corrijas o lo envíes otra vez.
+    </p>
+  </section>
+
+  <section id="factura">
+    <h2><span class="num">6</span>Facturación</h2>
+    <p>
+      Emitimos la factura con los datos de identificación que registraste en tu pedido y la enviamos a tu correo. Revisa que tu
+      nombre, tu cédula o RUC y tu correo estén correctos antes de confirmar, porque una factura emitida no se puede cambiar
+      libremente.
+    </p>
+  </section>
+
+  <section id="envios">
+    <h2><span class="num">7</span>Envíos y entrega</h2>
+    <ul>
+      <li>Enviamos a la dirección que indicaste. Asegúrate de que esté completa y de que alguien pueda recibir el paquete.</li>
+      <li>Trabajamos con distintos transportistas. Cuando despachamos tu pedido te damos el transportista y el número de guía, y puedes seguirlo desde tu pedido.</li>
+      <li>Los tiempos de entrega son referenciales y dependen del transportista y del lugar de destino. Si el envío tiene un costo, te lo informaremos antes de confirmar.</li>
+    </ul>
+  </section>
+
+  <section id="cambios">
+    <h2><span class="num">8</span>Cambios y devoluciones</h2>
+    <p>
+      Las condiciones para cambiar un producto o pedir una devolución están en la página de
+      <a routerLink="/legal/devoluciones">Cambios y devoluciones</a>.
+    </p>
+  </section>
+
+  <section id="propiedad">
+    <h2><span class="num">9</span>Propiedad intelectual</h2>
+    <p>
+      El nombre, el logo, las fotos, los textos y el diseño de este sitio pertenecen a {{ info.name() }} o se usan con permiso.
+      No puedes copiarlos ni usarlos con fines comerciales sin nuestra autorización por escrito.
+    </p>
+  </section>
+
+  <section id="responsabilidad">
+    <h2><span class="num">10</span>Responsabilidad</h2>
+    <p>
+      Hacemos lo posible por mantener el sitio disponible y la información al día, pero puede haber interrupciones o errores
+      ajenos a nuestro control. No respondemos por daños causados por el uso indebido del sitio o por fallas de servicios de
+      terceros, como tu conexión a internet, tu banco o el transportista, más allá de lo que establece la ley.
+    </p>
+  </section>
+
+  <section id="cambios-terminos">
+    <h2><span class="num">11</span>Cambios en estos términos</h2>
+    <p>
+      Podemos actualizar estos términos cuando cambie la tienda o la ley. Publicaremos la versión nueva en esta página con su
+      fecha. Los pedidos que ya hiciste se rigen por los términos vigentes cuando los confirmaste.
+    </p>
+  </section>
+
+  <section id="ley">
+    <h2><span class="num">12</span>Ley aplicable</h2>
+    <p>
+      Estos términos se rigen por las leyes de la República del Ecuador, en especial la Ley Orgánica de Defensa del Consumidor.
+      Tus derechos como consumidora o consumidor siguen vigentes sin importar lo que diga este documento.
+    </p>
+  </section>
+
+  <section id="contacto">
+    <h2><span class="num">13</span>Contacto</h2>
+    <p>
+      ¿Dudas sobre estos términos? Escríbenos desde la página de <a routerLink="/legal/contacto">contacto</a>.
+    </p>
+  </section>
+</div>

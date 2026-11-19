@@ -71,6 +71,19 @@
       }
     </div>
 
+    <div class="accept">
+      <label class="accept__label">
+        <input type="checkbox" formControlName="accept" />
+        <span>
+          Acepto los <a routerLink="/legal/terminos" target="_blank">Términos y condiciones</a> y la
+          <a routerLink="/legal/privacidad" target="_blank">Política de privacidad</a>.
+        </span>
+      </label>
+      @if (form.controls.accept.touched && form.controls.accept.invalid) {
+        <span class="field__error">Para crear tu cuenta debes aceptarlos</span>
+      }
+    </div>
+
     @if (errorMessage()) {
       <p class="auth__error" role="alert">{{ errorMessage() }}</p>
     }

@@ -15,6 +15,18 @@ export const routes: Routes = [
       import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
   },
   {
+    path: 'recuperar',
+    title: 'Recuperar contraseña | La Cuevita',
+    loadComponent: () =>
+      import('./features/auth/forgot-password/forgot-password.component').then((m) => m.ForgotPasswordComponent),
+  },
+  {
+    path: 'restablecer',
+    title: 'Nueva contraseña | La Cuevita',
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password.component').then((m) => m.ResetPasswordComponent),
+  },
+  {
     path: 'admin',
     title: 'Panel | La Cuevita',
     canActivate: [adminGuard],
@@ -24,5 +36,4 @@ export const routes: Routes = [
     path: '',
     loadChildren: () => import('./features/store/store.routes').then((m) => m.STORE_ROUTES),
   },
-  { path: '**', redirectTo: '' },
 ];

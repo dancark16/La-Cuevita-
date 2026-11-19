@@ -7,6 +7,7 @@ import com.tienda.auth.dto.LoginRequest;
 import com.tienda.auth.dto.RefreshRequest;
 import com.tienda.auth.dto.RegisterRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final PasswordResetService passwordResetService;
     private final RefreshCookieFactory cookieFactory;
 
     @PostMapping("/register")
@@ -63,5 +65,18 @@ public class AuthController {
             throw new InvalidRefreshTokenException("No hay una sesión activa");
         }
         return refreshToken;
+    }
+
+    /** Siempre responde 202, exista o no el correo. */
+    @PostMapping("/forgot-password")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void forgotPassword(@Valid @RequestBody com.tienda.auth.dto.ForgotPasswordRequest request) {
+        passwordResetService.requestReset(request.email());
+    }
+
+    @PostMapping("/reset-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resetPassword(@Valid @RequestBody com.tienda.auth.dto.ResetPasswordRequest request) {
+        passwordResetService.reset(request.token(), request.password());
     }
 }

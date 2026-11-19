@@ -1,3 +1,33 @@
 @use '../auth-form';
 
 @include auth-form.auth-form;
+
+.accept {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-top: 0.25rem;
+}
+
+.accept__label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  cursor: pointer;
+
+  input {
+    flex: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    margin-top: 0.125rem;
+    accent-color: var(--color-accent);
+  }
+
+  a {
+    font-weight: 700;
+    color: var(--color-accent-deep);
+    text-decoration: underline;
+  }
+}

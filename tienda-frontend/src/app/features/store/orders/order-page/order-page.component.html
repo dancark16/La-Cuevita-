@@ -14,7 +14,7 @@
           <div>
             <p class="order__eyebrow">Pedido</p>
             <h1 class="order__number">#{{ o.orderNumber }}</h1>
-            <p class="order__date">{{ o.createdAt | date: "d 'de' MMMM, y · HH:mm" }}</p>
+            <p class="order__date">{{ o.createdAt | date: "d 'de' MMMM, y · HH:mm" : undefined : 'es' }}</p>
           </div>
         </div>
         <span class="status" [class.status--ok]="o.status === 'PAID' || o.status === 'SHIPPED' || o.status === 'DELIVERED'" [class.status--off]="o.status === 'CANCELLED'">
@@ -235,7 +235,7 @@
                   <span class="tracking__dot" aria-hidden="true"></span>
                   <div>
                     <strong>{{ event.message }}</strong>
-                    <small>{{ event.createdAt | date: "d 'de' MMM, HH:mm" }}</small>
+                    <small>{{ event.createdAt | date: "d 'de' MMM, HH:mm" : undefined : 'es' }}</small>
                   </div>
                 </li>
               }

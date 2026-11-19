@@ -52,6 +52,7 @@ export class CheckoutPageComponent {
     city: ['', Validators.required],
     province: ['', Validators.required],
     reference: [''],
+    accept: [false, Validators.requiredTrue],
   });
 
   invalid(name: keyof typeof this.form.controls): boolean {

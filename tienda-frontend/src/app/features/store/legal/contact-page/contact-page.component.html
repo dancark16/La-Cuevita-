@@ -1,0 +1,78 @@
+<div class="contact">
+  <p class="contact__lead">
+    Escríbenos por el canal que prefieras. Si tu consulta es sobre un pedido, ten a mano tu número de pedido.
+  </p>
+
+  <div class="cards">
+    @if (info.whatsappNumber()) {
+      <a class="card card--wa" [href]="info.whatsapp('Hola, quiero hacer una consulta.')" target="_blank" rel="noopener">
+        <span class="card__icon material-icons" aria-hidden="true">chat</span>
+        <span class="card__body">
+          <strong>WhatsApp</strong>
+          <small>{{ info.whatsappLabel() }}</small>
+        </span>
+        <span class="card__go material-icons" aria-hidden="true">arrow_forward</span>
+      </a>
+    }
+    @if (info.instagram()) {
+      <a class="card card--ig" [href]="info.instagramUrl()" target="_blank" rel="noopener">
+        <span class="card__icon material-icons" aria-hidden="true">photo_camera</span>
+        <span class="card__body">
+          <strong>Instagram</strong>
+          <small>&#64;{{ info.instagram() }}</small>
+        </span>
+        <span class="card__go material-icons" aria-hidden="true">arrow_forward</span>
+      </a>
+    }
+    @if (info.email()) {
+      <a class="card card--mail" [href]="'mailto:' + info.email()">
+        <span class="card__icon material-icons" aria-hidden="true">mail</span>
+        <span class="card__body">
+          <strong>Correo</strong>
+          <small>{{ info.email() }}</small>
+        </span>
+        <span class="card__go material-icons" aria-hidden="true">arrow_forward</span>
+      </a>
+    }
+    @if (info.address()) {
+      <div class="card card--place">
+        <span class="card__icon material-icons" aria-hidden="true">place</span>
+        <span class="card__body">
+          <strong>Dirección</strong>
+          <small>{{ info.address() }}</small>
+        </span>
+      </div>
+    }
+  </div>
+
+  @if (!info.whatsappNumber() && !info.instagram() && !info.email() && !info.address()) {
+    <p class="empty">Muy pronto tendrás aquí nuestros datos de contacto.</p>
+  }
+
+  @if (info.whatsappNumber()) {
+    <h2 class="contact__title">¿Sobre qué quieres escribirnos?</h2>
+    <div class="topics">
+      <a class="topic" [href]="info.whatsapp('Hola, tengo una consulta sobre mi pedido. Mi número de pedido es: ')" target="_blank" rel="noopener">
+        <span class="material-icons" aria-hidden="true">receipt_long</span>Mi pedido
+      </a>
+      <a class="topic" [href]="info.whatsapp('Hola, quiero consultar por la talla o disponibilidad de un producto.')" target="_blank" rel="noopener">
+        <span class="material-icons" aria-hidden="true">straighten</span>Tallas y disponibilidad
+      </a>
+      <a class="topic" [href]="info.whatsapp('Hola, quiero pedir un cambio o una devolución. Mi número de pedido es: ')" target="_blank" rel="noopener">
+        <span class="material-icons" aria-hidden="true">sync_alt</span>Cambios y devoluciones
+      </a>
+      <a class="topic" [href]="info.whatsapp('Hola, quiero ejercer mis derechos sobre mis datos personales.')" target="_blank" rel="noopener">
+        <span class="material-icons" aria-hidden="true">shield</span>Mis datos personales
+      </a>
+    </div>
+  }
+
+  @if (info.legalName() || info.ruc()) {
+    <dl class="business">
+      <div><dt>Razón social</dt><dd>{{ info.legalName() || info.name() }}</dd></div>
+      @if (info.ruc()) {
+        <div><dt>RUC</dt><dd>{{ info.ruc() }}</dd></div>
+      }
+    </dl>
+  }
+</div>

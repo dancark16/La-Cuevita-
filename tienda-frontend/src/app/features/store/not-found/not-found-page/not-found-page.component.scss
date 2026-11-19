@@ -1,0 +1,210 @@
+@use 'styles/mixins' as m;
+
+:host {
+  display: block;
+  background: linear-gradient(180deg, #eaf5fc 0%, #ffffff 32rem);
+}
+
+.nf {
+  display: grid;
+  place-items: center;
+  padding-block: 3rem 5rem;
+
+  @include m.container;
+}
+
+.nf__card {
+  width: 100%;
+  max-width: 40rem;
+  padding: 2.5rem 1.5rem;
+  border: 1px solid #cfe3f2;
+  border-top: 5px solid var(--color-accent);
+  border-radius: 1.25rem;
+  background: linear-gradient(160deg, #ffffff 0%, #eef7fd 100%);
+  box-shadow: 0 18px 44px rgb(42 92 170 / 16%);
+  text-align: center;
+
+  @include m.up(md) {
+    padding: 3rem 3rem;
+  }
+}
+
+.nf__code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: clamp(5rem, 22vw, 8rem);
+  font-style: italic;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-black);
+
+  span {
+    text-shadow: 0 6px 0 rgb(31 58 147 / 14%);
+  }
+}
+
+.nf__crown {
+  width: 0.9em;
+  height: 0.9em;
+  fill: var(--color-accent);
+  filter: drop-shadow(0 6px 10px rgb(255 79 163 / 45%));
+  animation: nf-float 3s ease-in-out infinite;
+}
+
+@keyframes nf-float {
+  50% {
+    transform: translateY(-0.4rem) rotate(-4deg);
+  }
+}
+
+.nf__title {
+  margin-top: 1rem;
+  font-size: clamp(1.375rem, 4vw, 1.875rem);
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.nf__text {
+  max-width: 28rem;
+  margin: 0.625rem auto 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #4a5d78;
+}
+
+.nf__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 28rem;
+  margin: 1.75rem auto 0;
+  padding: 0.25rem;
+  border: 1px solid #b7d5ea;
+  border-radius: var(--radius-pill);
+  background: var(--color-white);
+  box-shadow: inset 0 1px 3px rgb(20 40 75 / 8%);
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus-within {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgb(255 79 163 / 25%);
+  }
+}
+
+.nf__search-icon {
+  margin-left: 0.75rem;
+  color: var(--color-muted);
+}
+
+.nf__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.625rem 0.75rem;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  outline: none;
+}
+
+.nf__go {
+  padding: 0.625rem 1.25rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-black);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-white);
+  cursor: pointer;
+  transition: background-color 0.15s;
+
+  &:hover {
+    background: var(--color-accent);
+  }
+}
+
+.nf__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.nf__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8125rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s, color 0.15s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  .material-icons {
+    font-size: 1.25rem;
+  }
+}
+
+.nf__button--primary {
+  background: var(--color-accent);
+  box-shadow: 0 6px 14px rgb(255 79 163 / 40%);
+  color: var(--color-white);
+
+  &:hover {
+    background: var(--color-accent-deep);
+  }
+}
+
+.nf__button--outline {
+  border: 1px solid var(--color-black);
+  color: var(--color-black);
+
+  &:hover {
+    background: var(--color-black);
+    color: var(--color-white);
+  }
+}
+
+.nf__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed #b7d5ea;
+}
+
+.nf__chips-label {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.nf__chip {
+  padding: 0.375rem 0.875rem;
+  border: 1px solid #b7d5ea;
+  border-radius: var(--radius-pill);
+  background: var(--color-white);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  transition: background-color 0.15s, border-color 0.15s;
+
+  &:hover {
+    border-color: var(--color-accent);
+    background: #fff0f7;
+    color: var(--color-accent-deep);
+  }
+}
+
+.visually-hidden {
+  @include m.visually-hidden;
+}

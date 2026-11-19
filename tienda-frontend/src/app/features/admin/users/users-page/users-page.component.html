@@ -1,0 +1,109 @@
+<header class="page-header">
+  <div>
+    <h1 class="page-header__title"><span class="slash" aria-hidden="true">/</span>Cuentas</h1>
+    <p class="page-header__text">Quién puede entrar al panel y quién compra en la tienda. Suma a tu equipo, quita accesos o envía un enlace para cambiar la contraseña.</p>
+  </div>
+  <button type="button" class="button button--primary" (click)="modalOpen.set(true)">
+    <span class="material-icons" aria-hidden="true">person_add</span>
+    Nueva cuenta
+  </button>
+</header>
+
+<section class="card">
+  <div class="toolbar">
+    <label class="search">
+      <span class="material-icons search__icon" aria-hidden="true">search</span>
+      <input class="search__input" type="search" placeholder="Buscar por correo..." [formControl]="searchControl" />
+    </label>
+    <app-select class="filter" variant="filter" ariaLabel="Tipo de cuenta" [options]="roleOptions" [formControl]="roleControl" />
+    <span class="toolbar__count">{{ total() }} {{ total() === 1 ? 'cuenta' : 'cuentas' }}</span>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Cuenta</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>Creada</th>
+          <th class="num">Acciones</th>
+        </tr>
+      </thead>
+      <tbody [class.table--loading]="loading()">
+        @for (user of rows(); track user.id) {
+          <tr>
+            <td>
+              <div class="person">
+                <span class="person__avatar" aria-hidden="true">{{ user.email.charAt(0).toUpperCase() }}</span>
+                <div class="person__text">
+                  <span class="strong">{{ user.email }}</span>
+                  @if (isMe(user)) {
+                    <span class="person__me">Tú</span>
+                  }
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="role" [class.role--admin]="user.role === 'ADMIN'">
+                {{ user.role === 'ADMIN' ? 'Administrador' : 'Cliente' }}
+              </span>
+            </td>
+            <td>
+              <span class="chip" [class.chip--ok]="user.enabled" [class.chip--off]="!user.enabled">
+                {{ user.enabled ? 'Activa' : 'Desactivada' }}
+              </span>
+            </td>
+            <td>{{ user.createdAt | date: "d 'de' MMM y" : undefined : 'es' }}</td>
+            <td>
+              <div class="actions">
+                <button type="button" class="icon-btn" title="Enviar enlace para cambiar la contraseña" aria-label="Enviar enlace de contraseña" (click)="sendLink(user)">
+                  <span class="material-icons" aria-hidden="true">forward_to_inbox</span>
+                </button>
+                @if (!isMe(user)) {
+                  <button
+                    type="button"
+                    class="icon-btn"
+                    [title]="user.role === 'ADMIN' ? 'Quitar acceso al panel' : 'Dar acceso al panel'"
+                    [attr.aria-label]="user.role === 'ADMIN' ? 'Quitar acceso al panel' : 'Dar acceso al panel'"
+                    (click)="toggleRole(user)"
+                  >
+                    <span class="material-icons" aria-hidden="true">{{ user.role === 'ADMIN' ? 'admin_panel_settings' : 'verified_user' }}</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="icon-btn"
+                    [class.icon-btn--danger]="user.enabled"
+                    [title]="user.enabled ? 'Desactivar cuenta' : 'Activar cuenta'"
+                    [attr.aria-label]="user.enabled ? 'Desactivar cuenta' : 'Activar cuenta'"
+                    (click)="toggleEnabled(user)"
+                  >
+                    <span class="material-icons" aria-hidden="true">{{ user.enabled ? 'block' : 'check_circle' }}</span>
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (loading() && rows().length === 0) {
+      <p class="empty">Cargando...</p>
+    } @else if (!loading() && rows().length === 0) {
+      <p class="empty">No encontramos cuentas con ese filtro.</p>
+    }
+  </div>
+
+  <footer class="pager">
+    <span class="pager__info">Mostrando {{ from() }}–{{ to() }} de {{ total() }}</span>
+    <div class="pager__buttons">
+      <button type="button" class="button button--outline" [disabled]="pageIndex() === 0" (click)="goTo(pageIndex() - 1)">Anterior</button>
+      <span class="pager__page">Página {{ pageIndex() + 1 }} de {{ totalPages() }}</span>
+      <button type="button" class="button button--outline" [disabled]="pageIndex() + 1 >= totalPages()" (click)="goTo(pageIndex() + 1)">Siguiente</button>
+    </div>
+  </footer>
+</section>
+
+@if (modalOpen()) {
+  <app-user-modal (saved)="onSaved()" (cancelled)="modalOpen.set(false)" />
+}

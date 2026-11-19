@@ -9,12 +9,14 @@ export interface AdminSettings {
   instagramUser: string | null;
   payphoneEnabled: boolean;
   bankAccounts: BankAccount[];
+  contactEmail: string | null;
 }
 
 export interface SettingsRequest {
   whatsappNumber: string | null;
   instagramUser: string | null;
   payphoneEnabled: boolean;
+  contactEmail: string | null;
 }
 
 export interface BillingProfile {

@@ -1,0 +1,30 @@
+<section class="legal">
+  <header class="hero">
+    <span class="hero__icon material-icons" aria-hidden="true">{{ icon() }}</span>
+    <div>
+      <h1 class="hero__title">{{ title() }}</h1>
+      @if (subtitle()) {
+        <p class="hero__text">{{ subtitle() }}</p>
+      }
+    </div>
+    @if (showUpdated()) {
+      <span class="hero__date">Actualizado el {{ info.policy.updated | date: "d 'de' MMMM, y" : undefined : 'es' }}</span>
+    }
+  </header>
+
+  <div class="layout">
+    <nav class="menu" aria-label="Información legal">
+      <p class="menu__title">Información</p>
+      @for (link of links; track link.path) {
+        <a class="menu__link" [routerLink]="['/legal', link.path]" routerLinkActive="menu__link--active">
+          <span class="menu__icon material-icons" aria-hidden="true">{{ link.icon }}</span>
+          {{ link.label }}
+        </a>
+      }
+    </nav>
+
+    <article class="paper">
+      <router-outlet />
+    </article>
+  </div>
+</section>

@@ -128,6 +128,20 @@
           los números de cuenta y subirás tu comprobante.
         </p>
 
+        <div class="accept">
+          <label class="accept__label">
+            <input type="checkbox" formControlName="accept" />
+            <span>
+              Acepto los <a routerLink="/legal/terminos" target="_blank">Términos y condiciones</a>, la
+              <a routerLink="/legal/privacidad" target="_blank">Política de privacidad</a> y las condiciones de
+              <a routerLink="/legal/devoluciones" target="_blank">cambios y devoluciones</a>.
+            </span>
+          </label>
+          @if (invalid('accept')) {
+            <span class="field__error">Debes aceptarlos para confirmar tu pedido</span>
+          }
+        </div>
+
         @if (errorMessage()) {
           <p class="summary__error" role="alert">{{ errorMessage() }}</p>
         }

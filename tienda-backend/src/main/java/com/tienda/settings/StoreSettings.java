@@ -27,6 +27,9 @@ public class StoreSettings {
     @Column(name = "payphone_enabled", nullable = false)
     private boolean payphoneEnabled;
 
+    @Column(name = "contact_email", length = 150)
+    private String contactEmail;
+
     @Column(name = "business_name", length = 200)
     private String businessName;
 

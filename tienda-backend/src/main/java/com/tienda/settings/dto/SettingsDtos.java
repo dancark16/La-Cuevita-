@@ -17,7 +17,13 @@ public final class SettingsDtos {
             String instagramUser,
             boolean payphoneEnabled,
             List<String> bankNames
-    ) {
+    ,
+            String contactEmail,
+            String tradeName,
+            String businessName,
+            String ruc,
+            String headOfficeAddress
+) {
     }
 
     /** Datos para transferir; solo para clientas con sesión iniciada. */
@@ -29,14 +35,18 @@ public final class SettingsDtos {
             String instagramUser,
             boolean payphoneEnabled,
             List<BankAccountResponse> bankAccounts
-    ) {
+    ,
+            String contactEmail
+) {
     }
 
     public record SettingsRequest(
             @Size(max = 20) String whatsappNumber,
             @Size(max = 60) String instagramUser,
             boolean payphoneEnabled
-    ) {
+    ,
+            @Size(max = 150) @jakarta.validation.constraints.Email String contactEmail
+) {
     }
 
     /** Datos del emisor que salen en la factura. */

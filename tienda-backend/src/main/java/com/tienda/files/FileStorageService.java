@@ -44,14 +44,11 @@ public class FileStorageService {
 
     private final StoredFileRepository repository;
     private final Path root;
-    private final String publicBaseUrl;
 
     public FileStorageService(StoredFileRepository repository,
-                              @Value("${app.storage.root:uploads}") String root,
-                              @Value("${app.public-base-url:http://localhost:8080}") String publicBaseUrl) {
+                              @Value("${app.storage.root:uploads}") String root) {
         this.repository = repository;
         this.root = Path.of(root).toAbsolutePath().normalize();
-        this.publicBaseUrl = publicBaseUrl.replaceAll("/+$", "");
     }
 
     @Transactional
@@ -164,7 +161,7 @@ public class FileStorageService {
     }
 
     private UploadedFile toResponse(StoredFile file) {
-        return new UploadedFile(file.getId(), publicBaseUrl + "/api/files/" + file.getId(),
+        return new UploadedFile(file.getId(), "/api/files/" + file.getId(),
                 file.getOriginalName(), file.getSizeBytes());
     }
 

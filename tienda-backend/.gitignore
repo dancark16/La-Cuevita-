@@ -4,3 +4,6 @@ target/
 .vscode/
 .env
 uploads/
+
+# Exportaciones del catalogo para entregar (pueden traer costos y stock)
+entrega/
