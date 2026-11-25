@@ -36,6 +36,7 @@
             },
             "assets": [
               "src/favicon.ico",
+              "src/manifest.webmanifest",
               "src/assets"
             ],
             "styles": [
@@ -51,13 +52,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "700kb",
+                  "maximumError": "1.5mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "12kb",
+                  "maximumError": "24kb"
                 }
               ],
               "outputHashing": "all"
@@ -106,6 +107,11 @@
             ],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src"
+              ]
+            },
             "assets": [
               "src/favicon.ico",
               "src/assets"

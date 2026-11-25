@@ -124,3 +124,10 @@
   background: var(--color-accent);
   color: var(--color-white);
 }
+
+.categories__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2.75rem;
+}

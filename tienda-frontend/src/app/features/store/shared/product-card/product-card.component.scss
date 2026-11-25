@@ -193,3 +193,11 @@
     cursor: not-allowed;
   }
 }
+
+// Celular: tallas fáciles de tocar
+@media (max-width: 47.99rem) {
+  .size {
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+  }
+}

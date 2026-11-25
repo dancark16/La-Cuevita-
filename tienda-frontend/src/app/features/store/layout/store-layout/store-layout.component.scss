@@ -1,9 +1,19 @@
+@use 'styles/mixins' as m;
+
 :host {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .store__main {
   flex: 1;
+}
+
+// En celular la barra inferior ocupa el borde: el contenido deja ese espacio libre
+@media (max-width: 63.99rem) {
+  :host {
+    padding-bottom: calc(3.75rem + env(safe-area-inset-bottom));
+  }
 }

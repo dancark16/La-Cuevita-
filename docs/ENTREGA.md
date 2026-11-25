@@ -48,3 +48,7 @@ No incluye clientas, pedidos, comprobantes de pago, cuentas bancarias ni usuario
   El frontend y el backend deben servirse bajo el mismo dominio (Nginx envía `/api` al backend).
   En desarrollo, `ng serve` usa `proxy.conf.json` para lo mismo.
 - La carpeta de fotos (`uploads`) y la base de datos deben tener copias de seguridad.
+
+## Servidor de producción
+
+Para instalar todo en un servidor (Docker, HTTPS, copias de seguridad), sigue **`DESPLIEGUE.md`**.

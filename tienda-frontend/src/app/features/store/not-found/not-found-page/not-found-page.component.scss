@@ -208,3 +208,12 @@
 .visually-hidden {
   @include m.visually-hidden;
 }
+
+// El contenido no debe ensanchar la tarjeta más que la pantalla
+.nf {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.nf__card {
+  min-width: 0;
+}

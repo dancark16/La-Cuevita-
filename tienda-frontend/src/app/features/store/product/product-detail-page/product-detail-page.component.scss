@@ -537,3 +537,81 @@
   border: 1px solid rgb(20 40 75 / 20%);
   border-radius: 50%;
 }
+
+// ================= Celular =================
+.gallery__dots {
+  display: none;
+}
+
+@media (max-width: 63.99rem) {
+  .gallery__main {
+    border-radius: 1.25rem;
+    touch-action: pan-y;
+  }
+
+  .gallery__dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.375rem;
+    margin-top: 0.75rem;
+  }
+
+  .gallery__dot {
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 50%;
+    background: #b7d5ea;
+    transition: width 0.2s, background-color 0.2s;
+  }
+
+  .gallery__dot--on {
+    width: 1.25rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+  }
+
+  .gallery__thumbs {
+    display: none;
+  }
+
+  .detail {
+    padding-block: 0.5rem 2rem;
+  }
+
+  .info {
+    padding: 1.25rem;
+  }
+
+  .info__name {
+    font-size: 1.5rem;
+  }
+
+  // Cantidad y «Agregar al carrito» se quedan a la vista sobre la barra inferior
+  .buy {
+    position: sticky;
+    bottom: calc(3.75rem + env(safe-area-inset-bottom) + 0.5rem);
+    z-index: 30;
+    margin: 1.25rem -1.25rem 0;
+    padding: 0.875rem 1.25rem;
+    border-top: 1px solid #cfe3f2;
+    background: rgb(255 255 255 / 96%);
+    box-shadow: 0 -8px 20px rgb(20 40 75 / 10%);
+    backdrop-filter: blur(8px);
+    gap: 0.75rem;
+    flex-wrap: nowrap;
+  }
+
+  .buy__add {
+    min-width: 0;
+  }
+
+  .qty__button {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+
+  .size,
+  .color {
+    min-height: 2.75rem;
+  }
+}

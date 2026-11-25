@@ -15,7 +15,7 @@
             <li class="line">
                 <div class="line__media">
                     @if (line.imageUrl) {
-                    <img class="line__image" [src]="line.imageUrl" [alt]="line.productName" />
+                    <img class="line__image" [src]="line.imageUrl | imageSrc: 240" [alt]="line.productName" decoding="async" />
                     } @else {
                     <span class="material-icons line__placeholder" aria-hidden="true">checkroom</span>
                     }
@@ -88,7 +88,7 @@
                 <strong>{{ cart.subtotal() | currency: 'USD' }}</strong>
             </p>
 
-            <a routerLink="/pago" class="button button--primary">
+            <a routerLink="/pago" class="button button--primary summary__pay">
                 <span class="material-icons" aria-hidden="true">lock</span>
                 Pagar
             </a>
@@ -105,6 +105,16 @@
         </aside>
     </div>
     }
+<div class="paybar">
+    <div class="paybar__total">
+        <small>Total</small>
+        <strong>{{ cart.subtotal() | currency: 'USD' }}</strong>
+    </div>
+    <a routerLink="/pago" class="paybar__go">
+        Pagar
+        <span class="material-icons" aria-hidden="true">arrow_forward</span>
+    </a>
+</div>
 </section>
 
 @if (selectedAccount(); as account) {

@@ -88,8 +88,11 @@
 
   .field__toggle {
     position: absolute;
-    right: 0.5rem;
+    right: 0.25rem;
     display: grid;
+    place-items: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
     padding: 0.375rem;
     border: 0;
     background: none;

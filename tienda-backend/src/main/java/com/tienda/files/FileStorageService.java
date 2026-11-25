@@ -156,6 +156,85 @@ public class FileStorageService {
         repository.deleteById(id);
     }
 
+    /** Anchos que se pueden pedir (?w=). Evita que alguien genere miles de tamaños distintos. */
+    private static final int[] WIDTHS = {240, 480, 800, 1200};
+
+    /**
+     * Devuelve una versión reducida de la foto (JPEG) para que el celular no baje la imagen completa.
+     * Se genera una vez y se guarda en uploads/.cache. Si no se puede reducir, devuelve la original.
+     */
+    public Path resizedPath(StoredFile file, int requestedWidth) {
+        Path original = pathOf(file);
+        int width = 0;
+        for (int candidate : WIDTHS) {
+            if (candidate >= requestedWidth) {
+                width = candidate;
+                break;
+            }
+        }
+        if (width == 0) {
+            return original; // pidió más que el máximo: se sirve la original
+        }
+        Path cached = root.resolve(".cache").resolve(file.getId() + "-" + width + ".jpg");
+        if (java.nio.file.Files.exists(cached)) {
+            return cached;
+        }
+        try (java.io.InputStream in = java.nio.file.Files.newInputStream(original)) {
+            java.awt.image.BufferedImage source = javax.imageio.ImageIO.read(in);
+            if (source == null || source.getWidth() <= width) {
+                return original; // formato que Java no lee (p. ej. WebP) o ya es chica
+            }
+            int height = Math.max(1, Math.round(source.getHeight() * (width / (float) source.getWidth())));
+            java.awt.image.BufferedImage scaled = scaleDown(source, width, height);
+            java.nio.file.Files.createDirectories(cached.getParent());
+            Path temp = java.nio.file.Files.createTempFile(cached.getParent(), "tmp-", ".jpg");
+            writeJpeg(scaled, temp);
+            java.nio.file.Files.move(temp, cached, java.nio.file.StandardCopyOption.REPLACE_EXISTING,
+                    java.nio.file.StandardCopyOption.ATOMIC_MOVE);
+            return cached;
+        } catch (Exception e) {
+            return original;
+        }
+    }
+
+    /** Reduce en pasos de la mitad: sale más nítido que reducir de golpe. */
+    private static java.awt.image.BufferedImage scaleDown(java.awt.image.BufferedImage src, int width, int height) {
+        java.awt.image.BufferedImage current = src;
+        int w = src.getWidth();
+        int h = src.getHeight();
+        while (w / 2 >= width) {
+            w /= 2;
+            h /= 2;
+            current = drawScaled(current, w, h);
+        }
+        return drawScaled(current, width, height);
+    }
+
+    private static java.awt.image.BufferedImage drawScaled(java.awt.image.BufferedImage src, int w, int h) {
+        java.awt.image.BufferedImage out = new java.awt.image.BufferedImage(w, h, java.awt.image.BufferedImage.TYPE_INT_RGB);
+        java.awt.Graphics2D g = out.createGraphics();
+        g.setColor(java.awt.Color.WHITE);
+        g.fillRect(0, 0, w, h);
+        g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g.setRenderingHint(java.awt.RenderingHints.KEY_RENDERING, java.awt.RenderingHints.VALUE_RENDER_QUALITY);
+        g.drawImage(src, 0, 0, w, h, null);
+        g.dispose();
+        return out;
+    }
+
+    private static void writeJpeg(java.awt.image.BufferedImage image, Path target) throws java.io.IOException {
+        javax.imageio.ImageWriter writer = javax.imageio.ImageIO.getImageWritersByFormatName("jpeg").next();
+        javax.imageio.ImageWriteParam param = writer.getDefaultWriteParam();
+        param.setCompressionMode(javax.imageio.ImageWriteParam.MODE_EXPLICIT);
+        param.setCompressionQuality(0.82f);
+        try (javax.imageio.stream.ImageOutputStream out = javax.imageio.ImageIO.createImageOutputStream(target.toFile())) {
+            writer.setOutput(out);
+            writer.write(null, new javax.imageio.IIOImage(image, null, null), param);
+        } finally {
+            writer.dispose();
+        }
+    }
+
     public Path pathOf(StoredFile file) {
         return resolve(file.getStoragePath());
     }

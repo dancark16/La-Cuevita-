@@ -1,0 +1,14 @@
+# Las pruebas usan SU PROPIA base de datos (tienda_test): nunca tocan la real.
+app:
+  bootstrap:
+    admin-email: admin-test@lacuevita.test
+    admin-password: AdminPrueba123
+  security:
+    auth-ip-max: 100000
+  storage:
+    root: ${java.io.tmpdir}/cuevita-test-uploads
+  orders:
+    allow-delete: true
+logging:
+  level:
+    root: WARN

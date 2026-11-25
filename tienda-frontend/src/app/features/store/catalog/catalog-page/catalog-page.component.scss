@@ -201,3 +201,34 @@
   font-variant-numeric: tabular-nums;
   color: var(--color-muted);
 }
+
+// ================= Celular =================
+@media (max-width: 63.99rem) {
+  .catalog {
+    padding-block: 0.75rem 2rem;
+  }
+
+  .catalog__filters-toggle {
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(160deg, #ffffff 0%, #eaf5fc 100%);
+    box-shadow: 0 4px 12px rgb(42 92 170 / 10%);
+  }
+
+  .catalog__title {
+    font-size: 1.75rem;
+  }
+
+  .catalog__grid {
+    gap: 1.25rem 0.625rem;
+  }
+
+  .catalog__sidebar {
+    width: min(22rem, 90vw);
+    padding-top: calc(1rem + env(safe-area-inset-top));
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+}

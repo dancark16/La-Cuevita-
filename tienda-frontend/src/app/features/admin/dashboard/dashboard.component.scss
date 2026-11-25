@@ -492,3 +492,29 @@ li + li > .recent__row {
   background: linear-gradient(160deg, #ffffff 0%, #fff6e5 100%);
   border-color: #f6e0b4;
 }
+
+// ================= Celular: nada se sale de la pantalla =================
+.counts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include m.up(lg) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.count {
+  min-width: 0;
+  padding: 0.875rem 1rem;
+}
+
+.count__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.grid,
+.panel {
+  min-width: 0;
+}

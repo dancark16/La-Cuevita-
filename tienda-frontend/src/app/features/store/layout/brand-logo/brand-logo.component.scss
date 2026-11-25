@@ -23,3 +23,13 @@
   letter-spacing: -0.01em;
   text-transform: uppercase;
 }
+
+.logo__text {
+  white-space: nowrap;
+}
+
+@media (max-width: 63.99rem) {
+  .logo__text {
+    font-size: 1.125rem;
+  }
+}

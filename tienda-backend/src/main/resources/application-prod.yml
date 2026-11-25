@@ -1,0 +1,26 @@
+# Perfil de producción (SPRING_PROFILES_ACTIVE=prod). Se suma a application.yml.
+server:
+  # Detrás de Nginx: toma la IP real y el https de las cabeceras X-Forwarded-*
+  forward-headers-strategy: framework
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: false
+
+springdoc:
+  # La documentación de la API no se publica en producción
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+app:
+  cookie:
+    # La cookie de sesión solo viaja por HTTPS. Para probar sin HTTPS: COOKIE_SECURE=false
+    secure: ${COOKIE_SECURE:true}
+
+logging:
+  level:
+    root: INFO

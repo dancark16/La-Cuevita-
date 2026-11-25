@@ -8,7 +8,7 @@ spring:
       max-request-size: 120MB
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:tienda}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:tienda}
     username: ${POSTGRES_USER:tienda_user}
     password: ${POSTGRES_PASSWORD:change_me_local}
 
@@ -47,6 +47,13 @@ springdoc:
     path: /v3/api-docs
 
 app:
+  security:
+    # Intentos fallidos seguidos de una cuenta antes de bloquearla un rato
+    login-max-failures: ${LOGIN_MAX_FAILURES:5}
+    login-window-minutes: ${LOGIN_WINDOW_MINUTES:15}
+    # Llamadas a ingresar, registrarse y recuperar contraseña por IP
+    auth-ip-max: ${AUTH_IP_MAX:30}
+    auth-ip-window-minutes: ${AUTH_IP_WINDOW_MINUTES:10}
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:4200}
   bootstrap:

@@ -36,12 +36,15 @@ public class FileController {
                 .toList();
     }
 
+    /** La foto. Con ?w=480 (240, 480, 800 o 1200) devuelve una versión más liviana para pantallas chicas. */
     @GetMapping("/api/files/{id}")
-    public ResponseEntity<Resource> download(@PathVariable UUID id) {
+    public ResponseEntity<Resource> download(@PathVariable UUID id, @RequestParam(required = false) Integer w) {
         StoredFile file = storageService.getPublicImage(id);
+        java.nio.file.Path path = w == null ? storageService.pathOf(file) : storageService.resizedPath(file, w);
+        boolean resized = w != null && !path.equals(storageService.pathOf(file));
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(file.getContentType()))
+                .contentType(MediaType.parseMediaType(resized ? "image/jpeg" : file.getContentType()))
                 .cacheControl(CacheControl.maxAge(Duration.ofDays(365)).cachePublic().immutable())
-                .body(new FileSystemResource(storageService.pathOf(file)));
+                .body(new FileSystemResource(path));
     }
 }

@@ -146,9 +146,19 @@
           <p class="summary__error" role="alert">{{ errorMessage() }}</p>
         }
 
-        <button type="submit" class="button button--primary" [disabled]="submitting()">
+        <button type="submit" class="button button--primary summary__confirm" [disabled]="submitting()">
           {{ submitting() ? 'Creando pedido...' : 'Confirmar pedido' }}
         </button>
+        <div class="paybar">
+          <div class="paybar__total">
+            <small>Total</small>
+            <strong>{{ cart.subtotal() | currency: 'USD' }}</strong>
+          </div>
+          <button type="submit" class="paybar__go" [disabled]="submitting()">
+            {{ submitting() ? 'Creando...' : 'Confirmar' }}
+            <span class="material-icons" aria-hidden="true">check</span>
+          </button>
+        </div>
         <a routerLink="/carrito" class="summary__back">Volver al carrito</a>
       </aside>
     </form>

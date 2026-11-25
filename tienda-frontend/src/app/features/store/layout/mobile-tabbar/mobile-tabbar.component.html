@@ -1,0 +1,61 @@
+<nav class="tabbar" aria-label="Navegación principal">
+  <a class="tab" routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">
+    <span class="tab__icon material-icons" aria-hidden="true">home</span>
+    <span class="tab__label">Inicio</span>
+  </a>
+  <a class="tab" routerLink="/tienda" routerLinkActive="is-active">
+    <span class="tab__icon material-icons" aria-hidden="true">checkroom</span>
+    <span class="tab__label">Tienda</span>
+  </a>
+  <button type="button" class="tab" [class.is-active]="sheetOpen()" (click)="sheetOpen.set(true)" aria-haspopup="dialog">
+    <span class="tab__icon material-icons" aria-hidden="true">category</span>
+    <span class="tab__label">Categorías</span>
+  </button>
+  <a class="tab" routerLink="/carrito" routerLinkActive="is-active">
+    <span class="tab__icon material-icons" aria-hidden="true">shopping_bag</span>
+    @if (cart.count() > 0) {
+      <span class="tab__badge">{{ cart.count() }}</span>
+    }
+    <span class="tab__label">Carrito</span>
+  </a>
+  <a class="tab" [routerLink]="accountLink()" routerLinkActive="is-active">
+    <span class="tab__icon material-icons" aria-hidden="true">{{ auth.isAuthenticated() ? 'person' : 'login' }}</span>
+    <span class="tab__label">{{ auth.isAuthenticated() ? 'Mis pedidos' : 'Ingresar' }}</span>
+  </a>
+</nav>
+
+@if (sheetOpen()) {
+  <button type="button" class="backdrop" aria-label="Cerrar categorías" (click)="closeSheet()"></button>
+  <section class="sheet" role="dialog" aria-modal="true" aria-label="Categorías">
+    <span class="sheet__grip" aria-hidden="true"></span>
+    <header class="sheet__head">
+      <h2 class="sheet__title">Categorías</h2>
+      <button type="button" class="sheet__close" aria-label="Cerrar" (click)="closeSheet()">
+        <span class="material-icons" aria-hidden="true">close</span>
+      </button>
+    </header>
+
+    <div class="sheet__body">
+      <a class="sheet__all" routerLink="/tienda" (click)="closeSheet()">
+        <span class="material-icons" aria-hidden="true">apps</span>Ver todo el catálogo
+      </a>
+      <a class="sheet__all sheet__all--new" routerLink="/tienda" [queryParams]="{ orden: 'NEWEST' }" (click)="closeSheet()">
+        <span class="material-icons" aria-hidden="true">auto_awesome</span>Novedades
+      </a>
+
+      @for (group of groups(); track group.root.id) {
+        <div class="group">
+          <a class="group__title" routerLink="/tienda" [queryParams]="{ categoria: group.root.id }" (click)="closeSheet()">
+            {{ group.root.name }}
+            <span class="material-icons" aria-hidden="true">arrow_forward</span>
+          </a>
+          <div class="group__chips">
+            @for (child of group.children; track child.id) {
+              <a class="chip" routerLink="/tienda" [queryParams]="{ categoria: child.id }" (click)="closeSheet()">{{ child.name }}</a>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+}

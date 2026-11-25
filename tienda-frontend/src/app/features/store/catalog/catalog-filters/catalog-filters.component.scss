@@ -100,16 +100,7 @@
 }
 
 .sort__select {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-white);
-  font: inherit;
-  color: var(--color-ink);
-
-  &:focus {
-    border-color: var(--color-black);
-  }
+  min-width: 11rem;
 }
 
 .chips--sub {
@@ -121,4 +112,41 @@
   border-radius: var(--radius-pill);
   font-size: 0.75rem;
   font-weight: 500;
+}
+
+@media (max-width: 63.99rem) {
+  :host {
+    margin-top: 0.75rem;
+  }
+
+  .filters {
+    gap: 0.625rem;
+  }
+
+  .search {
+    max-width: none;
+  }
+
+  .search__input {
+    border-radius: var(--radius-pill);
+    padding-inline: 1.125rem;
+  }
+
+  .search__button {
+    border-radius: var(--radius-pill);
+    padding-inline: 1rem;
+  }
+
+  .sort {
+    display: flex;
+    width: 100%;
+  }
+
+  .sort__label {
+    display: none;
+  }
+
+  .sort__select {
+    flex: 1;
+  }
 }

@@ -61,3 +61,10 @@
   margin-top: 1.5rem;
   color: var(--color-muted);
 }
+
+.featured__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2.75rem;
+}

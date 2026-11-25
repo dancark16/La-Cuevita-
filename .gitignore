@@ -1,0 +1,4 @@
+.env
+backups/
+.env.*
+!.env.prod.example

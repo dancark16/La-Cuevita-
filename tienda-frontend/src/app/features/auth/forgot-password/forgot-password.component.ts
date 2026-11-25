@@ -41,7 +41,9 @@ export class ForgotPasswordComponent {
         this.errorMessage.set(
           error.status === 0
             ? 'No se pudo conectar con el servidor. Inténtalo de nuevo en un momento.'
-            : 'No pudimos procesar tu solicitud. Inténtalo de nuevo.'
+            : error.status === 429
+              ? (error.error?.message ?? 'Demasiados intentos. Espera unos minutos.')
+              : 'No pudimos procesar tu solicitud. Inténtalo de nuevo.'
         );
       },
     });

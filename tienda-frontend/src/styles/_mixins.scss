@@ -101,6 +101,26 @@
     font-size: 0.8125rem;
   }
 
+  // En celular las migas no se parten en varias filas: se deslizan de lado
+  @media (max-width: 47.99rem) {
+    .crumbs {
+      flex-wrap: nowrap;
+      margin-block: 1rem;
+      margin-inline: -1rem;
+      padding-inline: 1rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .crumbs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .crumbs > * {
+      flex: none;
+    }
+  }
+
   .crumbs a,
   .crumbs__current {
     display: inline-flex;

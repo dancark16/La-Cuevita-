@@ -22,6 +22,7 @@ public class AuthService {
 
     private static final String DEFAULT_ROLE = "CUSTOMER";
 
+    private final LoginAttemptService loginAttempts;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -53,8 +54,16 @@ public class AuthService {
 
     @Transactional
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+        String attemptKey = request.email().trim().toLowerCase();
+        loginAttempts.checkAllowed(attemptKey);
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+        } catch (org.springframework.security.core.AuthenticationException e) {
+            loginAttempts.recordFailure(attemptKey);
+            throw e;
+        }
+        loginAttempts.reset(attemptKey);
 
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalStateException("Usuario autenticado no encontrado"));

@@ -1,3 +1,4 @@
+import { ImageSrcPipe } from '../../../../shared/util/image-src.pipe';
 import { ColorBackgroundPipe } from '../../../../shared/util/color-background.pipe';
 import { CurrencyPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
@@ -10,7 +11,7 @@ import { CartService } from '../cart.service';
 @Component({
     selector: 'app-cart-page',
     standalone: true,
-    imports: [ColorBackgroundPipe, RouterLink, CurrencyPipe, BankAccountModalComponent],
+    imports: [ImageSrcPipe, ColorBackgroundPipe, RouterLink, CurrencyPipe, BankAccountModalComponent],
     templateUrl: './cart-page.component.html',
     styleUrl: './cart-page.component.scss',
 })

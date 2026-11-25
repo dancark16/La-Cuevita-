@@ -1,0 +1,5 @@
+# Los scripts de shell deben terminar en LF aunque se editen en Windows (si no, fallan en Linux)
+*.sh text eol=lf
+*.conf text eol=lf
+*.template text eol=lf
+Dockerfile text eol=lf

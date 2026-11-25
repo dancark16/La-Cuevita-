@@ -2,7 +2,7 @@
   <a [routerLink]="['/producto', product.id]" class="card__link">
     <div class="card__media">
       @if (product.imageUrl) {
-        <img class="card__image" [src]="product.imageUrl" [alt]="product.name" loading="lazy" />
+        <img class="card__image" [src]="product.imageUrl | imageSrc: 480" [attr.srcset]="product.imageUrl | imageSrcset: 480 : 800" sizes="(max-width: 64rem) 50vw, 25vw" [alt]="product.name" loading="lazy" decoding="async" />
       } @else {
         <span class="card__placeholder material-icons" aria-hidden="true">checkroom</span>
       }

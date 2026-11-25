@@ -58,3 +58,27 @@ img {
         scroll-behavior: auto !important;
     }
 }
+// ---- Celular
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+}
+
+a,
+button,
+[role='button'] {
+    touch-action: manipulation;
+}
+
+@media (max-width: 47.99rem) {
+    // iOS hace zoom al tocar un campo con letra menor a 16 px
+    input:not([type='checkbox']):not([type='radio']):not([type='range']),
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+}

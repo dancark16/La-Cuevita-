@@ -1,3 +1,4 @@
+import { ImageSrcPipe, ImageSrcsetPipe } from '../../../../shared/util/image-src.pipe';
 import { ColorBackgroundPipe } from '../../../../shared/util/color-background.pipe';
 import { CurrencyPipe } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
@@ -14,7 +15,7 @@ import { ColorSwatch, StoreProductDetail, StoreProductSummary, StoreVariant } fr
 @Component({
   selector: 'app-product-detail-page',
   standalone: true,
-  imports: [ColorBackgroundPipe, RouterLink, CurrencyPipe, ProductCardComponent],
+  imports: [ImageSrcPipe, ImageSrcsetPipe, ColorBackgroundPipe, RouterLink, CurrencyPipe, ProductCardComponent],
   templateUrl: './product-detail-page.component.html',
   styleUrl: './product-detail-page.component.scss',
 })
@@ -154,6 +155,28 @@ export class ProductDetailPageComponent {
       .subscribe((page) =>
         this.related.set((page?.content ?? []).filter((item) => item.id !== product.id).slice(0, 4))
       );
+  }
+
+  private touchX: number | null = null;
+
+  /** Deslizar la foto de lado cambia a la anterior o a la siguiente. */
+  onTouchStart(event: TouchEvent): void {
+    this.touchX = event.touches[0]?.clientX ?? null;
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    const start = this.touchX;
+    this.touchX = null;
+    const end = event.changedTouches[0]?.clientX;
+    if (start === null || end === undefined || this.images().length < 2) {
+      return;
+    }
+    const delta = end - start;
+    if (Math.abs(delta) < 40) {
+      return;
+    }
+    const last = this.images().length - 1;
+    this.imageIndex.update((i) => Math.min(last, Math.max(0, delta < 0 ? i + 1 : i - 1)));
   }
 
   selectColor(name: string): void {

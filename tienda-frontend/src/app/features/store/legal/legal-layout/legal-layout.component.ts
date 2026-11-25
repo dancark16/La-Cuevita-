@@ -35,9 +35,10 @@ export class LegalLayoutComponent {
   private readonly data = toSignal(
     this.router.events.pipe(
       filter((event) => event instanceof NavigationEnd),
-      map(() => this.route.firstChild?.snapshot.data ?? {})
+      map(() => this.route.firstChild?.snapshot?.data ?? {})
     ),
-    { initialValue: this.route.firstChild?.snapshot.data ?? {} }
+    // Al llegar desde otra página, la ruta hija aún no tiene snapshot: se completa con el primer NavigationEnd
+    { initialValue: this.route.firstChild?.snapshot?.data ?? {} }
   );
 
   readonly title = computed(() => (this.data()['title'] as string) ?? 'Información legal');
